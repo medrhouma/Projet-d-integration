@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { ChevronDown, User, BookOpen, Building, Zap, Cpu, Wrench, Search, Menu, X, Calendar, Clock, MapPin, ArrowRight, Star, GraduationCap, Users, Award, BookMarked } from 'lucide-react';
-
+import Link from "next/link";
 export default function Homepage() {
   const [showDepartments, setShowDepartments] = useState(false);
   const [showExtranet, setShowExtranet] = useState(false);
@@ -217,15 +217,15 @@ export default function Homepage() {
                       <p className="text-sm text-gray-600">Connectez-vous à votre espace</p>
                     </div>
                     
-                    <button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold">
-                      Se connecter
-                    </button>
-                    
-                    <div className="text-center text-sm text-gray-500">ou</div>
-                    
-                    <button className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold">
-                      Créer un compte
-                    </button>
+                   <button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold">
+  <Link href="/login">Se connecter</Link>
+</button>
+
+<div className="text-center text-sm text-gray-500">ou</div>
+
+<button className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold">
+  <Link href="/register">Créer un compte</Link>
+</button>
                   </div>
                 </div>
               </div>
