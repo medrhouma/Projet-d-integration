@@ -12,6 +12,7 @@ export default function Homepage() {
   // Effet pour le scroll de la navbar
   useEffect(() => {
     const handleScroll = () => {
+      
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
