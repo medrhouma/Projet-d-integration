@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, User, BookOpen, Building, Zap, Cpu, Wrench, Search, Menu, X, Calendar, Clock, MapPin, ArrowRight, Star, GraduationCap, Users, Award, BookMarked } from 'lucide-react';
 import Link from "next/link";
+import { link } from 'fs';
 export default function Homepage() {
   const [showDepartments, setShowDepartments] = useState(false);
   const [showExtranet, setShowExtranet] = useState(false);
@@ -28,21 +29,26 @@ export default function Homepage() {
   }, []);
 
   const departments = [
-    { 
-      name: 'Informatique', 
-      icon: <Cpu className="w-5 h-5" />, 
-      color: 'bg-gradient-to-br from-purple-500 to-blue-500',
-      students: '450+ étudiants',
-      programs: ['IA & Data Science', 'Développement Web', 'Cybersécurité', 'Cloud Computing'],
-      stats: { success: '95%', internships: '120+', labs: '8' }
-    },
+   {   
+    name: 'Informatique', 
+    icon: <Cpu className="w-5 h-5" />, 
+    color: 'bg-gradient-to-br from-purple-500 to-blue-500',
+    students: '450+ étudiants',
+    programs: ['IA & Data Science', 'Développement Web', 'Cybersécurité', 'Cloud Computing'],
+    stats: { success: '95%', internships: '120+', labs: '8' },
+    link: '/Depinfo' 
+  },
+
+   
     { 
       name: 'Génie Civil', 
       icon: <Building className="w-5 h-5" />, 
       color: 'bg-gradient-to-br from-orange-500 to-red-500',
       students: '320+ étudiants',
       programs: ['Construction Durable', 'Géotechnique', 'Infrastructures', 'BTP'],
-      stats: { success: '92%', internships: '80+', labs: '6' }
+      stats: { success: '92%', internships: '80+', labs: '6' },
+      link: '/Depcivil'
+    
     },
     { 
       name: 'Génie Mécanique', 
@@ -50,7 +56,8 @@ export default function Homepage() {
       color: 'bg-gradient-to-br from-red-500 to-pink-500',
       students: '280+ étudiants', 
       programs: ['Robotique', 'Thermodynamique', 'Mécatronique', 'Production'],
-      stats: { success: '94%', internships: '90+', labs: '7' }
+      stats: { success: '94%', internships: '90+', labs: '7' },
+      link: '/Depmecanique'
     },
     { 
       name: 'Génie Électrique', 
@@ -58,7 +65,8 @@ export default function Homepage() {
       color: 'bg-gradient-to-br from-yellow-500 to-amber-500',
       students: '350+ étudiants',
       programs: ['Énergies Renouvelables', 'Automatisme', 'Électronique', 'Réseaux'],
-      stats: { success: '93%', internships: '100+', labs: '5' }
+      stats: { success: '93%', internships: '100+', labs: '5' },
+      link: '/Depelectrique'
     }
   ];
 
@@ -158,32 +166,34 @@ export default function Homepage() {
                   <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 w-[800px] backdrop-blur-sm">
                     <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Nos Départements d'Excellence</h3>
                     <div className="grid grid-cols-2 gap-6">
-                      {departments.map((dept, index) => (
-                        <div key={index} className="group/card bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-gray-200 relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-                          
-                          <div className="relative z-10">
-                            <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-4 group-hover/card:scale-110 transition-transform duration-300 shadow-lg`}>
-                              {dept.icon}
-                            </div>
-                            
-                            <h3 className="text-xl font-bold text-gray-800 mb-3">{dept.name}</h3>
-                            
-                            <div className="space-y-2 mb-4">
-                              {dept.programs.slice(0, 2).map((program, i) => (
-                                <span key={i} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mr-1">
-                                  {program}
-                                </span>
-                              ))}
-                            </div>
-                            
-                            <div className="flex justify-between items-center text-sm text-gray-600">
-                              <span>👨‍🎓 {dept.students}</span>
-                              <span>🏆 {dept.stats.success} réussite</span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                     {departments.map((dept, index) => (
+  <Link key={index} href={dept.link}>
+    <div className="group/card bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-gray-200 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
+      
+      <div className="relative z-10">
+        <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-4 group-hover/card:scale-110 transition-transform duration-300 shadow-lg`}>
+          {dept.icon}
+        </div>
+        
+        <h3 className="text-xl font-bold text-gray-800 mb-3">{dept.name}</h3>
+        
+        <div className="space-y-2 mb-4">
+          {dept.programs.slice(0, 2).map((program, i) => (
+            <span key={i} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mr-1">
+              {program}
+            </span>
+          ))}
+        </div>
+        
+        <div className="flex justify-between items-center text-sm text-gray-600">
+          <span>👨‍🎓 {dept.students}</span>
+          <span>🏆 {dept.stats.success} réussite</span>
+        </div>
+      </div>
+    </div>
+  </Link>
+))}
                     </div>
                     
                     <div className="mt-8 pt-6 border-t border-gray-200 text-center">
@@ -221,7 +231,7 @@ export default function Homepage() {
                    <button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold">
   <Link href="/login">Se connecter</Link>
 </button>
-
+  
 <div className="text-center text-sm text-gray-500">ou</div>
 
 <button className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold">
@@ -359,10 +369,14 @@ export default function Homepage() {
                     <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">
                       {dept.students}
                     </span>
-                    <button className="text-purple-600 hover:text-purple-700 font-semibold flex items-center space-x-1">
-                      <span>En savoir plus</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
+                      
+                   <Link href={dept.link}>
+  <button className="text-purple-600 hover:text-purple-700 font-semibold flex items-center space-x-1">
+    <span>En savoir plus</span>
+    <ArrowRight className="w-4 h-4" />
+  </button>
+</Link>
+                    
                   </div>
                 </div>
               </div>
@@ -532,6 +546,7 @@ export default function Homepage() {
               © 2025 ISET Tozeur. Tous droits réservés. | 
               <a href="#" className="hover:text-white transition-colors ml-2">Mentions légales</a> | 
               <a href="#" className="hover:text-white transition-colors ml-2">Politique de confidentialité</a>
+              
             </p>
           </div>
         </div>
