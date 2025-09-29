@@ -1,3 +1,4 @@
+
 # 🎓 EduManager - Système de Gestion Scolaire
 
 ![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js)
@@ -9,12 +10,11 @@
 ---
 
 ## 📖 Description
-**EduManager** est une application web moderne de gestion scolaire complète. Elle permet aux établissements d’organiser et suivre efficacement :
+**EduManager** est une plateforme web moderne pour la gestion scolaire complète, permettant aux établissements de gérer :
 - Étudiants & enseignants  
 - Cours & emplois du temps  
-- Notes & absences  
+- Notes, bulletins & absences  
 - Messagerie interne et ressources pédagogiques  
-
 ---
 
 ## ✨ Fonctionnalités
