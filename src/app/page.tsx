@@ -196,7 +196,7 @@ export default function Homepage() {
 
               <div className="w-px h-8 bg-gray-300"></div>
 
-              {/* Extranet */}
+              {/* Extranet            / */}
               <div 
                 className="relative"
                 onMouseEnter={() => setShowExtranet(true)}

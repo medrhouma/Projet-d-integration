@@ -40,7 +40,7 @@ export default function RegisterPage() {
   });
 
   const roles = [
-    { key: "etudiant" as UserRole, label: "Étudiant", icon: <GraduationCap className="w-5 h-5" />, description: "Accès aux cours et évaluations" },
+    { key: "etudiant" as UserRole, label: "Etudiant", icon: <GraduationCap className="w-5 h-5" />, description: "Accès aux cours et évaluations" },
     { key: "enseignant" as UserRole, label: "Enseignant", icon: <User className="w-5 h-5" />, description: "Gestion des cours et notes" },
     { key: "admin" as UserRole, label: "Administration", icon: <Building className="w-5 h-5" />, description: "Gestion complète du système" },
   ];
@@ -107,43 +107,51 @@ export default function RegisterPage() {
   };
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    setSuccessMessage("");
-    
+  e.preventDefault();
+  
+  if (!validateForm()) return;
+  
+  setIsLoading(true);
+  setSuccessMessage("");
+  setErrors({}); // reset errors
+  
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        ...form, 
+        role,
+        ...(role === 'etudiant' ? { matricule: undefined } : { numInsc: undefined })
+      })
+    });
+
+    let data;
     try {
-      // Simulation d'appel API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          ...form, 
-          role,
-          ...(role === 'etudiant' ? { matricule: undefined } : { numInsc: undefined })
-        })
-      });
-      
-      if (!response.ok) throw new Error('Erreur lors de l\'inscription');
-      
-      setSuccessMessage("Compte créé avec succès ! Redirection en cours...");
-      
-      // Redirection après 2 secondes
-      setTimeout(() => {
-        // router.push('/login');
-        console.log("Redirection vers /login");
-      }, 2000);
-      
-    } catch (error) {
-      setErrors({ general: "Erreur lors de l'inscription. Veuillez réessayer." });
-    } finally {
-      setIsLoading(false);
+      data = await response.json();
+    } catch {
+      data = {};
     }
-  };
+
+    if (!response.ok) {
+      setErrors({ general: data.error || "Erreur serveur" });
+      return;
+    }
+
+    setSuccessMessage("Compte créé avec succès ! Redirection en cours...");
+
+    setTimeout(() => {
+      console.log("Redirection vers /login");
+      // router.push('/login');
+    }, 2000);
+
+  } catch (err) {
+    console.error(err);
+    setErrors({ general: "Erreur lors de l'inscription. Veuillez réessayer." });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const getFieldStatus = (fieldName: string) => {
     const value = form[fieldName as keyof FormData];
@@ -468,7 +476,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
-          <p className="text-gray-600">
+          <p className="text-gray-600"> 
             Vous avez déjà un compte ?{" "}
             <Link 
               href="/login" 

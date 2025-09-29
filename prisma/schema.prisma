@@ -1,0 +1,217 @@
+
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Énumération pour les rôles
+enum Role {
+  Etudiant
+  Enseignant
+  Admin
+}
+
+// Énumération pour le statut d'absence
+enum StatutAbsence {
+  Justifiee    @map("Justifiée")
+  NonJustifiee @map("Non justifiée")
+}
+
+// Table principale d'authentification
+model Utilisateur {
+  id_utilisateur    Int      @id @default(autoincrement())
+  nom               String   @db.VarChar(100)
+  prenom            String   @map("prénom") @db.VarChar(100)
+  email             String   @unique @db.VarChar(255)
+  identifiant       String   @unique @db.VarChar(50)
+  mot_de_passe_hash String   @db.VarChar(255)
+  role              Role     @map("rôle")
+  date_creation     DateTime @default(now())
+  date_modification DateTime @updatedAt
+
+  // Relations
+  etudiant          Etudiant?
+  enseignant        Enseignant?
+  messages_envoyes  Message[] @relation("Expediteur")
+  messages_recus    Message[] @relation("Destinataire")
+
+  @@map("utilisateur")
+}
+
+// Table Département
+model Departement {
+  id_departement Int    @id @default(autoincrement())
+  nom            String @unique @db.VarChar(100)
+
+  // Relations
+  specialites Specialite[]
+  enseignants Enseignant[]
+
+  @@map("departement")
+}
+
+// Table Spécialité
+model Specialite {
+  id_specialite  Int @id @default(autoincrement())
+  nom            String @unique @db.VarChar(100)
+  id_departement Int
+
+  // Relations
+  departement Departement @relation(fields: [id_departement], references: [id_departement], onDelete: Cascade)
+  niveaux     Niveau[]
+  etudiants   Etudiant[]
+
+  @@map("specialite")
+}
+
+// Table Niveau
+model Niveau {
+  id_niveau     Int    @id @default(autoincrement())
+  nom           String @db.VarChar(50)
+  id_specialite Int
+
+  // Relations
+  specialite Specialite @relation(fields: [id_specialite], references: [id_specialite], onDelete: Cascade)
+  groupes    Groupe[]
+  matieres   Matiere[]
+
+  @@map("niveau")
+}
+
+// Table Groupe
+model Groupe {
+  id_groupe Int    @id @default(autoincrement())
+  nom       String @db.VarChar(50)
+  id_niveau Int
+
+  // Relations
+  niveau       Niveau        @relation(fields: [id_niveau], references: [id_niveau], onDelete: Cascade)
+  etudiants    Etudiant[]
+  emploi_temps EmploiTemps[]
+
+  @@map("groupe")
+}
+
+// Table Étudiant
+model Etudiant {
+  id_etudiant        Int    @id
+  numero_inscription String @unique @db.Char(6)
+  id_specialite      Int?       // nullable
+  id_groupe          Int?       // nullable
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [id_etudiant], references: [id_utilisateur], onDelete: Cascade)
+  specialite  Specialite?  @relation(fields: [id_specialite], references: [id_specialite])
+  groupe      Groupe?      @relation(fields: [id_groupe], references: [id_groupe])
+  absences    Absence[]
+
+  @@map("etudiant")
+}
+
+// Table Enseignant
+model Enseignant {
+  id_enseignant  Int    @id
+  matricule      String @unique @db.VarChar(50)
+  id_departement Int
+
+  // Relations
+  utilisateur  Utilisateur   @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)
+  departement  Departement   @relation(fields: [id_departement], references: [id_departement])
+  matieres     Matiere[]
+  emploi_temps EmploiTemps[]
+
+  @@map("enseignant")
+}
+
+// Table Matière
+model Matiere {
+  id_matiere    Int @id @default(autoincrement())
+  nom           String @db.VarChar(100)
+  id_niveau     Int
+  id_enseignant Int
+
+  // Relations
+  niveau       Niveau        @relation(fields: [id_niveau], references: [id_niveau], onDelete: Cascade)
+  enseignant   Enseignant    @relation(fields: [id_enseignant], references: [id_enseignant])
+  emploi_temps EmploiTemps[]
+
+  @@map("matiere")
+}
+
+// Table Salle
+model Salle {
+  id_salle Int    @id @default(autoincrement())
+  code     String @unique @db.VarChar(20)
+  type     String @db.VarChar(50)
+  capacite Int    @map("capacité")
+
+  // Relations
+  emploi_temps EmploiTemps[]
+
+  @@map("salle")
+}
+
+// Table Emploi du Temps
+model EmploiTemps {
+  id_emploi     Int      @id @default(autoincrement())
+  date          DateTime @db.Date
+  heure_debut   DateTime @db.Time
+  heure_fin     DateTime @db.Time
+  id_salle      Int
+  id_matiere    Int
+  id_groupe     Int
+  id_enseignant Int
+
+  // Relations
+  salle      Salle      @relation(fields: [id_salle], references: [id_salle])
+  matiere    Matiere    @relation(fields: [id_matiere], references: [id_matiere])
+  groupe     Groupe     @relation(fields: [id_groupe], references: [id_groupe])
+  enseignant Enseignant @relation(fields: [id_enseignant], references: [id_enseignant])
+  absences   Absence[]
+
+  @@index([date])
+  @@index([id_groupe, date])
+  @@map("emploi_temps")
+}
+
+// Table Absence
+model Absence {
+  id_absence  Int           @id @default(autoincrement())
+  id_etudiant Int
+  id_emploi   Int
+  motif       String?       @db.VarChar(255)
+  statut      StatutAbsence
+
+  // Relations
+  etudiant     Etudiant    @relation(fields: [id_etudiant], references: [id_etudiant], onDelete: Cascade)
+  emploi_temps EmploiTemps @relation(fields: [id_emploi], references: [id_emploi], onDelete: Cascade)
+
+  @@index([id_etudiant])
+  @@index([id_emploi])
+  @@map("absence")
+}
+
+// Table Message
+model Message {
+  id_message      Int      @id @default(autoincrement())
+  id_expediteur   Int
+  id_destinataire Int
+  contenu         String   @db.Text
+  date            DateTime @default(now())
+  lu              Boolean  @default(false)
+
+  // Relations
+  expediteur   Utilisateur @relation("Expediteur", fields: [id_expediteur], references: [id_utilisateur], onDelete: Cascade)
+  destinataire Utilisateur @relation("Destinataire", fields: [id_destinataire], references: [id_utilisateur], onDelete: Cascade)
+
+  @@index([id_destinataire])
+  @@index([date])
+  @@map("message")
+}
