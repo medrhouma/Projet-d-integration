@@ -119,11 +119,11 @@ model Etudiant {
 model Enseignant {
   id_enseignant  Int    @id
   matricule      String @unique @db.VarChar(50)
-  id_departement Int
+  id_departement Int?   // nullable
 
   // Relations
   utilisateur  Utilisateur   @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)
-  departement  Departement   @relation(fields: [id_departement], references: [id_departement])
+  departement  Departement?  @relation(fields: [id_departement], references: [id_departement])
   matieres     Matiere[]
   emploi_temps EmploiTemps[]
 
