@@ -66,7 +66,7 @@ npx prisma db push
 # Lancer en développement
 npm run dev
 
-
+---
 🗂️ Structure du Projet
 edumanager/
 ├── app/                  # Pages et Dashboards
@@ -74,7 +74,7 @@ edumanager/
 ├── prisma/               # Schéma de la base
 └── public/               # Assets statiques
 
-
+---
 📊 Rôles & Permissions
 Rôle	Permissions
 Étudiant	Voir emploi du temps, notes, bulletins, absences, cours
@@ -100,10 +100,9 @@ Feedback visuel en temps réel
 
 Accessibilité respectée
 
-📸 Captures d'Écran
-Login	Dashboard Étudiant	Dashboard Admin
 
-	
+
+---	
 	
 🏗️ Scripts Disponibles
 npm run dev       # Développement
@@ -123,7 +122,7 @@ Intégration systèmes externes
 Rapports analytiques avancés
 
 Réservation de salles et paiement en ligne
-
+---
 🐛 Dépannage
 
 Vérifier connexion MySQL
@@ -131,7 +130,7 @@ Vérifier connexion MySQL
 Vérifier DATABASE_URL dans .env
 
 Régénérer Prisma : npx prisma generate && npx prisma db push
-
+---
 📄 Licence
 
 MIT License – voir fichier LICENSE
