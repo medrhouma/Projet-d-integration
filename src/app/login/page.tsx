@@ -1,25 +1,39 @@
 'use client';
 import { useState } from "react";
 import Link from "next/link";
-import { GraduationCap, User, Building, Eye, EyeOff, CheckCircle, XCircle, LogIn } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { 
+  GraduationCap, 
+  User, 
+  Building, 
+  Eye, 
+  EyeOff, 
+  CheckCircle, 
+  XCircle, 
+  LogIn,
+  BookOpen,
+  School,
+  Settings
+} from "lucide-react";
 
 interface FormData {
   login: string;
   password: string;
 }
 
-type UserRole = "etudiant" | "enseignant" | "admin";
+type UserRole = "Etudiant" | "Enseignant" | "Admin";
 
 interface FormErrors {
   [key: string]: string;
 }
 
 export default function LoginPage() {
-  const [role, setRole] = useState<UserRole>("etudiant");
+  const [role, setRole] = useState<UserRole>("Etudiant");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [rememberMe, setRememberMe] = useState(false);
+  const router = useRouter();
   
   const [form, setForm] = useState<FormData>({
     login: "",
@@ -28,33 +42,44 @@ export default function LoginPage() {
 
   const roles = [
     { 
-      key: "etudiant" as UserRole, 
+      key: "Etudiant" as UserRole, 
       label: "Étudiant", 
-      icon: <GraduationCap className="w-5 h-5" />, 
-      description: "Accès étudiant",
-      dashboardRoute: "/dashboard-etudiant"
+      icon: <GraduationCap className="w-6 h-6" />, 
+      description: "Accès à l'espace étudiant",
+      dashboardRoute: "/dashboard-etudiant",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200"
     },
     { 
-      key: "enseignant" as UserRole, 
+      key: "Enseignant" as UserRole, 
       label: "Enseignant", 
-      icon: <User className="w-5 h-5" />, 
+      icon: <User className="w-6 h-6" />, 
       description: "Espace enseignant",
-      dashboardRoute: "/dashboard-enseignant"
+      dashboardRoute: "/dashboard-enseignant",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200"
     },
     { 
-      key: "admin" as UserRole, 
+      key: "Admin" as UserRole, 
       label: "Administration", 
-      icon: <Building className="w-5 h-5" />, 
-      description: "Panel admin",
-      dashboardRoute: "/dashboard-admin"
+      icon: <Building className="w-6 h-6" />, 
+      description: "Panel d'administration",
+      dashboardRoute: "/dashboard-admin",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200"
     },
   ];
 
   const validateField = (name: string, value: string): string => {
     switch (name) {
       case 'login':
+        if (!value) return "L'identifiant est requis";
         return value.length < 3 ? "Au moins 3 caractères requis" : "";
       case 'password':
+        if (!value) return "Le mot de passe est requis";
         return value.length < 6 ? "Au moins 6 caractères requis" : "";
       default:
         return "";
@@ -91,33 +116,70 @@ export default function LoginPage() {
     setErrors({});
     
     try {
-      // Simulation d'appel API
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const response = await fetch('/api/login', {
+      // URL absolue pour éviter les problèmes de routing
+      const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ 
-          ...form, 
-          role,
-          rememberMe
+          login: form.login,
+          password: form.password,
+          role: role
         })
       });
+
+      // Vérifier d'abord le type de contenu
+      const contentType = response.headers.get('content-type');
       
-      if (!response.ok) {
-        throw new Error('Identifiants incorrects');
+      if (!contentType || !contentType.includes('application/json')) {
+        // Si ce n'est pas du JSON, c'est probablement une erreur HTML
+        const text = await response.text();
+        console.error('Réponse non-JSON:', text.substring(0, 200));
+        throw new Error('Erreur serveur - réponse inattendue');
       }
       
+      // Maintenant parser le JSON
       const data = await response.json();
       
-      // Redirection selon le rôle
-      const selectedRole = roles.find(r => r.key === role);
-      console.log(`Connexion réussie ! Redirection vers ${selectedRole?.dashboardRoute}`);
+      if (!response.ok) {
+        throw new Error(data.message || `Erreur ${response.status}`);
+      }
+
+      if (!data.success) {
+        throw new Error(data.message || 'Échec de la connexion');
+      }
       
-      // Ici vous feriez la redirection réelle
-      // router.push(selectedRole?.dashboardRoute || '/dashboard');
+      // Stockage des informations d'authentification
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userLogin', data.user.identifiant);
+        localStorage.setItem('userData', JSON.stringify(data.user));
+      }
+      
+      // Redirection vers le dashboard approprié selon le rôle
+      let redirectRoute = "";
+      
+      switch (data.user.role) {
+        case "Etudiant":
+          redirectRoute = "/dashboard-etudiant";
+          break;
+        case "Enseignant":
+          redirectRoute = "/dashboard-enseignant";
+          break;
+        case "Admin":
+          redirectRoute = "/dashboard-admin";
+          break;
+        default:
+          redirectRoute = "/dashboard-etudiant";
+      }
+      
+      console.log(`Connexion ${data.user.role} réussie! Redirection vers ${redirectRoute}`);
+      router.push(redirectRoute);
       
     } catch (error) {
+      console.error('Erreur de connexion détaillée:', error);
       setErrors({ 
         general: error instanceof Error ? error.message : "Erreur de connexion. Veuillez vérifier vos identifiants." 
       });
@@ -135,55 +197,70 @@ export default function LoginPage() {
     return 'success';
   };
 
+  const getRoleConfig = (roleKey: UserRole) => {
+    return roles.find(r => r.key === roleKey) || roles[0];
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-indigo-50 px-4 py-8">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-xl border border-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4 py-8">
+      <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-gray-100">
+        
+        {/* En-tête */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-2xl mb-4">
-            <LogIn className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
+            <School className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-            Connexion
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            EduManager
           </h1>
-          <p className="text-gray-600">Accédez à votre espace personnel</p>
+          <p className="text-gray-600 text-lg">Plateforme de gestion scolaire</p>
         </div>
 
         {/* Message d'erreur général */}
         {errors.general && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3">
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-pulse">
             <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <p className="text-red-700">{errors.general}</p>
+            <p className="text-red-700 font-medium">{errors.general}</p>
           </div>
         )}
 
         {/* Sélection du rôle */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Sélectionnez votre profil</h3>
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <Settings className="w-5 h-5 text-gray-600" />
+            Sélectionnez votre profil
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {roles.map((r) => (
-              <div
+              <button
                 key={r.key}
+                type="button"
                 onClick={() => setRole(r.key)}
-                className={`cursor-pointer border-2 rounded-2xl p-5 text-center transition-all duration-300 ${
+                className={`cursor-pointer border-2 rounded-2xl p-5 text-center transition-all duration-300 transform hover:scale-105 ${
                   role === r.key
-                    ? "border-purple-500 bg-gradient-to-br from-purple-500 to-indigo-500 text-white shadow-lg transform scale-105"
-                    : "border-gray-200 bg-gray-50 text-gray-700 hover:border-purple-300 hover:bg-purple-50"
+                    ? `border-transparent bg-gradient-to-r ${r.color} text-white shadow-xl scale-105`
+                    : `border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-md`
                 }`}
               >
-                <div className="flex justify-center mb-3">{r.icon}</div>
+                <div className={`flex justify-center mb-3 ${role === r.key ? 'text-white' : 'text-gray-600'}`}>
+                  {r.icon}
+                </div>
                 <h4 className="font-semibold text-base mb-1">{r.label}</h4>
-                <p className={`text-xs ${role === r.key ? 'text-purple-100' : 'text-gray-500'}`}>
+                <p className={`text-xs ${role === r.key ? 'text-blue-100' : 'text-gray-500'}`}>
                   {r.description}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
-        <div className="space-y-6">
-          {/* Champ Login */}
+        {/* Formulaire de connexion */}
+        <form onSubmit={handleLogin} className="space-y-6">
+          
+          {/* Champ Identifiant */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <User className="w-4 h-4" />
               Identifiant *
             </label>
             <div className="relative">
@@ -192,16 +269,22 @@ export default function LoginPage() {
                 name="login"
                 value={form.login}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all duration-200 ${
-                  getFieldStatus('login') === 'error' ? 'border-red-300 bg-red-50' :
-                  getFieldStatus('login') === 'success' ? 'border-green-300 bg-green-50' :
-                  'border-gray-200 bg-gray-50 focus:border-purple-500'
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 ${
+                  getFieldStatus('login') === 'error' 
+                    ? 'border-red-300 bg-red-50 ring-2 ring-red-200' 
+                    : getFieldStatus('login') === 'success' 
+                    ? 'border-green-300 bg-green-50' 
+                    : 'border-gray-200 bg-gray-50 focus:border-blue-500'
                 }`}
-                placeholder="Votre identifiant"
+                placeholder="Votre identifiant ou email"
                 required
+                disabled={isLoading}
               />
               {getFieldStatus('login') === 'success' && (
                 <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-green-500" />
+              )}
+              {getFieldStatus('login') === 'error' && (
+                <XCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-red-500" />
               )}
             </div>
             {errors.login && (
@@ -214,7 +297,8 @@ export default function LoginPage() {
 
           {/* Champ Mot de passe */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+              <BookOpen className="w-4 h-4" />
               Mot de passe *
             </label>
             <div className="relative">
@@ -223,18 +307,22 @@ export default function LoginPage() {
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all duration-200 ${
-                  getFieldStatus('password') === 'error' ? 'border-red-300 bg-red-50' :
-                  getFieldStatus('password') === 'success' ? 'border-green-300 bg-green-50' :
-                  'border-gray-200 bg-gray-50 focus:border-purple-500'
+                className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 ${
+                  getFieldStatus('password') === 'error' 
+                    ? 'border-red-300 bg-red-50 ring-2 ring-red-200' 
+                    : getFieldStatus('password') === 'success' 
+                    ? 'border-green-300 bg-green-50' 
+                    : 'border-gray-200 bg-gray-50 focus:border-blue-500'
                 }`}
                 placeholder="••••••••"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors p-1"
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -254,14 +342,15 @@ export default function LoginPage() {
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
+                disabled={isLoading}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
               <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
             </label>
             
             <Link 
               href="/forgot-password" 
-              className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors hover:underline"
             >
               Mot de passe oublié ?
             </Link>
@@ -271,8 +360,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+            className={`w-full bg-gradient-to-r ${getRoleConfig(role).color} text-white py-4 rounded-xl font-semibold hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg`}
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-3">
@@ -282,11 +370,11 @@ export default function LoginPage() {
             ) : (
               <div className="flex items-center justify-center gap-2">
                 <LogIn className="w-5 h-5" />
-                Se connecter
+                Se connecter en tant que {getRoleConfig(role).label}
               </div>
             )}
           </button>
-        </div>
+        </form>
 
         {/* Séparateur */}
         <div className="relative my-8">
@@ -294,7 +382,7 @@ export default function LoginPage() {
             <div className="w-full border-t border-gray-200"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">ou</span>
+            <span className="px-4 bg-white text-gray-500">Première connexion ?</span>
           </div>
         </div>
 
@@ -303,10 +391,18 @@ export default function LoginPage() {
           <p className="text-gray-600 mb-4">Vous n'avez pas encore de compte ?</p>
           <Link 
             href="/register" 
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-purple-200 text-purple-600 rounded-xl font-semibold hover:bg-purple-50 hover:border-purple-300 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 hover:shadow-md"
           >
             Créer un compte
+            <GraduationCap className="w-4 h-4" />
           </Link>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-xs text-gray-500">
+            © 2024 EduManager. Tous droits réservés.
+          </p>
         </div>
       </div>
     </div>
