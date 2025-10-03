@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@prisma/client": "^6.16.2",
+    "@prisma/client": "^6.16.3",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
@@ -25,7 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "prisma": "^6.16.2",
+    "prisma": "^6.16.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
