@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'votre_secret_par_defaut_pour_le_dev'
-
 // Fonction pour hacher le mot de passe
 async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
@@ -59,14 +57,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           success: false,
-          error: 'Tous les champs obligatoires doivent être remplis' 
+          error: 'Tous les champs obligatoires doivent être remplis'
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validation de l'email
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Format d\'email invalide'
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validation du mot de passe
+    if (password.length < 8) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Le mot de passe doit contenir au moins 8 caractères'
+        },
+        { status: 400 }
+      )
+    }
+
+    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre'
+        },
+        { status: 400 }
+      )
+    }
+
+    // Validation de l'identifiant
+    if (login.length < 3) {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: 'L\'identifiant doit contenir au moins 3 caractères'
         },
         { status: 400 }
       )
     }
 
     // Validation du rôle
-    if (!['etudiant', 'enseignant', 'admin'].includes(role)) {
+    if (!['Etudiant', 'Enseignant', 'Admin'].includes(role)) {
       return NextResponse.json(
         { 
           success: false,
@@ -91,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Vérifications spécifiques au rôle
-    if (role === 'etudiant') {
+    if (role === 'Etudiant') {
       if (!numInsc || !/^\d{6}$/.test(numInsc)) {
         return NextResponse.json(
           { 
@@ -114,7 +156,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (role === 'enseignant' || role === 'admin') {
+    if (role === 'Enseignant' || role === 'Admin') {
       if (!matricule || !/^\d{4}$/.test(matricule)) {
         return NextResponse.json(
           { 
@@ -150,12 +192,12 @@ export async function POST(request: NextRequest) {
           email: email.trim().toLowerCase(),
           identifiant: login.trim(),
           mot_de_passe_hash: hashedPassword,
-          role: role.charAt(0).toUpperCase() + role.slice(1) as any // Convertir en format Prisma
+          role: role as any
         }
       })
 
       // Créer les données spécifiques au rôle
-      if (role === 'etudiant') {
+      if (role === 'Etudiant') {
         await tx.etudiant.create({
           data: {
             id_etudiant: utilisateur.id_utilisateur,
@@ -165,7 +207,7 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      if (role === 'enseignant') {
+      if (role === 'Enseignant') {
         // Pour l'instant, on assigne un département par défaut (à adapter)
         const defaultDepartement = await tx.departement.findFirst()
         if (!defaultDepartement) {
@@ -181,10 +223,21 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      if (role === 'admin') {
-        // Pour les admins, on peut aussi créer un enregistrement enseignant ou autre structure
-        // Pour l'instant, on crée juste l'utilisateur de base
-        console.log('Compte admin créé')
+      if (role === 'Admin') {
+        // Pour les admins, créer aussi un enregistrement enseignant avec le matricule
+        const defaultDepartement = await tx.departement.findFirst()
+        if (!defaultDepartement) {
+          throw new Error('Aucun département disponible')
+        }
+
+        await tx.enseignant.create({
+          data: {
+            id_enseignant: utilisateur.id_utilisateur,
+            matricule: matricule,
+            id_departement: defaultDepartement.id_departement
+          }
+        })
+        console.log('Compte admin créé avec accès enseignant')
       }
 
       return utilisateur
@@ -219,6 +272,27 @@ export async function POST(request: NextRequest) {
           { 
             success: false,
             error: 'Configuration système incomplète. Veuillez contacter l\'administrateur.' 
+          },
+          { status: 500 }
+        )
+      }
+
+      // Erreurs Prisma
+      if (error.message.includes('Unique constraint')) {
+        return NextResponse.json(
+          { 
+            success: false,
+            error: 'Cet identifiant, email, numéro d\'inscription ou matricule existe déjà'
+          },
+          { status: 409 }
+        )
+      }
+
+      if (error.message.includes('Foreign key constraint')) {
+        return NextResponse.json(
+          { 
+            success: false,
+            error: 'Erreur de référence dans la base de données'
           },
           { status: 500 }
         )

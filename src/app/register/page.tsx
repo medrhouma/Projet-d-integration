@@ -14,14 +14,14 @@ interface FormData {
   confirmPassword: string;
 }
 
-type UserRole = "etudiant" | "enseignant" | "admin";
+type UserRole = "Etudiant" | "Enseignant" | "Admin";
 
 interface FormErrors {
   [key: string]: string;
 }
 
 export default function RegisterPage() {
-  const [role, setRole] = useState<UserRole>("etudiant");
+  const [role, setRole] = useState<UserRole>("Etudiant");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,9 +40,9 @@ export default function RegisterPage() {
   });
 
   const roles = [
-    { key: "etudiant" as UserRole, label: "Etudiant", icon: <GraduationCap className="w-5 h-5" />, description: "Accès aux cours et évaluations" },
-    { key: "enseignant" as UserRole, label: "Enseignant", icon: <User className="w-5 h-5" />, description: "Gestion des cours et notes" },
-    { key: "admin" as UserRole, label: "Administration", icon: <Building className="w-5 h-5" />, description: "Gestion complète du système" },
+    { key: "Etudiant" as UserRole, label: "Etudiant", icon: <GraduationCap className="w-5 h-5" />, description: "Accès aux cours et évaluations" },
+    { key: "Enseignant" as UserRole, label: "Enseignant", icon: <User className="w-5 h-5" />, description: "Gestion des cours et notes" },
+    { key: "Admin" as UserRole, label: "Administration", icon: <Building className="w-5 h-5" />, description: "Gestion complète du système" },
   ];
 
   const validateEmail = (email: string): boolean => {
@@ -70,9 +70,9 @@ export default function RegisterPage() {
       case 'login':
         return value.length < 3 ? "Au moins 3 caractères requis" : "";
       case 'numInsc':
-        return role === "etudiant" && !/^\d{6}$/.test(value) ? "6 chiffres requis" : "";
+        return role === "Etudiant" && !/^\d{6}$/.test(value) ? "6 chiffres requis" : "";
       case 'matricule':
-        return (role === "enseignant" || role === "admin") && !/^\d{4}$/.test(value) ? "4 chiffres requis" : "";
+        return (role === "Enseignant" || role === "Admin") && !/^\d{4}$/.test(value) ? "4 chiffres requis" : "";
       case 'password':
         return !validatePassword(value).isValid ? validatePassword(value).message : "";
       case 'confirmPassword':
@@ -95,8 +95,8 @@ export default function RegisterPage() {
     const newErrors: FormErrors = {};
     
     Object.keys(form).forEach(key => {
-      if (key === 'numInsc' && role !== 'etudiant') return;
-      if (key === 'matricule' && role === 'etudiant') return;
+      if (key === 'numInsc' && role !== 'Etudiant') return;
+      if (key === 'matricule' && role === 'Etudiant') return;
       
       const error = validateField(key, form[key as keyof FormData]);
       if (error) newErrors[key] = error;
@@ -122,7 +122,7 @@ export default function RegisterPage() {
       body: JSON.stringify({ 
         ...form, 
         role,
-        ...(role === 'etudiant' ? { matricule: undefined } : { numInsc: undefined })
+        ...(role === 'Etudiant' ? { matricule: undefined } : { numInsc: undefined })
       })
     });
 
@@ -319,7 +319,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Champs spécifiques au rôle */}
-          {role === "etudiant" && (
+          {role === "Etudiant" && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Numéro d'inscription *
@@ -352,7 +352,7 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {(role === "enseignant" || role === "admin") && (
+          {(role === "Enseignant" || role === "Admin") && (
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Matricule *
