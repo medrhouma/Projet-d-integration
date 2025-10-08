@@ -1,38 +1,40 @@
 'use client';
-import { Cpu, Users, GraduationCap, Award, BookOpen, Calendar, Network, Server, Laptop, Briefcase, Mail, Phone, MapPin } from "lucide-react";
-import Link from "next/link";
+
+import { Cpu, Users, GraduationCap, Award, BookOpen, Calendar, Network, Server, Laptop, Briefcase, Mail, Phone, MapPin } from 'lucide-react';
+import Link from 'next/link';
+
 export default function DepInfoDashboard() {
   const infos = [
-    { icon: <Users className="w-6 h-6 text-purple-600" />, label: "Étudiants", value: "450+" },
-    { icon: <GraduationCap className="w-6 h-6 text-purple-600" />, label: "Enseignants", value: "21" },
-    { icon: <Award className="w-6 h-6 text-purple-600" />, label: "Réussite", value: "95%" },
-    { icon: <BookOpen className="w-6 h-6 text-purple-600" />, label: "Laboratoires", value: "10+" },
+    { icon: <Users className="w-6 h-6 text-purple-600" />, label: 'Étudiants', value: '450+' },
+    { icon: <GraduationCap className="w-6 h-6 text-purple-600" />, label: 'Enseignants', value: '21' },
+    { icon: <Award className="w-6 h-6 text-purple-600" />, label: 'Réussite', value: '95%' },
+    { icon: <BookOpen className="w-6 h-6 text-purple-600" />, label: 'Laboratoires', value: '10+' },
   ];
 
   const specialites = [
-    { icon: <Server className="w-6 h-6 text-blue-600" />, title: "DSI", desc: "Développement des Systèmes d’Information." },
-    { icon: <Network className="w-6 h-6 text-green-600" />, title: "RSI", desc: "Réseaux & Services Informatiques." },
-    { icon: <Laptop className="w-6 h-6 text-pink-600" />, title: "MDW", desc: "Multimédia & Développement Web." },
+    { icon: <Server className="w-6 h-6 text-blue-600" />, title: 'DSI', desc: 'Développement des Systèmes d’Information.' },
+    { icon: <Network className="w-6 h-6 text-green-600" />, title: 'RSI', desc: 'Réseaux & Services Informatiques.' },
+    { icon: <Laptop className="w-6 h-6 text-pink-600" />, title: 'MDW', desc: 'Multimédia & Développement Web.' },
   ];
 
   const projets = [
-    "Système de gestion RH (Web & Mobile)",
-    "Application de cybersécurité pour IoT",
-    "Plateforme e-learning avec IA",
+    'Système de gestion RH (Web & Mobile)',
+    'Application de cybersécurité pour IoT',
+    'Plateforme e-learning avec IA',
   ];
 
   const clubs = [
-    "Club Programmation",
-    "Club Réseaux & Sécurité",
-    "Club Innovation & Startups",
+    'Club Programmation',
+    'Club Réseaux & Sécurité',
+    'Club Innovation & Startups',
   ];
 
   const debouches = [
-    "Développeur d’Applications de gestion",
-    "Développeur de sites Web",
-    "Administrateur réseaux",
-    "Webmaster designer",
-    "Architecte réseaux et systèmes",
+    'Développeur d’Applications de gestion',
+    'Développeur de sites Web',
+    'Administrateur réseaux',
+    'Webmaster designer',
+    'Architecte réseaux et systèmes',
   ];
 
   return (
@@ -135,15 +137,15 @@ export default function DepInfoDashboard() {
           </div>
         </div>
       </section>
-     {/* CTA */}
+
+      {/* CTA */}
       <div className="text-center py-12">
         <Link href="/">
           <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-            retour a l'acceuil
+            Retour à l'accueil
           </button>
         </Link>
       </div>
     </div>
   );
 }
-
