@@ -232,11 +232,9 @@ export default function Homepage() {
   <Link href="/login">Se connecter</Link>
 </button>
   
-<div className="text-center text-sm text-gray-500">ou</div>
 
-<button className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold">
-  <Link href="/register">Créer un compte</Link>
-</button>
+
+
                   </div>
                 </div>
               </div>

@@ -180,10 +180,10 @@ export async function POST(request: NextRequest) {
       userResponse.enseignant = {
         id_enseignant: utilisateur.enseignant.id_enseignant,
         matricule: utilisateur.enseignant.matricule,
-        departement: {
+        departement: utilisateur.enseignant.departement ? {
           id_departement: utilisateur.enseignant.departement.id_departement,
           nom: utilisateur.enseignant.departement.nom
-        },
+        } : null,
         matieres: utilisateur.enseignant.matieres.map(matiere => ({
           id_matiere: matiere.id_matiere,
           nom: matiere.nom,
