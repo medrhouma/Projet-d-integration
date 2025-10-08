@@ -237,7 +237,6 @@ const news = [
   <Link href="/login">Se connecter</Link>
 </button>
   
-
                   </div>
                 </div>
               </div>
