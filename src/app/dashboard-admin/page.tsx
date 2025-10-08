@@ -112,7 +112,7 @@ export default function DashboardAdmin() {
               <p className="text-xs text-gray-500 truncate">Administrateur</p>
             </div>
           </div>
-          
+         
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border border-red-100 rounded-lg transition"
@@ -145,7 +145,7 @@ export default function DashboardAdmin() {
                   <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
                 <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                  stat.change.startsWith('+') ? 'bg-green-100 text-green-800' : 
+                  stat.change.startsWith('+') ? 'bg-green-100 text-green-800' :
                   stat.change.startsWith('-') ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                 }`}>
                   {stat.change}
