@@ -100,7 +100,41 @@ const news = [
     category: "Événement",
     image: "/images/iset-robotique.jpg",
     tags: ["robotique", "compétition", "innovation"]
-  }
+  },
+
+  {
+  title: "Journées de sensibilisation en cybersécurité",
+  description:
+    "L’ISET Tozeur, en partenariat avec le Centre 4C, a organisé deux journées de sensibilisation à la cybersécurité afin d’initier les étudiants aux bonnes pratiques numériques et à la sécurité des données.",
+  date: "13-14 octobre 2024",
+  readTime: "3 min de lecture",
+  category: "Événement",
+  image: "/images/cybersecurite-iset-tozeur.jpg",
+  tags: ["cybersécurité", "formation", "numérique", "4C"]
+},
+
+{
+  title: "Séminaire sur les énergies renouvelables et développement durable",
+  description:
+    "L’ISET Tozeur, en collaboration avec le Centre d’Affaires de Tozeur, a organisé un séminaire pour sensibiliser étudiants et professionnels aux enjeux de l’économie circulaire et des énergies propres. :contentReference[oaicite:1]{index=1}",
+  date: "9 mai 2023",
+  readTime: "3 min de lecture",
+  category: "Événement",
+  image: "/images/energies-renouvelables.jpg",
+  tags: ["énergie", "durabilité", "environnement"]
+},
+{
+  title: "Projet « Tozeur Oasis des sciences et technologies » (TOST)",
+  description:
+    "Lancé par l’association Youth Vision avec le soutien de l’Union européenne et de l’ANPR, ce projet vise à vulgariser la science et la technologie dans les écoles et les clubs de jeunesse de Tozeur, notamment par la création de clubs de robotique. :contentReference[oaicite:1]{index=1}",
+  date: "2 juin 2025",
+  readTime: "3 min de lecture",
+  category: "Actualité",
+  image: "/images/tostoasis-sciences-technologies.jpg",
+  tags: ["science", "jeunesse", "robotique", "éducation"]
+}
+
+
 ];
 
 
@@ -172,40 +206,24 @@ const news = [
                     <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Nos Départements d'Excellence</h3>
                     <div className="grid grid-cols-2 gap-6">
                      {departments.map((dept, index) => (
-  <Link key={index} href={dept.link}>
-    <div className="group/card bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer border border-gray-200 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300"></div>
-      
-      <div className="relative z-10">
-        <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-4 group-hover/card:scale-110 transition-transform duration-300 shadow-lg`}>
-          {dept.icon}
-        </div>
-        
-        <h3 className="text-xl font-bold text-gray-800 mb-3">{dept.name}</h3>
-        
-        <div className="space-y-2 mb-4">
-          {dept.programs.slice(0, 2).map((program, i) => (
-            <span key={i} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mr-1">
-              {program}
-            </span>
-          ))}
-        </div>
-        
-        <div className="flex justify-between items-center text-sm text-gray-600">
-          <span>👨‍🎓 {dept.students}</span>
-          <span>🏆 {dept.stats.success} réussite</span>
+    <Link key={index} href={dept.link}>
+      <div className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 relative">
+        <img
+          src={`/images/${dept.name.toLowerCase().replace(/ /g, '-')}.jpg`}
+
+          alt={dept.name}
+          className="w-full h-48 object-cover"
+        />
+        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-25 transition-opacity duration-300 rounded-2xl"></div>
+        <div className="absolute bottom-4 left-4 text-white font-bold text-lg shadow-lg">
+          {dept.name}
         </div>
       </div>
-    </div>
-  </Link>
-))}
-                    </div>
+    </Link>
+  ))}
+</div>
                     
-                    <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-                      <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-xl hover:shadow-lg transition-all duration-300 font-semibold hover:scale-105">
-                        Voir tous les programmes
-                      </button>
-                    </div>
+                   
                   </div>
                 </div>
               </div>
@@ -430,17 +448,20 @@ const news = [
                       <p className="text-gray-600 mb-6 leading-relaxed">{item.description}</p>
                       
                       <div className="flex items-center justify-between">
-                        <div className="flex space-x-2">
-                          {item.tags.map((tag, i) => (
-                            <span key={i} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                        <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300">
-                          Lire l'article
-                        </button>
-                      </div>
+  <div className="flex space-x-2">
+    {item.tags.map((tag, i) => (
+      <span key={i} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+        #{tag}
+      </span>
+    ))}
+  </div>
+  <Link href="/lirearticle">
+    <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300">
+      Lire l'article
+    </button>
+  </Link>
+</div>
+
                     </div>
                   </div>
                 </div>
@@ -536,32 +557,48 @@ const news = [
             </div>
             
             {[
-              {
-                title: "Formation",
-                links: ["Programmes", "Admissions", "Bourses", "Calendrier"]
-              },
-              {
-                title: "Recherche",
-                links: ["Laboratoires", "Publications", "Partenariats", "Projets"]
-              },
-              {
-                title: "Contact",
-                links: ["Campus Principal", "+216 76 123 456", "contact@iset-tozeur.tn", "Plan d'accès"]
-              }
-            ].map((column, index) => (
-              <div key={index}>
-                <h4 className="font-semibold text-lg mb-6">{column.title}</h4>
-                <ul className="space-y-3">
-                  {column.links.map((link, i) => (
-                    <li key={i}>
-                      <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+  {
+    title: "Formation",
+    links: ["Programmes", "Admissions", "Bourses", "Calendrier"]
+  },
+  {
+    title: "Recherche",
+    links: ["Laboratoires", "Publications", "Partenariats", "Projets"]
+  },
+  {
+    title: "Contact",
+    links: [
+      "Campus Principal",
+      "+216 76 123 456",
+      "contact@iset-tozeur.tn",
+      <a
+        href="https://www.google.com/maps/dir/?api=1&destination=ISET+Tozeur+33.918270,8.130611"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-400 hover:text-white transition-colors text-sm"
+      >
+        Plan d'accès
+      </a>
+    ]
+  }
+].map((column, index) => (
+  <div key={index}>
+    <h4 className="font-semibold text-lg mb-6">{column.title}</h4>
+    <ul className="space-y-3">
+      {column.links.map((link, i) => (
+        <li key={i}>
+          {typeof link === "string" ? (
+            <span className="text-gray-400 hover:text-white transition-colors text-sm">{link}</span>
+          ) : (
+            link
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+))}
+
+            
           </div>
           
           
