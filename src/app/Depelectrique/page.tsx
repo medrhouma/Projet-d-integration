@@ -28,11 +28,7 @@ export default function DepElectriqueDashboard() {
           </div>
         
         </div>
-        <Link href="/Depelectrique">
-          <button className="w-full mt-6 px-4 py-2 bg-white text-yellow-700 font-semibold rounded-lg shadow hover:bg-gray-100 transition">
-            Accéder au site
-          </button>
-        </Link>
+        
       </aside>
 
       {/* Main Content */}
