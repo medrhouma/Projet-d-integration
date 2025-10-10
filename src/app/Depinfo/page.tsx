@@ -1,6 +1,7 @@
 'use client';
 import { Cpu, Users, GraduationCap, Award, BookOpen, Calendar, Network, Server, Laptop, Briefcase, Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
+
 export default function DepInfoDashboard() {
   const infos = [
     { icon: <Users className="w-6 h-6 text-purple-600" />, label: "Étudiants", value: "450+" },
@@ -15,24 +16,54 @@ export default function DepInfoDashboard() {
     { icon: <Laptop className="w-6 h-6 text-pink-600" />, title: "MDW", desc: "Multimédia & Développement Web." },
   ];
 
-  const projets = [
-    "Système de gestion RH (Web & Mobile)",
-    "Application de cybersécurité pour IoT",
-    "Plateforme e-learning avec IA",
-  ];
-
-  const clubs = [
-    "Club Programmation",
-    "Club Réseaux & Sécurité",
-    "Club Innovation & Startups",
-  ];
-
   const debouches = [
     "Développeur d’Applications de gestion",
     "Développeur de sites Web",
-    "Administrateur réseaux",
+    "Développeur Multimédia",
+    "Développeur de bases de données",
+    "Technico-commercial dans la mise en place de solutions logicielles",
+    "Webmaster développeur",
     "Webmaster designer",
-    "Architecte réseaux et systèmes",
+    "Administrateur de portail web",
+    "Intégrateur de technologies web",
+    "Administrateur réseaux",
+    "Administrateur systèmes",
+    "Architecte réseaux et systèmes de communication",
+  ];
+
+  const enseignants = [
+    "02 maîtres technologues en informatique",
+    "01 maître technologue en gestion",
+    "09 technologues en informatique",
+    "03 assistants technologues en informatique",
+    "04 professeurs de l’enseignement supérieur en informatique",
+    "03 professeurs de l’enseignement supérieur en mathématiques, français et anglais",
+  ];
+
+  const laboratoires = [
+    "07 laboratoires d’informatique",
+    "01 laboratoire CISCO",
+    "01 laboratoire C2i",
+    "01 salle de projets",
+  ];
+
+  const planEtude = [
+    "Licence appliquée en technologies de l’informatique",
+    "3 parcours de spécialisation : RSI, MDW et DSI",
+  ];
+
+  const organisation = [
+    "02 semestres de tronc commun",
+    "03 semestres de spécialisation (RSI, MDW et DSI)",
+    "01 semestre de stage de fin de parcours",
+    "2 stages d’initiation et de perfectionnement durant la 1ère et 2ème année",
+  ];
+
+  const manifestations = [
+    "Manifestations scientifiques et techniques annuelles",
+    "Visites industrielles",
+    "Sorties pédagogiques",
+    "Participation à des compétitions et événements régionaux et nationaux",
   ];
 
   return (
@@ -57,7 +88,7 @@ export default function DepInfoDashboard() {
         ))}
       </section>
 
-      {/* Directeur & contacts */}
+      {/* Directeur & Contacts */}
       <section className="py-12 bg-white border-t">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Directeur & Contacts</h2>
@@ -79,16 +110,13 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
-      {/* Présentation */}
-      <section className="py-12 bg-gradient-to-r from-purple-50 to-pink-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Présentation</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Le département Technologies de l’Informatique a été créé en Septembre 2007. Il offre une formation en licence appliquée en technologies de l’informatique répartie sur trois parcours : RSI et DSI.
-          </p>
-          <p className="mt-4 text-gray-700 leading-relaxed">
-            Les enseignements pratiques se déroulent dans des laboratoires de haut niveau : 07 laboratoires d’informatique, 01 laboratoire CISCO, 01 laboratoire C2i et 01 salle de projets.
-          </p>
+      {/* Laboratoires */}
+      <section className="py-12 bg-purple-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-purple-600 mb-6">Laboratoires & Salles</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {laboratoires.map((lab, i) => <li key={i}>{lab}</li>)}
+          </ul>
         </div>
       </section>
 
@@ -109,7 +137,7 @@ export default function DepInfoDashboard() {
       </section>
 
       {/* Débouchés */}
-      <section className="py-12 bg-purple-50">
+      <section className="py-12 bg-gradient-to-r from-purple-50 to-pink-50">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-purple-600 mb-6 text-center">Débouchés</h2>
           <ul className="list-disc list-inside text-gray-700 grid md:grid-cols-2 gap-2">
@@ -118,32 +146,54 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
-      {/* Projets & Clubs */}
-      <section className="py-12 bg-gradient-to-r from-purple-50 to-pink-50">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-8">
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-bold text-purple-600 mb-4">Projets Étudiants</h2>
-            <ul className="list-disc list-inside text-gray-700 space-y-2">
-              {projets.map((p, i) => <li key={i}>{p}</li>)}
-            </ul>
-          </div>
-          <div className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h2 className="text-xl font-bold text-purple-600 mb-4">Clubs</h2>
-            <ul className="list-disc list-inside text-gray-700 space-y-2">
-              {clubs.map((c, i) => <li key={i}>{c}</li>)}
-            </ul>
-          </div>
+      {/* Équipe enseignante */}
+      <section className="py-12 bg-white border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Équipe Enseignante</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {enseignants.map((e, i) => <li key={i}>{e}</li>)}
+          </ul>
         </div>
       </section>
-     {/* CTA */}
+
+      {/* Plan d'étude */}
+      <section className="py-12 bg-purple-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-purple-600 mb-6">Plan d’étude</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {planEtude.map((p, i) => <li key={i}>{p}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Organisation des études */}
+      <section className="py-12 bg-white border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Organisation des Études</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {organisation.map((o, i) => <li key={i}>{o}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Manifestations */}
+      <section className="py-12 bg-gradient-to-r from-purple-50 to-pink-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-purple-600 mb-6">Manifestations Organisées</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {manifestations.map((m, i) => <li key={i}>{m}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* CTA */}
       <div className="text-center py-12">
         <Link href="/">
           <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-            retour a l'acceuil
+            Retour à l’accueil
           </button>
         </Link>
       </div>
     </div>
   );
 }
-

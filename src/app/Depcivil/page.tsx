@@ -1,5 +1,5 @@
 'use client';
-import { Users, GraduationCap, Award, BookOpen, Calendar, ArrowRight, Building, Phone, Mail, MapPin } from "lucide-react";
+import { Users, GraduationCap, Award, BookOpen, Calendar, ArrowRight, Building, Phone, Mail, MapPin, FileText, Briefcase } from "lucide-react";
 import Link from "next/link";
 
 export default function DepCivilDashboard() {
@@ -24,6 +24,32 @@ export default function DepCivilDashboard() {
     tel: "76 473 777 - Poste 120",
     email: "civil@iset-tozeur.tn"
   };
+
+  const presentation = `Le département Génie Civil a été créé en 2012. 
+  Il offre une formation de licence appliquée en génie civil. 
+  La mission principale du département Génie Civil est de former en trois ans le Technicien Supérieur 
+  spécialistes du bâtiment, travaux publics et de la topographie, 
+  pouvant exercer leurs fonctions dans des secteurs d'activités très diversifiés. 
+  La capacité d’accueil est fixée chaque année par le ministère.`;
+
+  const debouches = [
+    "Le licencié en Génie Civil peut intervenir dans des secteurs variés",
+    "Bâtiment : Construction, audit énergétique…",
+    "Travaux publics : Routes et ouvrages d’art.",
+    "Topographie : lever topographique, SIG…"
+  ];
+
+  const planEtude = [
+    "Bâtiment",
+    "Travaux",
+    "Topographie"
+  ];
+
+  const organisation = [
+    "Bâtiment : orienté vers le domaine du bâtiment (immeubles, bâtiments administratifs ou industriels, travaux d’entretien).",
+    "Travaux publics et communaux : orienté vers les infrastructures routières (routes, autoroutes) et ouvrages d’art (ponts, tunnels...).",
+    "Topographie : orienté vers la photogrammétrie, les SIG, la télédétection et la cartographie numérique."
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,7 +79,69 @@ export default function DepCivilDashboard() {
         ))}
       </section>
 
-      {/* Programs */}
+      {/* Nouvelle section : Directeur & Secrétaire */}
+      <section className="py-12 bg-white border-t">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Direction & Secrétariat</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+              <h3 className="font-semibold text-lg text-green-700 mb-2">Directeur de département</h3>
+              <p className="font-medium">Mohamed Youssef Hassine</p>
+              <p className="mt-3 text-gray-700">
+                <strong>Responsable & Coordonnées :</strong> Mohamed Youssef Hassine
+              </p>
+              <p className="flex items-center gap-2 mt-2 text-gray-700">
+                <Mail className="w-4 h-4 text-green-600" /> med_youssef_hassine@yahoo.fr
+              </p>
+            </div>
+
+            <div className="bg-green-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+              <h3 className="font-semibold text-lg text-green-700 mb-2">Secrétaire</h3>
+              <p className="font-medium">Samira Bououni</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Présentation */}
+      <section className="py-12 bg-green-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-green-700 mb-6">Présentation</h2>
+          <p className="text-gray-700 leading-relaxed max-w-3xl mx-auto">{presentation}</p>
+        </div>
+      </section>
+
+      {/* Débouchés */}
+      <section className="py-12 bg-white border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Débouchés</h2>
+          <ul className="list-disc list-inside text-left inline-block text-gray-700 space-y-2">
+            {debouches.map((d, i) => <li key={i}>{d}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Plan d'étude */}
+      <section className="py-12 bg-green-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-green-700 mb-6">Plan d’étude</h2>
+          <ul className="list-disc list-inside text-left inline-block text-gray-700 space-y-2">
+            {planEtude.map((p, i) => <li key={i}>{p}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Organisation des études */}
+      <section className="py-12 bg-white border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Organisation des Études</h2>
+          <ul className="list-disc list-inside text-left inline-block text-gray-700 space-y-2">
+            {organisation.map((o, i) => <li key={i}>{o}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* Programmes */}
       <section className="bg-white py-12 shadow-inner">
         <div className="max-w-6xl mx-auto px-6">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">Programmes de formation</h2>
@@ -87,12 +175,11 @@ export default function DepCivilDashboard() {
         </div>
       </section>
 
-     
       {/* CTA */}
       <div className="text-center py-12">
         <Link href="/">
           <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-            retour a l'acceuil
+            Retour à l’accueil
           </button>
         </Link>
       </div>
