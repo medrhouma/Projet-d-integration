@@ -34,7 +34,7 @@ export default function Homepage() {
     icon: <Cpu className="w-5 h-5" />, 
     color: 'bg-gradient-to-br from-purple-500 to-blue-500',
     students: '450+ étudiants',
-    programs: ['IA & Data Science', 'Développement Web', 'Cybersécurité', 'Cloud Computing'],
+    programs: ['DSI - Développement des Systèmes d\'Information', 'RSI - Réseaux & Services Informatiques', 'MDW - Multimédia & Développement Web'],
     stats: { success: '95%', internships: '120+', labs: '8' },
     link: '/Depinfo' 
   },
@@ -45,7 +45,7 @@ export default function Homepage() {
       icon: <Building className="w-5 h-5" />, 
       color: 'bg-gradient-to-br from-orange-500 to-red-500',
       students: '320+ étudiants',
-      programs: ['Construction Durable', 'Géotechnique', 'Infrastructures', 'BTP'],
+      programs: ['Bâtiment', 'Travaux Publics', 'Topographie'],
       stats: { success: '92%', internships: '80+', labs: '6' },
       link: '/Depcivil'
     
@@ -55,7 +55,7 @@ export default function Homepage() {
       icon: <Wrench className="w-5 h-5" />, 
       color: 'bg-gradient-to-br from-red-500 to-pink-500',
       students: '280+ étudiants', 
-      programs: ['Robotique', 'Thermodynamique', 'Mécatronique', 'Production'],
+      programs: ['Conception Mécanique', 'Maintenance Industrielle', 'Production Mécanique'],
       stats: { success: '94%', internships: '90+', labs: '7' },
       link: '/Depmecanique'
     },
@@ -64,7 +64,7 @@ export default function Homepage() {
       icon: <Zap className="w-5 h-5" />, 
       color: 'bg-gradient-to-br from-yellow-500 to-amber-500',
       students: '350+ étudiants',
-      programs: ['Énergies Renouvelables', 'Automatisme', 'Électronique', 'Réseaux'],
+      programs: ['Automatisme Industriel', 'Électronique & Instrumentation', 'Systèmes Électriques'],
       stats: { success: '93%', internships: '100+', labs: '5' },
       link: '/Depelectrique'
     }
@@ -191,11 +191,12 @@ const news = [
         
         <h3 className="text-xl font-bold text-gray-800 mb-3">{dept.name}</h3>
         
-        <div className="space-y-2 mb-4">
-          {dept.programs.slice(0, 2).map((program, i) => (
-            <span key={i} className="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full mr-1">
-              {program}
-            </span>
+        <div className="space-y-1 mb-4">
+          {dept.programs.map((program, i) => (
+            <div key={i} className="flex items-start text-xs text-gray-700">
+              <span className="text-blue-500 mr-1">▸</span>
+              <span className="flex-1">{program}</span>
+            </div>
           ))}
         </div>
         

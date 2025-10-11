@@ -9,6 +9,19 @@ interface Departement {
   nom: string;
   code: string;
   description?: string;
+  presentation?: string;
+  parcours?: string[];
+  laboratoires?: string[];
+  debouches?: string[];
+  equipe?: {
+    total: number;
+    composition: string[];
+  };
+  plan_etude?: string;
+  organisation?: string[];
+  manifestations?: string;
+  enseignants?: string[];
+  grades_enseignants?: string[];
 }
 
 interface Matiere {
@@ -57,10 +70,182 @@ type EntityType = 'departements' | 'matieres' | 'salles' | 'enseignants' | 'etud
 
 // ==================== DONNÉES MOCKÉES ====================
 const mockDepartements: Departement[] = [
-  { id_departement: 1, nom: 'Informatique', code: 'INFO', description: 'Département d\'informatique' },
-  { id_departement: 2, nom: 'Génie Civil', code: 'GC', description: 'Département de génie civil' },
-  { id_departement: 3, nom: 'Génie Électrique', code: 'GE', description: 'Département de génie électrique' },
-  { id_departement: 4, nom: 'Génie Mécanique', code: 'GM', description: 'Département de Génie Mécanique' },
+  { 
+    id_departement: 1, 
+    nom: 'Technologies de l\'Informatique', 
+    code: 'INFO', 
+    description: 'Département de Technologies de l\'Informatique',
+    presentation: 'Le département Technologies de l\'Informatique a été créé en Septembre 2007. Il offre une formation en licence appliquée en technologies de l\'informatique répartie sur trois (03) parcours.',
+    parcours: [
+      'Réseaux & services informatiques (RSI)',
+      'Multimédia & développement web (MDW)',
+      'Développement des systèmes d\'information (DSI)'
+    ],
+    laboratoires: [
+      '07 laboratoires d\'informatique',
+      '01 laboratoire CISCO',
+      '01 laboratoire C2i',
+      '01 salle de projets'
+    ],
+    debouches: [
+      'Développeur d\'Applications de gestion',
+      'Développeur de sites Web',
+      'Développeur Multimédia',
+      'Développeur de bases de données',
+      'Technico-commercial dans la mise en place de solutions logicielles',
+      'Webmaster développeur',
+      'Webmaster designer',
+      'Administrateur de portail web',
+      'Intégrateur de technologies web',
+      'Administrateur réseaux',
+      'Administrateur systèmes',
+      'Architecte réseaux et systèmes de communication'
+    ],
+    equipe: {
+      total: 21,
+      composition: [
+        '02 maîtres technologues en informatique',
+        '01 maître technologue en gestion',
+        '09 technologues en informatique',
+        '03 assistants technologues en informatique',
+        '04 professeurs de l\'enseignement supérieur en informatique',
+        '03 professeurs de l\'enseignement supérieur en mathématiques, français et anglais'
+      ]
+    },
+    plan_etude: 'Plan d\'étude disponible sur demande',
+    organisation: [
+      '02 semestres de tronc commun',
+      '03 semestres de spécialisation (RSI, MDW et DSI)',
+      '01 semestre de stage de fin de parcours',
+      'Les étudiants réaliseront 2 stages d\'initiation et de perfectionnement durant respectivement la 1ère et la 2ème année'
+    ],
+    manifestations: 'Plusieurs manifestations sont organisées chaque année universitaire au profit des enseignants et des étudiants. Des visites industrielles, des sorties et des participations aux manifestations régionales et nationales sont aussi programmées chaque année.'
+  },
+  { 
+    id_departement: 2, 
+    nom: 'Génie Civil', 
+    code: 'GC', 
+    description: 'Département de génie civil',
+    presentation: 'Le département de Génie Civil forme des techniciens supérieurs dans les domaines du bâtiment, des travaux publics et de la topographie.',
+    parcours: [
+      'Bâtiment',
+      'Travaux Publics',
+      'Topographie'
+    ],
+    laboratoires: [
+      '05 laboratoires de génie civil',
+      '01 laboratoire de topographie',
+      '01 salle de dessin technique'
+    ],
+    debouches: [
+      'Conducteur de travaux',
+      'Technicien en bureau d\'études',
+      'Géomètre-topographe',
+      'Chef de chantier',
+      'Métreur-vérificateur',
+      'Dessinateur en bâtiment'
+    ],
+    equipe: {
+      total: 18,
+      composition: [
+        '02 maîtres technologues en génie civil',
+        '08 technologues en génie civil',
+        '03 assistants technologues',
+        '03 professeurs de l\'enseignement supérieur',
+        '02 professeurs en mathématiques et physique'
+      ]
+    },
+    organisation: [
+      '02 semestres de tronc commun',
+      '03 semestres de spécialisation (Bâtiment, Travaux Publics, Topographie)',
+      '01 semestre de stage de fin d\'études',
+      'Stages pratiques sur chantiers'
+    ]
+  },
+  { 
+    id_departement: 3, 
+    nom: 'Génie Électrique', 
+    code: 'GE', 
+    description: 'Département de génie électrique',
+    presentation: 'Le département de Génie Électrique forme des techniciens supérieurs spécialisés en automatisme industriel, électronique et systèmes électriques.',
+    parcours: [
+      'Automatisme Industriel',
+      'Électronique & Instrumentation',
+      'Systèmes Électriques'
+    ],
+    laboratoires: [
+      '06 laboratoires d\'électronique',
+      '02 laboratoires d\'automatisme',
+      '01 laboratoire de systèmes électriques',
+      '01 atelier d\'instrumentation'
+    ],
+    debouches: [
+      'Technicien en automatisme',
+      'Technicien en électronique industrielle',
+      'Technicien en maintenance électrique',
+      'Technicien en instrumentation',
+      'Superviseur de systèmes automatisés',
+      'Technicien en énergies renouvelables'
+    ],
+    equipe: {
+      total: 19,
+      composition: [
+        '02 maîtres technologues en génie électrique',
+        '09 technologues en génie électrique',
+        '03 assistants technologues',
+        '03 professeurs de l\'enseignement supérieur',
+        '02 professeurs en mathématiques et physique'
+      ]
+    },
+    organisation: [
+      '02 semestres de tronc commun',
+      '03 semestres de spécialisation',
+      '01 semestre de stage de fin d\'études',
+      'Projets industriels en partenariat avec des entreprises'
+    ]
+  },
+  { 
+    id_departement: 4, 
+    nom: 'Génie Mécanique', 
+    code: 'GM', 
+    description: 'Département de Génie Mécanique',
+    presentation: 'Le département de Génie Mécanique assure la formation de techniciens supérieurs en conception mécanique, maintenance industrielle et production mécanique.',
+    parcours: [
+      'Conception Mécanique',
+      'Maintenance Industrielle',
+      'Production Mécanique'
+    ],
+    laboratoires: [
+      '05 laboratoires de mécanique',
+      '02 ateliers d\'usinage',
+      '01 laboratoire de CAO/DAO',
+      '01 laboratoire de métrologie'
+    ],
+    debouches: [
+      'Technicien en conception mécanique',
+      'Technicien en maintenance industrielle',
+      'Technicien méthodes',
+      'Dessinateur industriel',
+      'Responsable production',
+      'Technicien qualité'
+    ],
+    equipe: {
+      total: 17,
+      composition: [
+        '02 maîtres technologues en génie mécanique',
+        '08 technologues en génie mécanique',
+        '02 assistants technologues',
+        '03 professeurs de l\'enseignement supérieur',
+        '02 professeurs en mathématiques et physique'
+      ]
+    },
+    organisation: [
+      '02 semestres de tronc commun',
+      '03 semestres de spécialisation',
+      '01 semestre de stage de fin d\'études',
+      'Projets de fin d\'études en collaboration avec l\'industrie'
+    ]
+  }
 ];
 
 const mockMatieres: Matiere[] = [
@@ -319,7 +504,23 @@ interface ManagerProps<T> {
 function DepartementsManager({ 
   data, setData, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
 }: ManagerProps<Departement>) {
-  const [formData, setFormData] = useState({ nom: '', code: '', description: '' });
+  const [formData, setFormData] = useState({ 
+    nom: '', 
+    code: '', 
+    description: '',
+    presentation: '',
+    parcours: '',
+    laboratoires: '',
+    debouches: '',
+    equipe_total: '',
+    equipe_composition: '',
+    plan_etude: '',
+    organisation: '',
+    manifestations: '',
+    enseignants: '',
+    grades_enseignants: ''
+  });
+  const [viewingId, setViewingId] = useState<number | null>(null);
 
   const filteredData = data.filter(d => 
     d.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -333,26 +534,54 @@ function DepartementsManager({
       return;
     }
 
+    const departementData: Departement = {
+      id_departement: editingId || Math.max(0, ...data.map(d => d.id_departement)) + 1,
+      nom: formData.nom,
+      code: formData.code,
+      description: formData.description || undefined,
+      presentation: formData.presentation || undefined,
+      parcours: formData.parcours ? formData.parcours.split('\n').filter(p => p.trim()) : undefined,
+      laboratoires: formData.laboratoires ? formData.laboratoires.split('\n').filter(l => l.trim()) : undefined,
+      debouches: formData.debouches ? formData.debouches.split('\n').filter(d => d.trim()) : undefined,
+      equipe: formData.equipe_total && formData.equipe_composition ? {
+        total: parseInt(formData.equipe_total),
+        composition: formData.equipe_composition.split('\n').filter(c => c.trim())
+      } : undefined,
+      plan_etude: formData.plan_etude || undefined,
+      organisation: formData.organisation ? formData.organisation.split('\n').filter(o => o.trim()) : undefined,
+      manifestations: formData.manifestations || undefined
+    };
+
     if (editingId) {
       setData(prev => prev.map(item => 
-        item.id_departement === editingId ? { ...item, ...formData } : item
+        item.id_departement === editingId ? departementData : item
       ));
       setSuccess('Département modifié avec succès');
     } else {
-      const newItem: Departement = {
-        id_departement: Math.max(0, ...data.map(d => d.id_departement)) + 1,
-        ...formData
-      };
-      setData(prev => [...prev, newItem]);
+      setData(prev => [...prev, departementData]);
       setSuccess('Département ajouté avec succès');
     }
     resetForm();
   };
 
   const handleEdit = (item: Departement) => {
-    setFormData({ nom: item.nom, code: item.code, description: item.description || '' });
+    setFormData({ 
+      nom: item.nom, 
+      code: item.code, 
+      description: item.description || '',
+      presentation: item.presentation || '',
+      parcours: item.parcours?.join('\n') || '',
+      laboratoires: item.laboratoires?.join('\n') || '',
+      debouches: item.debouches?.join('\n') || '',
+      equipe_total: item.equipe?.total.toString() || '',
+      equipe_composition: item.equipe?.composition.join('\n') || '',
+      plan_etude: item.plan_etude || '',
+      organisation: item.organisation?.join('\n') || '',
+      manifestations: item.manifestations || ''
+    });
     setEditingId(item.id_departement);
     setShowForm(true);
+    setViewingId(null);
   };
 
   const handleDelete = (id: number) => {
@@ -362,15 +591,30 @@ function DepartementsManager({
   };
 
   const resetForm = () => {
-    setFormData({ nom: '', code: '', description: '' });
+    setFormData({ 
+      nom: '', 
+      code: '', 
+      description: '',
+      presentation: '',
+      parcours: '',
+      laboratoires: '',
+      debouches: '',
+      equipe_total: '',
+      equipe_composition: '',
+      plan_etude: '',
+      organisation: '',
+      manifestations: ''
+    });
     setEditingId(null);
     setShowForm(false);
   };
 
+  const viewingDept = viewingId ? data.find(d => d.id_departement === viewingId) : null;
+
   return (
     <div className="p-6">
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg max-h-[80vh] overflow-y-auto">
           <h3 className="text-lg font-semibold mb-4">
             {editingId ? 'Modifier le département' : 'Ajouter un département'}
           </h3>
@@ -401,6 +645,94 @@ function DepartementsManager({
                 value={formData.description}
                 onChange={(e) => setFormData({...formData, description: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={2}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Présentation</label>
+              <textarea
+                value={formData.presentation}
+                onChange={(e) => setFormData({...formData, presentation: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Description de la présentation du département"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Parcours (un par ligne)</label>
+              <textarea
+                value={formData.parcours}
+                onChange={(e) => setFormData({...formData, parcours: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Ex: Réseaux & services informatiques (RSI)"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Laboratoires (un par ligne)</label>
+              <textarea
+                value={formData.laboratoires}
+                onChange={(e) => setFormData({...formData, laboratoires: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Ex: 07 laboratoires d'informatique"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Débouchés (un par ligne)</label>
+              <textarea
+                value={formData.debouches}
+                onChange={(e) => setFormData({...formData, debouches: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={4}
+                placeholder="Ex: Développeur d'Applications de gestion"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Équipe - Total enseignants</label>
+              <input
+                type="number"
+                value={formData.equipe_total}
+                onChange={(e) => setFormData({...formData, equipe_total: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ex: 21"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Équipe - Composition (un par ligne)</label>
+              <textarea
+                value={formData.equipe_composition}
+                onChange={(e) => setFormData({...formData, equipe_composition: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Ex: 02 maîtres technologues en informatique"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Plan d'étude</label>
+              <textarea
+                value={formData.plan_etude}
+                onChange={(e) => setFormData({...formData, plan_etude: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={2}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Organisation des études (un par ligne)</label>
+              <textarea
+                value={formData.organisation}
+                onChange={(e) => setFormData({...formData, organisation: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                rows={3}
+                placeholder="Ex: 02 semestres de tronc commun"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Manifestations</label>
+              <textarea
+                value={formData.manifestations}
+                onChange={(e) => setFormData({...formData, manifestations: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={3}
               />
             </div>
@@ -414,6 +746,74 @@ function DepartementsManager({
             </button>
           </div>
         </form>
+      )}
+
+      {viewingDept && (
+        <div className="mb-6 p-6 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex justify-between items-start mb-4">
+            <h3 className="text-xl font-bold text-gray-900">{viewingDept.nom}</h3>
+            <button onClick={() => setViewingId(null)} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+          </div>
+          
+          {viewingDept.presentation && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">📋 Présentation</h4>
+              <p className="text-gray-700">{viewingDept.presentation}</p>
+            </div>
+          )}
+          
+          {viewingDept.parcours && viewingDept.parcours.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">🎓 Parcours</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {viewingDept.parcours.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          {viewingDept.laboratoires && viewingDept.laboratoires.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">🔬 Laboratoires</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {viewingDept.laboratoires.map((l, i) => <li key={i}>{l}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          {viewingDept.debouches && viewingDept.debouches.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">💼 Débouchés</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {viewingDept.debouches.map((d, i) => <li key={i}>{d}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          {viewingDept.equipe && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">👥 Équipe pédagogique ({viewingDept.equipe.total} enseignants)</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {viewingDept.equipe.composition.map((c, i) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          {viewingDept.organisation && viewingDept.organisation.length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">📅 Organisation des études</h4>
+              <ul className="list-disc list-inside text-gray-700">
+                {viewingDept.organisation.map((o, i) => <li key={i}>{o}</li>)}
+              </ul>
+            </div>
+          )}
+          
+          {viewingDept.manifestations && (
+            <div className="mb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">🎉 Manifestations</h4>
+              <p className="text-gray-700">{viewingDept.manifestations}</p>
+            </div>
+          )}
+        </div>
       )}
 
       <div className="overflow-x-auto">
@@ -433,6 +833,7 @@ function DepartementsManager({
                 <td className="px-6 py-4 text-sm text-gray-900">{item.code}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">{item.description || '-'}</td>
                 <td className="px-6 py-4 text-sm space-x-2">
+                  <button onClick={() => setViewingId(item.id_departement)} className="text-green-600 hover:text-green-900">Détails</button>
                   <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
                   <button onClick={() => handleDelete(item.id_departement)} className="text-red-600 hover:text-red-900">Supprimer</button>
                 </td>

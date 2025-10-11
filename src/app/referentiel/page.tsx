@@ -246,86 +246,39 @@ export default function ReferentielPublic() {
                   <div className="space-y-6">
                     <button
                       onClick={() => setSelectedDept(null)}
-                      className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
+                      className="text-blue-600 hover:text-blue-800 flex items-center gap-2 font-medium"
                     >
                       ← Retour à la liste
                     </button>
                     
-                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border border-blue-200">
-                      <h2 className="text-2xl font-bold text-gray-900 mb-2">{selectedDept.nom}</h2>
-                      <p className="text-sm text-gray-600 mb-4">Code: {selectedDept.code}</p>
-                      
-                      {selectedDept.presentation && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            📋 Présentation
-                          </h3>
-                          <p className="text-gray-700 leading-relaxed">{selectedDept.presentation}</p>
-                        </div>
-                      )}
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-8 rounded-lg border border-blue-200">
+                      <div className="flex items-start justify-between mb-6">
+                        <h2 className="text-3xl font-bold text-gray-900">{selectedDept.nom}</h2>
+                        <span className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg">
+                          {selectedDept.code}
+                        </span>
+                      </div>
                       
                       {selectedDept.parcours && selectedDept.parcours.length > 0 && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            🎓 Parcours
+                        <div>
+                          <h3 className="text-2xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                            🎓 Spécialités disponibles
                           </h3>
-                          <ul className="list-disc list-inside space-y-1 text-gray-700">
-                            {selectedDept.parcours.map((p, i) => <li key={i}>{p}</li>)}
-                          </ul>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {selectedDept.parcours.map((p, i) => (
+                              <div key={i} className="bg-white p-5 rounded-lg shadow-sm border border-blue-200 hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-3">
+                                  <span className="text-3xl">📚</span>
+                                  <span className="font-medium text-gray-800">{p}</span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
                       
-                      {selectedDept.laboratoires && selectedDept.laboratoires.length > 0 && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            🔬 Laboratoires
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 text-gray-700">
-                            {selectedDept.laboratoires.map((l, i) => <li key={i}>{l}</li>)}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {selectedDept.debouches && selectedDept.debouches.length > 0 && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            💼 Débouchés
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 text-gray-700">
-                            {selectedDept.debouches.map((d, i) => <li key={i}>{d}</li>)}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {selectedDept.equipe && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            👥 Équipe pédagogique ({selectedDept.equipe.total} enseignants)
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 text-gray-700">
-                            {selectedDept.equipe.composition.map((c, i) => <li key={i}>{c}</li>)}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {selectedDept.organisation && selectedDept.organisation.length > 0 && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            📅 Organisation des études
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 text-gray-700">
-                            {selectedDept.organisation.map((o, i) => <li key={i}>{o}</li>)}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      {selectedDept.manifestations && (
-                        <div className="mb-6">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                            🎉 Manifestations
-                          </h3>
-                          <p className="text-gray-700 leading-relaxed">{selectedDept.manifestations}</p>
-                        </div>
+                      {(!selectedDept.parcours || selectedDept.parcours.length === 0) && (
+                        <p className="text-gray-500 text-center py-8">Aucune spécialité disponible</p>
                       )}
                     </div>
                   </div>
@@ -334,19 +287,24 @@ export default function ReferentielPublic() {
                     {filteredDepartements.map(dept => (
                       <div
                         key={dept.id_departement}
-                        className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                        className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-lg transition-all cursor-pointer"
                         onClick={() => setSelectedDept(dept)}
                       >
-                        <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-lg font-semibold text-gray-900">{dept.nom}</h3>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+                        <div className="flex items-start justify-between mb-4">
+                          <h3 className="text-lg font-bold text-gray-900">{dept.nom}</h3>
+                          <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
                             {dept.code}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-600 mb-4">{dept.description || 'Aucune description'}</p>
-                        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                          Voir les détails →
-                        </button>
+                        
+                        <p className="text-sm text-gray-600 mb-4">
+                          {dept.description || 'Cliquez pour voir les spécialités'}
+                        </p>
+                        
+                        <div className="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+                          <span>Voir les spécialités</span>
+                          <span className="ml-2">→</span>
+                        </div>
                       </div>
                     ))}
                     {filteredDepartements.length === 0 && (
