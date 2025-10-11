@@ -70,44 +70,40 @@ export default function Homepage() {
     }
   ];
 
-  const news = [
-    {
-      title: "Nouvelle formation en Intelligence Artificielle",
-      date: "25 Sept 2025",
-      category: "Informatique",
-      description: "Lancement du nouveau programme de master en IA et apprentissage automatique avec partenariats industriels.",
-      image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400",
-      readTime: "3 min",
-      tags: ["IA", "Master", "Innovation"]
-    },
-    {
-      title: "Projet de construction du nouveau laboratoire",
-      date: "20 Sept 2025", 
-      category: "Génie Civil",
-      description: "Début des travaux pour le laboratoire de matériaux avancés d'une superficie de 2000m².",
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=400",
-      readTime: "2 min",
-      tags: ["Laboratoire", "Construction", "Recherche"]
-    },
-    {
-      title: "Partenariat avec l'industrie automobile",
-      date: "15 Sept 2025",
-      category: "Génie Mécanique", 
-      description: "Signature d'un accord de collaboration pour la recherche en mobilité durable et véhicules électriques.",
-      image: "https://images.unsplash.com/photo-1486266526122-6c2bd6470534?w=400",
-      readTime: "4 min",
-      tags: ["Partenariat", "Automobile", "Durable"]
-    },
-    {
-      title: "Installation de panneaux solaires sur le campus",
-      date: "10 Sept 2025",
-      category: "Génie Électrique",
-      description: "Mise en place d'un système photovoltaïque de 500 kW pour une autonomie énergétique partielle.",
-      image: "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400",
-      readTime: "3 min",
-      tags: ["Énergie", "Écologie", "Campus"]
-    }
-  ];
+const news = [
+  {
+    title: "Journée Portes Ouvertes 2025",
+    description:
+      "L’ISET Tozeur organise une journée portes ouvertes pour accueillir les nouveaux étudiants et présenter les clubs, formations et projets innovants.",
+    date: "12 octobre 2025",
+    readTime: "3 min de lecture",
+    category: "Événement",
+    image: "/images/iset-event1.jpg",
+    tags: ["ISET Tozeur", "portes ouvertes", "étudiants"]
+  },
+  {
+    title: "Séminaire sur la Transformation Digitale",
+    description:
+      "Les enseignants et étudiants du département Informatique ont assisté à un séminaire animé par des experts sur la transformation numérique dans les institutions éducatives.",
+    date: "20 septembre 2025",
+    readTime: "4 min de lecture",
+    category: "Actualité",
+    image: "/images/iset-digital.jpg.jpg",
+    tags: ["informatique", "séminaire", "transformation digitale"]
+  },
+  {
+    title: "Compétition Nationale de Robotique",
+    description:
+      "L’équipe de l’ISET Tozeur a remporté la 2e place à la compétition nationale de robotique, démontrant le savoir-faire et la créativité de nos étudiants.",
+    date: "5 septembre 2025",
+    readTime: "2 min de lecture",
+    category: "Événement",
+    image: "/images/iset-robotique.jpg",
+    tags: ["robotique", "compétition", "innovation"]
+  }
+];
+
+
 
   const stats = [
     { icon: <Users className="w-8 h-8" />, value: "5000+", label: "Étudiants" },
@@ -141,10 +137,27 @@ export default function Homepage() {
             {/* Navigation desktop */}
             <div className="hidden lg:flex items-center space-x-1 bg-gray-50 rounded-2xl px-4 py-2">
               
-              <button className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-purple-600 hover:bg-white rounded-xl transition-all duration-300 font-medium group">
-                <BookOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span>Nouveautés</span>
-              </button>
+              <button
+  onClick={() => {
+    const section = document.getElementById('news-section');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  }}
+  className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-purple-600 hover:bg-white rounded-xl transition-all duration-300 font-medium group"
+>
+  <BookOpen className="w-5 h-5 group-hover:scale-110 transition-transform" />
+  <span>Nouveautés</span>
+</button>
+
+              <div className="w-px h-8 bg-gray-300"></div>
+
+              <Link href="/referentiel">
+                <button className="flex items-center space-x-2 px-6 py-3 text-gray-700 hover:text-purple-600 hover:bg-white rounded-xl transition-all duration-300 font-medium group">
+                  <BookMarked className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Référentiels</span>
+                </button>
+              </Link>
 
               <div className="w-px h-8 bg-gray-300"></div>
 
@@ -232,9 +245,6 @@ export default function Homepage() {
   <Link href="/login">Se connecter</Link>
 </button>
   
-
-
-
                   </div>
                 </div>
               </div>
@@ -269,6 +279,12 @@ export default function Homepage() {
                   <BookOpen className="w-5 h-5" />
                   <span>Nouveautés</span>
                 </button>
+                <Link href="/referentiel" className="w-full">
+                  <button className="w-full flex items-center space-x-2 px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-xl transition-colors">
+                    <BookMarked className="w-5 h-5" />
+                    <span>Référentiels</span>
+                  </button>
+                </Link>
                 <button className="w-full flex items-center space-x-2 px-4 py-3 text-gray-700 hover:bg-purple-50 rounded-xl transition-colors">
                   <Building className="w-5 h-5" />
                   <span>Départements</span>
@@ -384,7 +400,8 @@ export default function Homepage() {
       </section>
 
       {/* Section Actualités avec carousel */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-purple-50">
+      <section id="news-section" className="py-20 bg-gradient-to-br from-gray-50 to-purple-50">
+
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Actualités & Événements</h2>
@@ -482,6 +499,27 @@ export default function Homepage() {
           </div>
         </div>
       </section>
+            {/* Section Localisation ISET Tozeur */}
+      <section className="py-20 bg-gradient-to-br from-purple-50 to-pink-50">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-gray-800 mb-6">Où nous trouver ?</h2>
+          <p className="text-lg text-gray-600 mb-10">
+            Institut Supérieur des Études Technologiques de Tozeur
+          </p>
+
+          <div className="rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3254.1181182574674!2d8.130611015248023!3d33.91827008064369!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x13ad14a3f45e4c1f%3A0x2cfe47a4e69d6a77!2sISET%20Tozeur!5e0!3m2!1sfr!2stn!4v1695567890123!5m2!1sfr!2stn"
+              width="100%"
+              height="500"
+              
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
 
       {/* Footer amélioré */}
       <footer className="bg-gray-900 text-white pt-16 pb-8">
@@ -492,6 +530,7 @@ export default function Homepage() {
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
                   <GraduationCap className="w-6 h-6 text-white" />
                 </div>
+                
                 <div>
                   <span className="text-xl font-bold">ISET Tozeur</span>
                   <p className="text-xs text-gray-400">Excellence Technologique</p>
@@ -539,6 +578,7 @@ export default function Homepage() {
             ))}
           </div>
           
+          
           <div className="border-t border-gray-800 pt-8 text-center">
             <p className="text-gray-400 text-sm">
               © 2025 ISET Tozeur. Tous droits réservés. | 
@@ -548,7 +588,10 @@ export default function Homepage() {
             </p>
           </div>
         </div>
+        
       </footer>
+      
     </div>
+    
   );
 }
