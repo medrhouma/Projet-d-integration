@@ -1,12 +1,8 @@
 'use client';
-<<<<<<< HEAD
 
 import { Cpu, Users, GraduationCap, Award, BookOpen, Calendar, Network, Server, Laptop, Briefcase, Mail, Phone, MapPin } from 'lucide-react';
 import Link from 'next/link';
-=======
-import { Cpu, Users, GraduationCap, Award, BookOpen, Calendar, Network, Server, Laptop, Briefcase, Mail, Phone, MapPin } from "lucide-react";
-import Link from "next/link";
->>>>>>> baa7d8521455c9ddabf7e1703b7f53488ff217fa
+
 
 export default function DepInfoDashboard() {
   const infos = [
@@ -22,7 +18,7 @@ export default function DepInfoDashboard() {
     { icon: <Laptop className="w-6 h-6 text-pink-600" />, title: 'MDW', desc: 'Multimédia & Développement Web.' },
   ];
 
-<<<<<<< HEAD
+
   const projets = [
     'Système de gestion RH (Web & Mobile)',
     'Application de cybersécurité pour IoT',
@@ -35,13 +31,6 @@ export default function DepInfoDashboard() {
     'Club Innovation & Startups',
   ];
 
-  const debouches = [
-    'Développeur d’Applications de gestion',
-    'Développeur de sites Web',
-    'Administrateur réseaux',
-    'Webmaster designer',
-    'Architecte réseaux et systèmes',
-=======
   const debouches = [
     "Développeur d’Applications de gestion",
     "Développeur de sites Web",
@@ -90,7 +79,7 @@ export default function DepInfoDashboard() {
     "Visites industrielles",
     "Sorties pédagogiques",
     "Participation à des compétitions et événements régionaux et nationaux",
->>>>>>> baa7d8521455c9ddabf7e1703b7f53488ff217fa
+
   ];
 
   return (
@@ -183,8 +172,7 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
-<<<<<<< HEAD
-=======
+
       {/* Plan d'étude */}
       <section className="py-12 bg-purple-50 border-t">
         <div className="max-w-6xl mx-auto px-6 text-center">
@@ -215,16 +203,16 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
->>>>>>> baa7d8521455c9ddabf7e1703b7f53488ff217fa
+
       {/* CTA */}
       <div className="text-center py-12">
         <Link href="/">
           <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-<<<<<<< HEAD
+
             Retour à l'accueil
-=======
+
             Retour à l’accueil
->>>>>>> baa7d8521455c9ddabf7e1703b7f53488ff217fa
+
           </button>
         </Link>
       </div>
