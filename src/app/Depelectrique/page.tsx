@@ -4,10 +4,10 @@ import Link from "next/link";
 
 export default function DepElectriqueDashboard() {
   const stats = [
-    { value: "320+", label: "Étudiants" },
-    { value: "28+", label: "Enseignants" },
-    { value: "90%", label: "Taux de réussite" },
-    { value: "4", label: "Laboratoires" }
+    { value: "320+", label: "Étudiants", icon: <Users className="w-8 h-8 text-yellow-600" /> },
+    { value: "28+", label: "Enseignants", icon: <GraduationCap className="w-8 h-8 text-yellow-600" /> },
+    { value: "90%", label: "Taux de réussite", icon: <Award className="w-8 h-8 text-yellow-600" /> },
+    { value: "4", label: "Laboratoires", icon: <BookOpen className="w-8 h-8 text-yellow-600" /> }
   ];
 
   const specialites = [
@@ -102,21 +102,14 @@ export default function DepElectriqueDashboard() {
 
       {/* Stats */}
       <section className="py-12 max-w-6xl mx-auto px-6 grid md:grid-cols-4 gap-6">
-        {stats.map((s, i) => (
-          <div key={i} className="bg-white rounded-xl shadow p-5 text-center hover:shadow-lg transition transform hover:-translate-y-1">
-            <div className="flex justify-center mb-2">{s.icon}</div>
-            <h3 className="text-xl font-bold">{s.value}</h3>
-            <p className="text-gray-600">{s.label}</p>
-          </div>
-<<<<<<< HEAD
-        
-        </div>
-        
-      </aside>
-=======
-        ))}
-      </section>
->>>>>>> baa7d8521455c9ddabf7e1703b7f53488ff217fa
+  {stats.map((s, i) => (
+    <div key={i} className="bg-white rounded-xl shadow p-5 text-center hover:shadow-lg transition transform hover:-translate-y-1">
+      <div className="flex justify-center mb-2">{s.icon}</div>
+      <h3 className="text-xl font-bold">{s.value}</h3>
+      <p className="text-gray-600">{s.label}</p>
+    </div>
+  ))}
+</section>
 
       {/* Présentation & Objectifs */}
       <section className="py-12 bg-white border-t">

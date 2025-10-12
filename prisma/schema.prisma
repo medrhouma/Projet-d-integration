@@ -1,4 +1,3 @@
-
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -81,6 +80,7 @@ model Niveau {
   specialite Specialite @relation(fields: [id_specialite], references: [id_specialite], onDelete: Cascade)
   groupes    Groupe[]
   matieres   Matiere[]
+  etudiants  Etudiant[]  // Ajout de la relation
 
   @@map("niveau")
 }
@@ -99,27 +99,41 @@ model Groupe {
   @@map("groupe")
 }
 
-// Table Étudiant
+// Table Étudiant - MODIFIÉE
 model Etudiant {
-  id_etudiant        Int    @id
-  numero_inscription String @unique @db.Char(6)
-  id_specialite      Int?       // nullable
-  id_groupe          Int?       // nullable
+  id_etudiant        Int     @id
+  numero_inscription String  @unique @db.Char(6)
+  id_specialite      Int?    // Gardé pour la relation
+  id_niveau          Int?    // AJOUT
+  id_groupe          Int?    // Gardé pour la relation
+  
+  // NOUVEAUX CHAMPS pour affichage direct
+  departement        String? @db.VarChar(100)
+  specialite_nom     String? @db.VarChar(100)
+  niveau_nom         String? @db.VarChar(50)
+  groupe_nom         String? @db.VarChar(50)
 
   // Relations
   utilisateur Utilisateur @relation(fields: [id_etudiant], references: [id_utilisateur], onDelete: Cascade)
   specialite  Specialite?  @relation(fields: [id_specialite], references: [id_specialite])
+  niveau      Niveau?      @relation(fields: [id_niveau], references: [id_niveau])  // AJOUT
   groupe      Groupe?      @relation(fields: [id_groupe], references: [id_groupe])
   absences    Absence[]
 
+  @@index([id_specialite])
+  @@index([id_niveau])  // AJOUT
+  @@index([id_groupe])
   @@map("etudiant")
 }
 
-// Table Enseignant
+// Table Enseignant - MODIFIÉE
 model Enseignant {
-  id_enseignant  Int    @id
-  matricule      String @unique @db.VarChar(50)
-  id_departement Int?   // nullable
+  id_enseignant  Int     @id
+  matricule      String  @unique @db.VarChar(50)
+  id_departement Int?    // Gardé pour la relation
+  
+  // NOUVEAU CHAMP pour affichage direct
+  departement_nom String? @db.VarChar(100)
 
   // Relations
   utilisateur  Utilisateur   @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)
@@ -127,6 +141,7 @@ model Enseignant {
   matieres     Matiere[]
   emploi_temps EmploiTemps[]
 
+  @@index([id_departement])
   @@map("enseignant")
 }
 

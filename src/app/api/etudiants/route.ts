@@ -50,8 +50,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nom, prenom, email, identifiant, mot_de_passe, numero_inscription, id_specialite, id_groupe } = body;
+    const { 
+      nom, 
+      prenom, 
+      email, 
+      identifiant, 
+      mot_de_passe, 
+      numero_inscription, 
+      id_specialite, 
+      id_niveau,
+      id_groupe 
+    } = body;
 
+    // Validation des champs obligatoires
     if (!nom || !prenom || !email || !identifiant || !mot_de_passe || !numero_inscription) {
       return NextResponse.json(
         { error: 'Tous les champs obligatoires doivent être remplis' },
@@ -91,6 +102,41 @@ export async function POST(request: NextRequest) {
     // Hasher le mot de passe
     const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
 
+    // Récupérer les informations de spécialité, niveau et groupe pour les champs dénormalisés
+    let departement = null;
+    let specialite_nom = null;
+    let niveau_nom = null;
+    let groupe_nom = null;
+
+    if (id_specialite) {
+      const specialite = await prisma.specialite.findUnique({
+        where: { id_specialite: parseInt(id_specialite) },
+        include: { departement: true }
+      });
+      if (specialite) {
+        departement = specialite.departement.nom;
+        specialite_nom = specialite.nom;
+      }
+    }
+
+    if (id_niveau) {
+      const niveau = await prisma.niveau.findUnique({
+        where: { id_niveau: parseInt(id_niveau) }
+      });
+      if (niveau) {
+        niveau_nom = niveau.nom;
+      }
+    }
+
+    if (id_groupe) {
+      const groupe = await prisma.groupe.findUnique({
+        where: { id_groupe: parseInt(id_groupe) }
+      });
+      if (groupe) {
+        groupe_nom = groupe.nom;
+      }
+    }
+
     // Créer l'utilisateur et l'étudiant dans une transaction
     const etudiant = await prisma.$transaction(async (tx) => {
       const utilisateur = await tx.utilisateur.create({
@@ -109,7 +155,13 @@ export async function POST(request: NextRequest) {
           id_etudiant: utilisateur.id_utilisateur,
           numero_inscription,
           id_specialite: id_specialite ? parseInt(id_specialite) : null,
-          id_groupe: id_groupe ? parseInt(id_groupe) : null
+          id_niveau: id_niveau ? parseInt(id_niveau) : null,
+          id_groupe: id_groupe ? parseInt(id_groupe) : null,
+          // Champs dénormalisés
+          departement,
+          specialite_nom,
+          niveau_nom,
+          groupe_nom
         },
         include: {
           utilisateur: {
@@ -127,6 +179,7 @@ export async function POST(request: NextRequest) {
               departement: true
             }
           },
+          niveau: true,
           groupe: {
             include: {
               niveau: {

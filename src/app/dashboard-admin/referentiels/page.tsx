@@ -1,280 +1,281 @@
-// app/admin/dashboard/referentiels/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 // ==================== TYPES ====================
 interface Departement {
   id_departement: number;
   nom: string;
-  code: string;
-  description?: string;
+}
+
+interface Specialite {
+  id_specialite: number;
+  nom: string;
+  id_departement: number;
+  departement?: Departement;
+}
+
+interface Niveau {
+  id_niveau: number;
+  nom: string;
+  id_specialite: number;
+  specialite?: Specialite;
+}
+
+interface Groupe {
+  id_groupe: number;
+  nom: string;
+  id_niveau: number;
+  niveau?: Niveau;
 }
 
 interface Matiere {
   id_matiere: number;
   nom: string;
-  code: string;
-  coefficient: number;
-  departement?: Departement;
-  id_departement?: number;
+  id_niveau: number;
+  id_enseignant: number;
+  niveau?: Niveau;
+  enseignant?: {
+    utilisateur: {
+      nom: string;
+      prenom: string;
+    };
+  };
 }
 
 interface Salle {
   id_salle: number;
-  nom: string;
-  capacite: number;
+  code: string;
   type: string;
-  equipements?: string;
+  capacite: number;
 }
 
 interface Enseignant {
   id_enseignant: number;
+  matricule: string;
+  departement_nom?: string;
   utilisateur: {
     nom: string;
     prenom: string;
     email: string;
   };
-  grade: string;
-  specialite: string;
-  departement?: Departement;
-  id_departement?: number;
 }
 
 interface Etudiant {
   id_etudiant: number;
   numero_inscription: string;
+  departement?: string;
+  specialite_nom?: string;
+  niveau_nom?: string;
+  groupe_nom?: string;
   utilisateur: {
     nom: string;
     prenom: string;
     email: string;
   };
-  specialite?: string;
-  groupe?: string;
 }
 
-type EntityType = 'departements' | 'matieres' | 'salles' | 'enseignants' | 'etudiants';
+type TabType = 'departements' | 'specialites' | 'niveaux' | 'groupes' | 'matieres' | 'salles' | 'enseignants' | 'etudiants';
 
-// ==================== DONNÉES MOCKÉES ====================
-const mockDepartements: Departement[] = [
-  { id_departement: 1, nom: 'Informatique', code: 'INFO', description: 'Département d\'informatique' },
-  { id_departement: 2, nom: 'Génie Civil', code: 'GC', description: 'Département de génie civil' },
-  { id_departement: 3, nom: 'Génie Électrique', code: 'GE', description: 'Département de génie électrique' },
-  { id_departement: 4, nom: 'Génie Mécanique', code: 'GM', description: 'Département de Génie Mécanique' },
-];
-
-const mockMatieres: Matiere[] = [
-  { id_matiere: 1, nom: 'Programmation Web', code: 'INF201', coefficient: 3, id_departement: 1, departement: mockDepartements[0] },
-  { id_matiere: 2, nom: 'Base de Données', code: 'INF202', coefficient: 3, id_departement: 1, departement: mockDepartements[0] },
-  { id_matiere: 3, nom: 'Résistance des Matériaux', code: 'GC101', coefficient: 4, id_departement: 2, departement: mockDepartements[1] },
-];
-
-const mockSalles: Salle[] = [
-  { id_salle: 1, nom: 'LI01', capacite: 30, type: 'Salle de cours', equipements: 'Projecteur, Tableau' },
-  { id_salle: 2, nom: 'SI01', capacite: 50, type: 'Amphithéâtre', equipements: 'Projecteur, Sono, Écran' },
-  { id_salle: 3, nom: 'SGO1', capacite: 25, type: 'Laboratoire', equipements: '25 PC, Projecteur' },
-];
-
-const mockEnseignants: Enseignant[] = [
-  { 
-    id_enseignant: 1, 
-    utilisateur: { nom: 'Benali', prenom: 'Ahmed', email: 'ahmed.benali@university.tn' },
-    grade: 'Professeur',
-    specialite: 'Développement Web',
-    id_departement: 1,
-    departement: mockDepartements[0]
-  },
-  { 
-    id_enseignant: 2, 
-    utilisateur: { nom: 'Trabelsi', prenom: 'Fatma', email: 'fatma.trabelsi@university.tn' },
-    grade: 'Maître Assistant',
-    specialite: 'Base de Données',
-    id_departement: 1,
-    departement: mockDepartements[0]
-  },
-];
-
-const mockEtudiants: Etudiant[] = [
-  { 
-    id_etudiant: 1, 
-    numero_inscription: '202401',
-    utilisateur: { nom: 'Mansour', prenom: 'Mohamed', email: 'mohamed.mansour@student.tn' },
-    specialite: 'Informatique',
-    groupe: 'G1'
-  },
-  { 
-    id_etudiant: 2, 
-    numero_inscription: '202402',
-    utilisateur: { nom: 'Gharbi', prenom: 'Salma', email: 'salma.gharbi@student.tn' },
-    specialite: 'Informatique',
-    groupe: 'G1'
-  },
-  {
-    id_etudiant: 3,
-    numero_inscription: '202403',
-    utilisateur: { nom: 'Kacem', prenom: 'Youssef', email: 'asssss@sss.tn' }, 
-    specialite: 'Génie Civil',
-    groupe: 'G2'
-  }
-];
-
-// ==================== COMPOSANT PRINCIPAL ====================
-export default function ReferentielsCRUD() {
-  const [activeTab, setActiveTab] = useState<EntityType>('departements');
+export default function ReferentielPublic() {
+  const [activeTab, setActiveTab] = useState<TabType>('departements');
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // États pour chaque entité
-  const [departements, setDepartements] = useState<Departement[]>(mockDepartements);
-  const [matieres, setMatieres] = useState<Matiere[]>(mockMatieres);
-  const [salles, setSalles] = useState<Salle[]>(mockSalles);
-  const [enseignants, setEnseignants] = useState<Enseignant[]>(mockEnseignants);
-  const [etudiants, setEtudiants] = useState<Etudiant[]>(mockEtudiants);
-
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  
+  // États pour les données
+  const [departements, setDepartements] = useState<Departement[]>([]);
+  const [specialites, setSpecialites] = useState<Specialite[]>([]);
+  const [niveaux, setNiveaux] = useState<Niveau[]>([]);
+  const [groupes, setGroupes] = useState<Groupe[]>([]);
+  const [matieres, setMatieres] = useState<Matiere[]>([]);
+  const [salles, setSalles] = useState<Salle[]>([]);
+  const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
+  const [etudiants, setEtudiants] = useState<Etudiant[]>([]);
 
-  // Auto-hide messages
+  // Charger les données au montage
   useEffect(() => {
-    if (error || success) {
-      const timer = setTimeout(() => {
-        setError(null);
-        setSuccess(null);
-      }, 3000);
-      return () => clearTimeout(timer);
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [deptRes, specRes, nivRes, grpRes, matRes, salleRes, ensRes, etudRes] = await Promise.all([
+        fetch('/api/departements'),
+        fetch('/api/specialites'),
+        fetch('/api/niveaux'),
+        fetch('/api/groupes'),
+        fetch('/api/matieres'),
+        fetch('/api/salles'),
+        fetch('/api/enseignants'),
+        fetch('/api/etudiants')
+      ]);
+
+      if (deptRes.ok) setDepartements(await deptRes.json());
+      if (specRes.ok) setSpecialites(await specRes.json());
+      if (nivRes.ok) setNiveaux(await nivRes.json());
+      if (grpRes.ok) setGroupes(await grpRes.json());
+      if (matRes.ok) setMatieres(await matRes.json());
+      if (salleRes.ok) setSalles(await salleRes.json());
+      if (ensRes.ok) setEnseignants(await ensRes.json());
+      if (etudRes.ok) setEtudiants(await etudRes.json());
+    } catch (err) {
+      setError('Erreur lors du chargement des données');
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-  }, [error, success]);
-
-  const tabs = [
-    { id: 'departements' as EntityType, label: 'Départements', icon: '🏢' },
-    { id: 'matieres' as EntityType, label: 'Matières', icon: '📚' },
-    { id: 'salles' as EntityType, label: 'Salles', icon: '🚪' },
-    { id: 'enseignants' as EntityType, label: 'Enseignants', icon: '👨‍🏫' },
-    { id: 'etudiants' as EntityType, label: 'Étudiants', icon: '🎓' },
-  ];
-
-  const handleTabChange = (tab: EntityType) => {
-    setActiveTab(tab);
-    setShowForm(false);
-    setEditingId(null);
-    setSearchTerm('');
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'departements':
-        return <DepartementsManager 
-          data={departements} 
-          setData={setDepartements}
-          searchTerm={searchTerm}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          setSuccess={setSuccess}
-          setError={setError}
-        />;
-      case 'matieres':
-        return <MatieresManager 
-          data={matieres} 
-          setData={setMatieres}
-          departements={departements}
-          searchTerm={searchTerm}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          setSuccess={setSuccess}
-          setError={setError}
-        />;
-      case 'salles':
-        return <SallesManager 
-          data={salles} 
-          setData={setSalles}
-          searchTerm={searchTerm}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          setSuccess={setSuccess}
-          setError={setError}
-        />;
-      case 'enseignants':
-        return <EnseignantsManager 
-          data={enseignants} 
-          setData={setEnseignants}
-          departements={departements}
-          searchTerm={searchTerm}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          setSuccess={setSuccess}
-          setError={setError}
-        />;
-      case 'etudiants':
-        return <EtudiantsManager 
-          data={etudiants} 
-          setData={setEtudiants}
-          searchTerm={searchTerm}
-          showForm={showForm}
-          setShowForm={setShowForm}
-          editingId={editingId}
-          setEditingId={setEditingId}
-          setSuccess={setSuccess}
-          setError={setError}
-        />;
-      default:
-        return null;
+  const tabs = [
+    { id: 'departements' as TabType, label: 'Départements', icon: '🏢', count: departements.length },
+    { id: 'specialites' as TabType, label: 'Spécialités', icon: '📚', count: specialites.length },
+    { id: 'niveaux' as TabType, label: 'Niveaux', icon: '📊', count: niveaux.length },
+    { id: 'groupes' as TabType, label: 'Groupes', icon: '👥', count: groupes.length },
+    { id: 'matieres' as TabType, label: 'Matières', icon: '📖', count: matieres.length },
+    { id: 'salles' as TabType, label: 'Salles', icon: '🚪', count: salles.length },
+    { id: 'enseignants' as TabType, label: 'Enseignants', icon: '👨‍🏫', count: enseignants.length },
+    { id: 'etudiants' as TabType, label: 'Étudiants', icon: '🎓', count: etudiants.length },
+  ];
+
+  // Filtres
+  const filteredDepartements = departements.filter(d => 
+    d.nom.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredSpecialites = specialites.filter(s => 
+    s.nom.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredNiveaux = niveaux.filter(n => 
+    n.nom.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredGroupes = groupes.filter(g => 
+    g.nom.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredMatieres = matieres.filter(m => 
+    m.nom.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredSalles = salles.filter(s => 
+    s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.type.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredEnseignants = enseignants.filter(e => 
+    e.utilisateur.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.utilisateur.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.matricule.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredEtudiants = etudiants.filter(e => 
+    e.utilisateur.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.utilisateur.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    e.numero_inscription.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Actions CRUD
+  const handleDelete = async (type: TabType, id: number) => {
+    if (!confirm('⚠️ Êtes-vous sûr de vouloir supprimer cet élément ?')) return;
+
+    try {
+      const endpoints: Record<TabType, string> = {
+        departements: `/api/departements/${id}`,
+        specialites: `/api/specialites/${id}`,
+        niveaux: `/api/niveaux/${id}`,
+        groupes: `/api/groupes/${id}`,
+        matieres: `/api/matieres/${id}`,
+        salles: `/api/salles/${id}`,
+        enseignants: `/api/enseignants/${id}`,
+        etudiants: `/api/etudiants/${id}`
+      };
+
+      const res = await fetch(endpoints[type], { method: 'DELETE' });
+      
+      if (res.ok) {
+        setSuccess('✅ Supprimé avec succès !');
+        loadData();
+        setTimeout(() => setSuccess(null), 3000);
+      } else {
+        const data = await res.json();
+        setError(data.error || '❌ Erreur lors de la suppression');
+      }
+    } catch (err) {
+      setError('❌ Erreur de connexion');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* En-tête */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Gestion des Référentiels</h1>
-          <p className="text-gray-600">Gérez les départements, matières, salles, enseignants et étudiants</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="bg-white shadow-md border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">📋 Référentiels</h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Gestion complète des départements, spécialités, niveaux, groupes, matières, salles, enseignants et étudiants
+              </p>
+            </div>
+            <Link 
+              href="/dashboard-admin"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              ← Retour à l'accueil
+            </Link>
+          </div>
         </div>
+      </header>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Messages */}
         {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center justify-between">
+          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex justify-between items-center">
             <span>{error}</span>
-            <button onClick={() => setError(null)} className="text-red-700 hover:text-red-900">✕</button>
+            <button onClick={() => setError(null)} className="text-red-700 font-bold">✕</button>
           </div>
         )}
-        
+
         {success && (
-          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center justify-between">
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex justify-between items-center">
             <span>{success}</span>
-            <button onClick={() => setSuccess(null)} className="text-green-700 hover:text-green-900">✕</button>
+            <button onClick={() => setSuccess(null)} className="text-green-700 font-bold">✕</button>
           </div>
         )}
 
         {/* Onglets */}
-        <div className="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-lg mb-6 overflow-hidden">
           <div className="flex border-b overflow-x-auto">
             {tabs.map(tab => (
               <button
                 key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setSearchTerm('');
+                }}
+                className={`flex items-center gap-2 px-6 py-4 font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 <span className="text-xl">{tab.icon}</span>
-                {tab.label}
+                <span>{tab.label}</span>
+                <span className="ml-2 px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded-full">
+                  {tab.count}
+                </span>
               </button>
             ))}
           </div>
 
-          {/* Barre de recherche et actions */}
-          <div className="p-4 bg-gray-50 flex gap-4 items-center">
+          {/* Barre de recherche et bouton ajouter */}
+          <div className="p-4 bg-gray-50 flex gap-4">
             <input
               type="text"
               placeholder="Rechercher..."
@@ -282,898 +283,454 @@ export default function ReferentielsCRUD() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button
-              onClick={() => {
-                setShowForm(true);
-                setEditingId(null);
-              }}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
+            <Link
+              href={
+                activeTab === 'etudiants' ? '/dashboard-admin/etudiants/nouveau' :
+                activeTab === 'enseignants' ? '/dashboard-admin/enseignants/nouveau' :
+                `/dashboard-admin/${activeTab}/nouveau`
+              }
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 whitespace-nowrap"
             >
-              + Ajouter
-            </button>
+              <span className="text-xl">+</span>
+              <span>Ajouter</span>
+            </Link>
           </div>
         </div>
 
-        {/* Contenu dynamique */}
-        <div className="bg-white rounded-lg shadow-md">
-          {renderContent()}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ==================== DÉPARTEMENTS MANAGER ====================
-interface ManagerProps<T> {
-  data: T[];
-  setData: React.Dispatch<React.SetStateAction<T[]>>;
-  searchTerm: string;
-  showForm: boolean;
-  setShowForm: (show: boolean) => void;
-  editingId: number | null;
-  setEditingId: (id: number | null) => void;
-  setSuccess: (msg: string) => void;
-  setError: (msg: string) => void;
-}
-
-function DepartementsManager({ 
-  data, setData, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
-}: ManagerProps<Departement>) {
-  const [formData, setFormData] = useState({ nom: '', code: '', description: '' });
-
-  const filteredData = data.filter(d => 
-    d.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    d.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nom || !formData.code) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    if (editingId) {
-      setData(prev => prev.map(item => 
-        item.id_departement === editingId ? { ...item, ...formData } : item
-      ));
-      setSuccess('Département modifié avec succès');
-    } else {
-      const newItem: Departement = {
-        id_departement: Math.max(0, ...data.map(d => d.id_departement)) + 1,
-        ...formData
-      };
-      setData(prev => [...prev, newItem]);
-      setSuccess('Département ajouté avec succès');
-    }
-    resetForm();
-  };
-
-  const handleEdit = (item: Departement) => {
-    setFormData({ nom: item.nom, code: item.code, description: item.description || '' });
-    setEditingId(item.id_departement);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce département ?')) return;
-    setData(prev => prev.filter(item => item.id_departement !== id));
-    setSuccess('Département supprimé avec succès');
-  };
-
-  const resetForm = () => {
-    setFormData({ nom: '', code: '', description: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  return (
-    <div className="p-6">
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
-            {editingId ? 'Modifier le département' : 'Ajouter un département'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => setFormData({...formData, nom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Code *</label>
-              <input
-                type="text"
-                value={formData.code}
-                onChange={(e) => setFormData({...formData, code: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-              />
-            </div>
+        {/* Contenu */}
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p className="mt-4 text-gray-600">Chargement...</p>
           </div>
-          <div className="flex gap-2">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              {editingId ? 'Modifier' : 'Ajouter'}
-            </button>
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-              Annuler
-            </button>
-          </div>
-        </form>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map(item => (
-              <tr key={item.id_departement} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nom}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.code}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.description || '-'}</td>
-                <td className="px-6 py-4 text-sm space-x-2">
-                  <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
-                  <button onClick={() => handleDelete(item.id_departement)} className="text-red-600 hover:text-red-900">Supprimer</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredData.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Aucun département trouvé</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ==================== MATIÈRES MANAGER ====================
-interface MatieresManagerProps extends ManagerProps<Matiere> {
-  departements: Departement[];
-}
-
-function MatieresManager({ 
-  data, setData, departements, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
-}: MatieresManagerProps) {
-  const [formData, setFormData] = useState({ nom: '', code: '', coefficient: 1, id_departement: '' });
-
-  const filteredData = data.filter(m => 
-    m.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.code.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nom || !formData.code) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    const departement = formData.id_departement 
-      ? departements.find(d => d.id_departement === parseInt(formData.id_departement))
-      : undefined;
-
-    if (editingId) {
-      setData(prev => prev.map(item => 
-        item.id_matiere === editingId 
-          ? { ...item, ...formData, coefficient: Number(formData.coefficient), departement, id_departement: formData.id_departement ? parseInt(formData.id_departement) : undefined } 
-          : item
-      ));
-      setSuccess('Matière modifiée avec succès');
-    } else {
-      const newItem: Matiere = {
-        id_matiere: Math.max(0, ...data.map(m => m.id_matiere)) + 1,
-        nom: formData.nom,
-        code: formData.code,
-        coefficient: Number(formData.coefficient),
-        departement,
-        id_departement: formData.id_departement ? parseInt(formData.id_departement) : undefined
-      };
-      setData(prev => [...prev, newItem]);
-      setSuccess('Matière ajoutée avec succès');
-    }
-    resetForm();
-  };
-
-  const handleEdit = (item: Matiere) => {
-    setFormData({ 
-      nom: item.nom, 
-      code: item.code, 
-      coefficient: item.coefficient,
-      id_departement: item.id_departement?.toString() || ''
-    });
-    setEditingId(item.id_matiere);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette matière ?')) return;
-    setData(prev => prev.filter(item => item.id_matiere !== id));
-    setSuccess('Matière supprimée avec succès');
-  };
-
-  const resetForm = () => {
-    setFormData({ nom: '', code: '', coefficient: 1, id_departement: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  return (
-    <div className="p-6">
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
-            {editingId ? 'Modifier la matière' : 'Ajouter une matière'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => setFormData({...formData, nom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Code *</label>
-              <input
-                type="text"
-                value={formData.code}
-                onChange={(e) => setFormData({...formData, code: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Coefficient *</label>
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={formData.coefficient}
-                onChange={(e) => setFormData({...formData, coefficient: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Département</label>
-              <select
-                value={formData.id_departement}
-                onChange={(e) => setFormData({...formData, id_departement: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionner un département</option>
-                {departements.map(d => (
-                  <option key={d.id_departement} value={d.id_departement}>{d.nom}</option>
+        ) : (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            {/* Départements */}
+            {activeTab === 'departements' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredDepartements.map(dept => (
+                  <div
+                    key={dept.id_departement}
+                    className="bg-white border-2 border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-lg transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-900">{dept.nom}</h3>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/dashboard-admin/departements/${dept.id_departement}/edit`}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Modifier"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete('departements', dept.id_departement)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Supprimer"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      📚 {specialites.filter(s => s.id_departement === dept.id_departement).length} spécialité(s)
+                    </p>
+                  </div>
                 ))}
-              </select>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              {editingId ? 'Modifier' : 'Ajouter'}
-            </button>
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-              Annuler
-            </button>
-          </div>
-        </form>
-      )}
+                {filteredDepartements.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-gray-500">
+                    Aucun département trouvé
+                  </div>
+                )}
+              </div>
+            )}
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coefficient</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map(item => (
-              <tr key={item.id_matiere} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nom}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.code}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.coefficient}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.departement?.nom || '-'}</td>
-                <td className="px-6 py-4 text-sm space-x-2">
-                  <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
-                  <button onClick={() => handleDelete(item.id_matiere)} className="text-red-600 hover:text-red-900">Supprimer</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredData.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Aucune matière trouvée</div>
-        )}
-      </div>
-    </div>
-  );
-}
+            {/* Spécialités */}
+            {activeTab === 'specialites' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Niveaux</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredSpecialites.map(spec => (
+                      <tr key={spec.id_specialite} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {spec.nom}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {spec.departement?.nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {niveaux.filter(n => n.id_specialite === spec.id_specialite).length} niveau(x)
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
+                          <Link
+                            href={`/dashboard-admin/specialites/${spec.id_specialite}/edit`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('specialites', spec.id_specialite)}
+                            className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredSpecialites.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">Aucune spécialité trouvée</div>
+                )}
+              </div>
+            )}
 
-// ==================== SALLES MANAGER ====================
-function SallesManager({ 
-  data, setData, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
-}: ManagerProps<Salle>) {
-  const [formData, setFormData] = useState({ nom: '', capacite: 20, type: 'Salle de cours', equipements: '' });
+            {/* Niveaux */}
+            {activeTab === 'niveaux' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spécialité</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Groupes</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredNiveaux.map(niveau => (
+                      <tr key={niveau.id_niveau} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {niveau.nom}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {niveau.specialite?.nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {groupes.filter(g => g.id_niveau === niveau.id_niveau).length} groupe(s)
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
+                          <Link
+                            href={`/dashboard-admin/niveaux/${niveau.id_niveau}/edit`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('niveaux', niveau.id_niveau)}
+                            className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredNiveaux.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">Aucun niveau trouvé</div>
+                )}
+              </div>
+            )}
 
-  const filteredData = data.filter(s => 
-    s.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    s.type.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nom) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    if (editingId) {
-      setData(prev => prev.map(item => 
-        item.id_salle === editingId 
-          ? { ...item, ...formData, capacite: Number(formData.capacite) } 
-          : item
-      ));
-      setSuccess('Salle modifiée avec succès');
-    } else {
-      const newItem: Salle = {
-        id_salle: Math.max(0, ...data.map(s => s.id_salle)) + 1,
-        ...formData,
-        capacite: Number(formData.capacite)
-      };
-      setData(prev => [...prev, newItem]);
-      setSuccess('Salle ajoutée avec succès');
-    }
-    resetForm();
-  };
-
-  const handleEdit = (item: Salle) => {
-    setFormData({ 
-      nom: item.nom, 
-      capacite: item.capacite,
-      type: item.type,
-      equipements: item.equipements || ''
-    });
-    setEditingId(item.id_salle);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette salle ?')) return;
-    setData(prev => prev.filter(item => item.id_salle !== id));
-    setSuccess('Salle supprimée avec succès');
-  };
-
-  const resetForm = () => {
-    setFormData({ nom: '', capacite: 20, type: 'Salle de cours', equipements: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  return (
-    <div className="p-6">
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
-            {editingId ? 'Modifier la salle' : 'Ajouter une salle'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => setFormData({...formData, nom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Capacité *</label>
-              <input
-                type="number"
-                min="1"
-                value={formData.capacite}
-                onChange={(e) => setFormData({...formData, capacite: parseInt(e.target.value)})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
-              <select
-                value={formData.type}
-                onChange={(e) => setFormData({...formData, type: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Salle de cours">Salle de cours</option>
-                <option value="Amphithéâtre">Amphithéâtre</option>
-                <option value="Laboratoire">Laboratoire</option>
-                <option value="TD">TD</option>
-                <option value="TP">TP</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Équipements</label>
-              <input
-                type="text"
-                value={formData.equipements}
-                onChange={(e) => setFormData({...formData, equipements: e.target.value})}
-                placeholder="Ex: Projecteur, Tableau"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              {editingId ? 'Modifier' : 'Ajouter'}
-            </button>
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-              Annuler
-            </button>
-          </div>
-        </form>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Capacité</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Équipements</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map(item => (
-              <tr key={item.id_salle} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nom}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.capacite}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.type}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.equipements || '-'}</td>
-                <td className="px-6 py-4 text-sm space-x-2">
-                  <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
-                  <button onClick={() => handleDelete(item.id_salle)} className="text-red-600 hover:text-red-900">Supprimer</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredData.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Aucune salle trouvée</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ==================== ENSEIGNANTS MANAGER ====================
-interface EnseignantsManagerProps extends ManagerProps<Enseignant> {
-  departements: Departement[];
-}
-
-function EnseignantsManager({ 
-  data, setData, departements, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
-}: EnseignantsManagerProps) {
-  const [formData, setFormData] = useState({ 
-    nom: '', prenom: '', email: '', grade: 'Maître Assistant', specialite: '', id_departement: '' 
-  });
-
-  const filteredData = data.filter(e => 
-    e.utilisateur.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.utilisateur.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.utilisateur.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.specialite.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nom || !formData.prenom || !formData.email) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    const departement = formData.id_departement 
-      ? departements.find(d => d.id_departement === parseInt(formData.id_departement))
-      : undefined;
-
-    if (editingId) {
-      setData(prev => prev.map(item => 
-        item.id_enseignant === editingId 
-          ? { 
-              ...item, 
-              utilisateur: { nom: formData.nom, prenom: formData.prenom, email: formData.email },
-              grade: formData.grade,
-              specialite: formData.specialite,
-              departement,
-              id_departement: formData.id_departement ? parseInt(formData.id_departement) : undefined
-            } 
-          : item
-      ));
-      setSuccess('Enseignant modifié avec succès');
-    } else {
-      const newItem: Enseignant = {
-        id_enseignant: Math.max(0, ...data.map(e => e.id_enseignant)) + 1,
-        utilisateur: { nom: formData.nom, prenom: formData.prenom, email: formData.email },
-        grade: formData.grade,
-        specialite: formData.specialite,
-        departement,
-        id_departement: formData.id_departement ? parseInt(formData.id_departement) : undefined
-      };
-      setData(prev => [...prev, newItem]);
-      setSuccess('Enseignant ajouté avec succès');
-    }
-    resetForm();
-  };
-
-  const handleEdit = (item: Enseignant) => {
-    setFormData({ 
-      nom: item.utilisateur.nom,
-      prenom: item.utilisateur.prenom,
-      email: item.utilisateur.email,
-      grade: item.grade,
-      specialite: item.specialite,
-      id_departement: item.id_departement?.toString() || ''
-    });
-    setEditingId(item.id_enseignant);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) return;
-    setData(prev => prev.filter(item => item.id_enseignant !== id));
-    setSuccess('Enseignant supprimé avec succès');
-  };
-
-  const resetForm = () => {
-    setFormData({ nom: '', prenom: '', email: '', grade: 'Maître Assistant', specialite: '', id_departement: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  return (
-    <div className="p-6">
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
-            {editingId ? 'Modifier l\'enseignant' : 'Ajouter un enseignant'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => setFormData({...formData, nom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
-              <input
-                type="text"
-                value={formData.prenom}
-                onChange={(e) => setFormData({...formData, prenom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Grade *</label>
-              <select
-                value={formData.grade}
-                onChange={(e) => setFormData({...formData, grade: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Professeur">Professeur</option>
-                <option value="Maître de Conférences">Maître de Conférences</option>
-                <option value="Maître Assistant">Maître Assistant</option>
-                <option value="Assistant">Assistant</option>
-                <option value="Vacataire">Vacataire</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Spécialité *</label>
-              <input
-                type="text"
-                value={formData.specialite}
-                onChange={(e) => setFormData({...formData, specialite: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Département</label>
-              <select
-                value={formData.id_departement}
-                onChange={(e) => setFormData({...formData, id_departement: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Sélectionner un département</option>
-                {departements.map(d => (
-                  <option key={d.id_departement} value={d.id_departement}>{d.nom}</option>
+            {/* Groupes */}
+            {activeTab === 'groupes' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredGroupes.map(groupe => (
+                  <div
+                    key={groupe.id_groupe}
+                    className="bg-white border-2 border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">{groupe.nom}</h3>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/dashboard-admin/groupes/${groupe.id_groupe}/edit`}
+                          className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                          title="Modifier"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete('groupes', groupe.id_groupe)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded"
+                          title="Supprimer"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {groupe.niveau?.nom || '-'}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {groupe.niveau?.specialite?.nom || '-'}
+                    </p>
+                  </div>
                 ))}
-              </select>
-            </div>
+                {filteredGroupes.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-gray-500">
+                    Aucun groupe trouvé
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Matières */}
+            {activeTab === 'matieres' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Niveau</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignant</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredMatieres.map(matiere => (
+                      <tr key={matiere.id_matiere} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {matiere.nom}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {matiere.niveau?.nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {matiere.enseignant ? 
+                            `${matiere.enseignant.utilisateur.nom} ${matiere.enseignant.utilisateur.prenom}` 
+                            : '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
+                          <Link
+                            href={`/dashboard-admin/matieres/${matiere.id_matiere}/edit`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('matieres', matiere.id_matiere)}
+                            className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredMatieres.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">Aucune matière trouvée</div>
+                )}
+              </div>
+            )}
+
+            {/* Salles */}
+            {activeTab === 'salles' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredSalles.map(salle => (
+                  <div
+                    key={salle.id_salle}
+                    className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">{salle.code}</h3>
+                      <div className="flex gap-2 items-center">
+                        <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                          {salle.type}
+                        </span>
+                        <Link
+                          href={`/dashboard-admin/salles/${salle.id_salle}/edit`}
+                          className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                          title="Modifier"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete('salles', salle.id_salle)}
+                          className="p-1 text-red-600 hover:bg-red-50 rounded"
+                          title="Supprimer"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      👥 Capacité: <span className="font-medium">{salle.capacite} places</span>
+                    </p>
+                  </div>
+                ))}
+                {filteredSalles.length === 0 && (
+                  <div className="col-span-full text-center py-12 text-gray-500">
+                    Aucune salle trouvée
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Enseignants */}
+            {activeTab === 'enseignants' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matricule</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom & Prénom</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredEnseignants.map(enseignant => (
+                      <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {enseignant.matricule}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {enseignant.utilisateur.nom} {enseignant.utilisateur.prenom}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {enseignant.utilisateur.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {enseignant.departement_nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
+                          <Link
+                            href={`/dashboard-admin/enseignants/${enseignant.id_enseignant}/edit`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('enseignants', enseignant.id_enseignant)}
+                            className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredEnseignants.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">Aucun enseignant trouvé</div>
+                )}
+              </div>
+            )}
+
+            {/* Étudiants */}
+            {activeTab === 'etudiants' && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Inscription</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom & Prénom</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spécialité</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Niveau</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Groupe</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {filteredEtudiants.map(etudiant => (
+                      <tr key={etudiant.id_etudiant} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {etudiant.numero_inscription}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {etudiant.utilisateur.nom} {etudiant.utilisateur.prenom}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {etudiant.utilisateur.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {etudiant.specialite_nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {etudiant.niveau_nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {etudiant.groupe_nom || '-'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
+                          <Link
+                            href={`/dashboard-admin/etudiants/${etudiant.id_etudiant}/edit`}
+                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Modifier
+                          </Link>
+                          <button
+                            onClick={() => handleDelete('etudiants', etudiant.id_etudiant)}
+                            className="inline-flex items-center gap-1 text-red-600 hover:text-red-800 font-medium"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Supprimer
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {filteredEtudiants.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">Aucun étudiant trouvé</div>
+                )}
+              </div>
+            )}
           </div>
-          <div className="flex gap-2">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              {editingId ? 'Modifier' : 'Ajouter'}
-            </button>
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-              Annuler
-            </button>
-          </div>
-        </form>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom & Prénom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spécialité</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Département</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map(item => (
-              <tr key={item.id_enseignant} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                  {item.utilisateur.nom} {item.utilisateur.prenom}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.utilisateur.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.grade}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.specialite}</td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.departement?.nom || '-'}</td>
-                <td className="px-6 py-4 text-sm space-x-2">
-                  <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
-                  <button onClick={() => handleDelete(item.id_enseignant)} className="text-red-600 hover:text-red-900">Supprimer</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredData.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Aucun enseignant trouvé</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ==================== ÉTUDIANTS MANAGER ====================
-function EtudiantsManager({ 
-  data, setData, searchTerm, showForm, setShowForm, editingId, setEditingId, setSuccess, setError 
-}: ManagerProps<Etudiant>) {
-  const [formData, setFormData] = useState({ 
-    nom: '', prenom: '', email: '', numero_inscription: '', specialite: '', groupe: '' 
-  });
-
-  const filteredData = data.filter(e => 
-    e.utilisateur.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.utilisateur.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.utilisateur.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    e.numero_inscription.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nom || !formData.prenom || !formData.email || !formData.numero_inscription) {
-      setError('Veuillez remplir tous les champs obligatoires');
-      return;
-    }
-
-    if (editingId) {
-      setData(prev => prev.map(item => 
-        item.id_etudiant === editingId 
-          ? { 
-              ...item, 
-              utilisateur: { nom: formData.nom, prenom: formData.prenom, email: formData.email },
-              numero_inscription: formData.numero_inscription,
-              specialite: formData.specialite || undefined,
-              groupe: formData.groupe || undefined
-            } 
-          : item
-      ));
-      setSuccess('Étudiant modifié avec succès');
-    } else {
-      const newItem: Etudiant = {
-        id_etudiant: Math.max(0, ...data.map(e => e.id_etudiant)) + 1,
-        utilisateur: { nom: formData.nom, prenom: formData.prenom, email: formData.email },
-        numero_inscription: formData.numero_inscription,
-        specialite: formData.specialite || undefined,
-        groupe: formData.groupe || undefined
-      };
-      setData(prev => [...prev, newItem]);
-      setSuccess('Étudiant ajouté avec succès');
-    }
-    resetForm();
-  };
-
-  const handleEdit = (item: Etudiant) => {
-    setFormData({ 
-      nom: item.utilisateur.nom,
-      prenom: item.utilisateur.prenom,
-      email: item.utilisateur.email,
-      numero_inscription: item.numero_inscription,
-      specialite: item.specialite || '',
-      groupe: item.groupe || ''
-    });
-    setEditingId(item.id_etudiant);
-    setShowForm(true);
-  };
-
-  const handleDelete = (id: number) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) return;
-    setData(prev => prev.filter(item => item.id_etudiant !== id));
-    setSuccess('Étudiant supprimé avec succès');
-  };
-
-  const resetForm = () => {
-    setFormData({ nom: '', prenom: '', email: '', numero_inscription: '', specialite: '', groupe: '' });
-    setEditingId(null);
-    setShowForm(false);
-  };
-
-  return (
-    <div className="p-6">
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-4">
-            {editingId ? 'Modifier l\'étudiant' : 'Ajouter un étudiant'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
-              <input
-                type="text"
-                value={formData.nom}
-                onChange={(e) => setFormData({...formData, nom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Prénom *</label>
-              <input
-                type="text"
-                value={formData.prenom}
-                onChange={(e) => setFormData({...formData, prenom: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Numéro d'inscription *</label>
-              <input
-                type="text"
-                value={formData.numero_inscription}
-                onChange={(e) => setFormData({...formData, numero_inscription: e.target.value})}
-                maxLength={6}
-                placeholder="Ex: 202401"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Spécialité</label>
-              <input
-                type="text"
-                value={formData.specialite}
-                onChange={(e) => setFormData({...formData, specialite: e.target.value})}
-                placeholder="Ex: Informatique"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Groupe</label>
-              <input
-                type="text"
-                value={formData.groupe}
-                onChange={(e) => setFormData({...formData, groupe: e.target.value})}
-                placeholder="Ex: G1"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-              {editingId ? 'Modifier' : 'Ajouter'}
-            </button>
-            <button type="button" onClick={resetForm} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-              Annuler
-            </button>
-          </div>
-        </form>
-      )}
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">N° Inscription</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom & Prénom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spécialité</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Groupe</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredData.map(item => (
-              <tr key={item.id_etudiant} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.numero_inscription}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {item.utilisateur.nom} {item.utilisateur.prenom}
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">{item.utilisateur.email}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.specialite || '-'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">{item.groupe || '-'}</td>
-                <td className="px-6 py-4 text-sm space-x-2">
-                  <button onClick={() => handleEdit(item)} className="text-blue-600 hover:text-blue-900">Modifier</button>
-                  <button onClick={() => handleDelete(item.id_etudiant)} className="text-red-600 hover:text-red-900">Supprimer</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {filteredData.length === 0 && (
-          <div className="text-center py-12 text-gray-500">Aucun étudiant trouvé</div>
         )}
       </div>
     </div>

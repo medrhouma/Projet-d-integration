@@ -9,11 +9,20 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Vérifier que l'ID existe et est valide
+    if (!params.id || params.id === 'undefined' || params.id === 'null') {
+      return NextResponse.json(
+        { error: 'ID étudiant manquant ou invalide' },
+        { status: 400 }
+      );
+    }
+
     const id = parseInt(params.id);
 
+    // Vérifier que l'ID est un nombre valide
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: 'ID invalide' },
+        { error: 'ID étudiant invalide' },
         { status: 400 }
       );
     }
@@ -28,7 +37,8 @@ export async function GET(
             prenom: true,
             email: true,
             identifiant: true,
-            role: true
+            role: true,
+            date_creation: true
           }
         },
         specialite: {
@@ -36,21 +46,12 @@ export async function GET(
             departement: true
           }
         },
+        niveau: true,
         groupe: {
           include: {
             niveau: {
               include: {
                 specialite: true
-              }
-            }
-          }
-        },
-        absences: {
-          include: {
-            emploi_temps: {
-              include: {
-                matiere: true,
-                salle: true
               }
             }
           }
@@ -67,6 +68,7 @@ export async function GET(
 
     return NextResponse.json(etudiant, { status: 200 });
   } catch (error) {
+    console.error('Erreur GET etudiant:', error);
     return handleApiError(error);
   }
 }
@@ -77,27 +79,39 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    if (!params.id || params.id === 'undefined' || params.id === 'null') {
+      return NextResponse.json(
+        { error: 'ID étudiant manquant ou invalide' },
+        { status: 400 }
+      );
+    }
+
     const id = parseInt(params.id);
-    const body = await request.json();
-    const { nom, prenom, email, identifiant, mot_de_passe, numero_inscription, id_specialite, id_groupe } = body;
 
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: 'ID invalide' },
+        { error: 'ID étudiant invalide' },
         { status: 400 }
       );
     }
 
-    if (!nom || !prenom || !email || !identifiant || !numero_inscription) {
-      return NextResponse.json(
-        { error: 'Tous les champs obligatoires doivent être remplis' },
-        { status: 400 }
-      );
-    }
+    const body = await request.json();
+    const { 
+      nom, 
+      prenom, 
+      email, 
+      identifiant, 
+      mot_de_passe,
+      numero_inscription, 
+      id_specialite, 
+      id_niveau,
+      id_groupe 
+    } = body;
 
     // Vérifier si l'étudiant existe
     const existingEtudiant = await prisma.etudiant.findUnique({
-      where: { id_etudiant: id }
+      where: { id_etudiant: id },
+      include: { utilisateur: true }
     });
 
     if (!existingEtudiant) {
@@ -107,72 +121,120 @@ export async function PUT(
       );
     }
 
-    // Vérifier si l'email ou l'identifiant existe déjà pour un autre utilisateur
-    const existingUser = await prisma.utilisateur.findFirst({
-      where: {
-        AND: [
-          { id_utilisateur: { not: id } },
-          {
-            OR: [
-              { email },
-              { identifiant }
-            ]
-          }
-        ]
-      }
-    });
+    // Vérifier les doublons
+    if (email || identifiant) {
+      const duplicateUser = await prisma.utilisateur.findFirst({
+        where: {
+          AND: [
+            { id_utilisateur: { not: id } },
+            {
+              OR: [
+                email ? { email } : {},
+                identifiant ? { identifiant } : {}
+              ]
+            }
+          ]
+        }
+      });
 
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'Un utilisateur avec cet email ou identifiant existe déjà' },
-        { status: 400 }
-      );
+      if (duplicateUser) {
+        return NextResponse.json(
+          { error: 'Un utilisateur avec cet email ou identifiant existe déjà' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Vérifier si le numéro d'inscription existe déjà pour un autre étudiant
-    const existingNumero = await prisma.etudiant.findFirst({
-      where: {
-        AND: [
-          { id_etudiant: { not: id } },
-          { numero_inscription }
-        ]
-      }
-    });
+    // Vérifier le numéro d'inscription
+    if (numero_inscription && numero_inscription !== existingEtudiant.numero_inscription) {
+      const duplicateNumero = await prisma.etudiant.findUnique({
+        where: { numero_inscription }
+      });
 
-    if (existingNumero) {
-      return NextResponse.json(
-        { error: 'Un étudiant avec ce numéro d\'inscription existe déjà' },
-        { status: 400 }
-      );
+      if (duplicateNumero) {
+        return NextResponse.json(
+          { error: 'Un étudiant avec ce numéro d\'inscription existe déjà' },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Récupérer les informations pour les champs dénormalisés
+    let departement = existingEtudiant.departement;
+    let specialite_nom = existingEtudiant.specialite_nom;
+    let niveau_nom = existingEtudiant.niveau_nom;
+    let groupe_nom = existingEtudiant.groupe_nom;
+
+    if (id_specialite && id_specialite !== existingEtudiant.id_specialite) {
+      const specialite = await prisma.specialite.findUnique({
+        where: { id_specialite: parseInt(id_specialite) },
+        include: { departement: true }
+      });
+      if (specialite) {
+        departement = specialite.departement.nom;
+        specialite_nom = specialite.nom;
+      }
+    }
+
+    if (id_niveau && id_niveau !== existingEtudiant.id_niveau) {
+      const niveau = await prisma.niveau.findUnique({
+        where: { id_niveau: parseInt(id_niveau) }
+      });
+      if (niveau) {
+        niveau_nom = niveau.nom;
+      }
+    }
+
+    if (id_groupe && id_groupe !== existingEtudiant.id_groupe) {
+      const groupe = await prisma.groupe.findUnique({
+        where: { id_groupe: parseInt(id_groupe) }
+      });
+      if (groupe) {
+        groupe_nom = groupe.nom;
+      }
     }
 
     // Mettre à jour dans une transaction
     const etudiant = await prisma.$transaction(async (tx) => {
-      // Préparer les données de mise à jour de l'utilisateur
-      const updateData: any = {
-        nom,
-        prenom,
-        email,
-        identifiant
-      };
-
-      // Si un nouveau mot de passe est fourni, le hasher
+      // Préparer les données utilisateur
+      const userData: any = {};
+      if (nom) userData.nom = nom;
+      if (prenom) userData.prenom = prenom;
+      if (email) userData.email = email;
+      if (identifiant) userData.identifiant = identifiant;
       if (mot_de_passe) {
-        updateData.mot_de_passe_hash = await bcrypt.hash(mot_de_passe, 10);
+        userData.mot_de_passe_hash = await bcrypt.hash(mot_de_passe, 10);
       }
 
-      await tx.utilisateur.update({
-        where: { id_utilisateur: id },
-        data: updateData
-      });
+      // Mettre à jour l'utilisateur
+      if (Object.keys(userData).length > 0) {
+        await tx.utilisateur.update({
+          where: { id_utilisateur: id },
+          data: userData
+        });
+      }
 
+      // Préparer les données étudiant
+      const etudiantData: any = {};
+      if (numero_inscription) etudiantData.numero_inscription = numero_inscription;
+      if (id_specialite !== undefined) {
+        etudiantData.id_specialite = id_specialite ? parseInt(id_specialite) : null;
+        etudiantData.departement = departement;
+        etudiantData.specialite_nom = specialite_nom;
+      }
+      if (id_niveau !== undefined) {
+        etudiantData.id_niveau = id_niveau ? parseInt(id_niveau) : null;
+        etudiantData.niveau_nom = niveau_nom;
+      }
+      if (id_groupe !== undefined) {
+        etudiantData.id_groupe = id_groupe ? parseInt(id_groupe) : null;
+        etudiantData.groupe_nom = groupe_nom;
+      }
+
+      // Mettre à jour l'étudiant
       return await tx.etudiant.update({
         where: { id_etudiant: id },
-        data: {
-          numero_inscription,
-          id_specialite: id_specialite ? parseInt(id_specialite) : null,
-          id_groupe: id_groupe ? parseInt(id_groupe) : null
-        },
+        data: etudiantData,
         include: {
           utilisateur: {
             select: {
@@ -189,6 +251,7 @@ export async function PUT(
               departement: true
             }
           },
+          niveau: true,
           groupe: {
             include: {
               niveau: {
@@ -204,6 +267,7 @@ export async function PUT(
 
     return NextResponse.json(etudiant, { status: 200 });
   } catch (error) {
+    console.error('Erreur PUT etudiant:', error);
     return handleApiError(error);
   }
 }
@@ -214,16 +278,40 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = parseInt(params.id);
-
-    if (isNaN(id)) {
+    if (!params.id || params.id === 'undefined' || params.id === 'null') {
       return NextResponse.json(
-        { error: 'ID invalide' },
+        { error: 'ID étudiant manquant ou invalide' },
         { status: 400 }
       );
     }
 
-    // Supprimer l'utilisateur (cascade supprimera l'étudiant)
+    const id = parseInt(params.id);
+
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'ID étudiant invalide' },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier si l'étudiant existe
+    const existingEtudiant = await prisma.etudiant.findUnique({
+      where: { id_etudiant: id }
+    });
+
+    if (!existingEtudiant) {
+      return NextResponse.json(
+        { error: 'Étudiant non trouvé' },
+        { status: 404 }
+      );
+    }
+
+    // Supprimer l'étudiant (l'utilisateur sera supprimé en cascade)
+    await prisma.etudiant.delete({
+      where: { id_etudiant: id }
+    });
+
+    // Supprimer l'utilisateur
     await prisma.utilisateur.delete({
       where: { id_utilisateur: id }
     });
@@ -233,6 +321,7 @@ export async function DELETE(
       { status: 200 }
     );
   } catch (error) {
+    console.error('Erreur DELETE etudiant:', error);
     return handleApiError(error);
   }
 }

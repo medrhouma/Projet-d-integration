@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
                 departement: true
               }
             },
+            niveau: true,
             groupe: {
               include: {
                 niveau: {
@@ -144,7 +145,7 @@ export async function POST(request: NextRequest) {
 
     // Construction de la réponse utilisateur
     const userResponse: any = {
-      id: utilisateur.id_utilisateur,
+      id_utilisateur: utilisateur.id_utilisateur,
       nom: utilisateur.nom,
       prenom: utilisateur.prenom,
       email: utilisateur.email,
@@ -154,15 +155,30 @@ export async function POST(request: NextRequest) {
       date_modification: utilisateur.date_modification
     }
 
-    // Ajout des données spécifiques au rôle
+    // Ajout des données spécifiques au rôle ÉTUDIANT
     if (role === 'Etudiant' && utilisateur.etudiant) {
+      userResponse.id_etudiant = utilisateur.etudiant.id_etudiant; // ⚠️ IMPORTANT !
+      userResponse.numero_inscription = utilisateur.etudiant.numero_inscription;
+      userResponse.departement = utilisateur.etudiant.departement;
+      userResponse.specialite_nom = utilisateur.etudiant.specialite_nom;
+      userResponse.niveau_nom = utilisateur.etudiant.niveau_nom;
+      userResponse.groupe_nom = utilisateur.etudiant.groupe_nom;
+      
       userResponse.etudiant = {
         id_etudiant: utilisateur.etudiant.id_etudiant,
         numero_inscription: utilisateur.etudiant.numero_inscription,
+        departement: utilisateur.etudiant.departement,
+        specialite_nom: utilisateur.etudiant.specialite_nom,
+        niveau_nom: utilisateur.etudiant.niveau_nom,
+        groupe_nom: utilisateur.etudiant.groupe_nom,
         specialite: utilisateur.etudiant.specialite ? {
           id_specialite: utilisateur.etudiant.specialite.id_specialite,
           nom: utilisateur.etudiant.specialite.nom,
           departement: utilisateur.etudiant.specialite.departement
+        } : null,
+        niveau: utilisateur.etudiant.niveau ? {
+          id_niveau: utilisateur.etudiant.niveau.id_niveau,
+          nom: utilisateur.etudiant.niveau.nom
         } : null,
         groupe: utilisateur.etudiant.groupe ? {
           id_groupe: utilisateur.etudiant.groupe.id_groupe,
@@ -176,15 +192,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Ajout des données spécifiques au rôle ENSEIGNANT
     if (role === 'Enseignant' && utilisateur.enseignant) {
+      userResponse.id_enseignant = utilisateur.enseignant.id_enseignant; // ⚠️ IMPORTANT !
+      userResponse.matricule = utilisateur.enseignant.matricule;
+      userResponse.departement_nom = utilisateur.enseignant.departement_nom;
+      
       userResponse.enseignant = {
         id_enseignant: utilisateur.enseignant.id_enseignant,
         matricule: utilisateur.enseignant.matricule,
+        departement_nom: utilisateur.enseignant.departement_nom,
         departement: utilisateur.enseignant.departement ? {
           id_departement: utilisateur.enseignant.departement.id_departement,
           nom: utilisateur.enseignant.departement.nom
         } : null,
-        matieres: utilisateur.enseignant.matieres.map(matiere => ({
+        matieres: utilisateur.enseignant.matieres?.map(matiere => ({
           id_matiere: matiere.id_matiere,
           nom: matiere.nom,
           niveau: {
@@ -192,16 +214,18 @@ export async function POST(request: NextRequest) {
             nom: matiere.niveau.nom,
             specialite: matiere.niveau.specialite
           }
-        }))
+        })) || []
       }
     }
 
-    // Si c'est un admin, on peut ajouter des données spécifiques si nécessaire
+    // Si c'est un admin
     if (role === 'Admin') {
       userResponse.admin = {
         id_admin: utilisateur.id_utilisateur
       }
     }
+
+    console.log('✅ Données utilisateur à retourner:', JSON.stringify(userResponse, null, 2))
 
     const response = NextResponse.json({
       success: true,
@@ -219,7 +243,7 @@ export async function POST(request: NextRequest) {
       path: '/'
     })
 
-    // Cookie pour le rôle (facultatif, pour faciliter l'accès côté client)
+    // Cookie pour le rôle
     response.cookies.set('userRole', utilisateur.role, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -227,14 +251,13 @@ export async function POST(request: NextRequest) {
       path: '/'
     })
 
-    console.log(`Connexion réussie pour ${userResponse.prenom} ${userResponse.nom} (${userResponse.role})`)
+    console.log(`✅ Connexion réussie pour ${userResponse.prenom} ${userResponse.nom} (${userResponse.role})`)
     
     return response
 
   } catch (error) {
-    console.error('Erreur lors de la connexion:', error)
+    console.error('❌ Erreur lors de la connexion:', error)
 
-    // Erreur générale
     return NextResponse.json(
       { 
         success: false,
