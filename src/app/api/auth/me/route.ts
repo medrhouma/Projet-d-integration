@@ -102,6 +102,11 @@ export async function GET(request: NextRequest) {
       date_modification: utilisateur.date_modification
     }
 
+    // Si l'utilisateur est un enseignant chef de département, ajuster le rôle
+    if (utilisateur.enseignant?.est_chef_departement) {
+      userResponse.role = 'ChefDepartement';
+    }
+
     // Ajout des données spécifiques au rôle
     if (role === 'Etudiant' && utilisateur.etudiant) {
       userResponse.etudiant = {
@@ -124,10 +129,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (role === 'Enseignant' && utilisateur.enseignant) {
+    if ((role === 'Enseignant' || role === 'ChefDepartement') && utilisateur.enseignant) {
+      userResponse.id_enseignant = utilisateur.enseignant.id_enseignant;
+      userResponse.matricule = utilisateur.enseignant.matricule;
+      userResponse.departement_nom = utilisateur.enseignant.departement_nom;
+      userResponse.est_chef_departement = utilisateur.enseignant.est_chef_departement;
+      userResponse.id_departement = utilisateur.enseignant.id_departement;
+      
       userResponse.enseignant = {
         id_enseignant: utilisateur.enseignant.id_enseignant,
         matricule: utilisateur.enseignant.matricule,
+        est_chef_departement: utilisateur.enseignant.est_chef_departement,
+        departement_nom: utilisateur.enseignant.departement_nom,
+        id_departement: utilisateur.enseignant.id_departement,
         departement: utilisateur.enseignant.departement ? {
           id_departement: utilisateur.enseignant.departement.id_departement,
           nom: utilisateur.enseignant.departement.nom

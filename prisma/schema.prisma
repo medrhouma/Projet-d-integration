@@ -14,6 +14,7 @@ datasource db {
 enum Role {
   Etudiant
   Enseignant
+  ChefDepartement
   Admin
 }
 
@@ -128,12 +129,13 @@ model Etudiant {
 
 // Table Enseignant - MODIFIÉE
 model Enseignant {
-  id_enseignant  Int     @id
-  matricule      String  @unique @db.VarChar(50)
-  id_departement Int?    // Gardé pour la relation
+  id_enseignant       Int     @id
+  matricule           String  @unique @db.VarChar(50)
+  id_departement      Int?    // Gardé pour la relation
+  est_chef_departement Boolean @default(false) // Indique si l'enseignant est chef de département
   
   // NOUVEAU CHAMP pour affichage direct
-  departement_nom String? @db.VarChar(100)
+  departement_nom     String? @db.VarChar(100)
 
   // Relations
   utilisateur  Utilisateur   @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)

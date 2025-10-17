@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nom, prenom, email, identifiant, mot_de_passe, matricule, id_departement } = body;
+    const { nom, prenom, email, identifiant, mot_de_passe, matricule, id_departement, est_chef_departement } = body;
 
     if (!nom || !prenom || !email || !identifiant || !mot_de_passe || !matricule) {
       return NextResponse.json(
@@ -89,6 +89,9 @@ export async function POST(request: NextRequest) {
 
     // Créer l'utilisateur et l'enseignant dans une transaction
     const enseignant = await prisma.$transaction(async (tx) => {
+      // Déterminer le rôle selon si c'est un chef de département
+      const role = est_chef_departement ? 'ChefDepartement' : 'Enseignant';
+      
       const utilisateur = await tx.utilisateur.create({
         data: {
           nom,
@@ -96,15 +99,26 @@ export async function POST(request: NextRequest) {
           email,
           identifiant,
           mot_de_passe_hash: hashedPassword,
-          role: 'Enseignant'
+          role
         }
       });
+
+      // Récupérer le nom du département si un id_departement est fourni
+      let departement_nom = null;
+      if (id_departement) {
+        const departement = await tx.departement.findUnique({
+          where: { id_departement: parseInt(id_departement) }
+        });
+        departement_nom = departement?.nom || null;
+      }
 
       return await tx.enseignant.create({
         data: {
           id_enseignant: utilisateur.id_utilisateur,
           matricule,
-          id_departement: id_departement ? parseInt(id_departement) : null
+          id_departement: id_departement ? parseInt(id_departement) : null,
+          est_chef_departement: est_chef_departement || false,
+          departement_nom
         },
         include: {
           utilisateur: {

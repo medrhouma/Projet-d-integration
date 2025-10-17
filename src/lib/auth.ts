@@ -11,11 +11,18 @@ export async function verifyPassword(password: string, hashedPassword: string): 
   return bcrypt.compare(password, hashedPassword)
 }
 
-export function generateToken(userId: number, role: string): string {
+export function generateToken(
+  userId: number, 
+  role: string, 
+  isChefDepartement?: boolean,
+  departementId?: number
+): string {
   return jwt.sign(
     { 
       userId, 
       role,
+      isChefDepartement,
+      departementId,
       iss: 'school-management',
       aud: 'school-management'
     },

@@ -65,7 +65,7 @@ export async function PUT(
   try {
     const id = parseInt(params.id);
     const body = await request.json();
-    const { nom, prenom, email, identifiant, mot_de_passe, matricule, id_departement } = body;
+    const { nom, prenom, email, identifiant, mot_de_passe, matricule, id_departement, est_chef_departement } = body;
 
     if (isNaN(id)) {
       return NextResponse.json(
@@ -147,17 +147,42 @@ export async function PUT(
         updateData.mot_de_passe_hash = await bcrypt.hash(mot_de_passe, 10);
       }
 
+      // Mettre à jour le rôle si nécessaire
+      if (est_chef_departement !== undefined) {
+        updateData.role = est_chef_departement ? 'ChefDepartement' : 'Enseignant';
+      }
+
       await tx.utilisateur.update({
         where: { id_utilisateur: id },
         data: updateData
       });
 
+      // Récupérer le nom du département si un id_departement est fourni
+      let departement_nom = null;
+      if (id_departement) {
+        const departement = await tx.departement.findUnique({
+          where: { id_departement: parseInt(id_departement) }
+        });
+        departement_nom = departement?.nom || null;
+      }
+
+      // Préparer les données de mise à jour de l'enseignant
+      const enseignantUpdateData: any = {
+        matricule,
+        id_departement: id_departement ? parseInt(id_departement) : null
+      };
+
+      if (departement_nom) {
+        enseignantUpdateData.departement_nom = departement_nom;
+      }
+
+      if (est_chef_departement !== undefined) {
+        enseignantUpdateData.est_chef_departement = est_chef_departement;
+      }
+
       return await tx.enseignant.update({
         where: { id_enseignant: id },
-        data: {
-          matricule,
-          id_departement: id_departement ? parseInt(id_departement) : null
-        },
+        data: enseignantUpdateData,
         include: {
           utilisateur: {
             select: {

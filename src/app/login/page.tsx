@@ -21,7 +21,7 @@ interface FormData {
   password: string;
 }
 
-type UserRole = "Etudiant" | "Enseignant" | "Admin";
+type UserRole = "Etudiant" | "Enseignant" | "ChefDepartement" | "Admin";
 
 interface FormErrors {
   [key: string]: string;
@@ -60,6 +60,16 @@ export default function LoginPage() {
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
       borderColor: "border-green-200"
+    },
+    { 
+      key: "ChefDepartement" as UserRole, 
+      label: "Chef de Département", 
+      icon: <Settings className="w-6 h-6" />, 
+      description: "Gestion du département",
+      dashboardRoute: "/dashboard-chef-departement",
+      color: "from-orange-500 to-orange-600",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-200"
     },
     { 
       key: "Admin" as UserRole, 
@@ -168,6 +178,9 @@ export default function LoginPage() {
         case "Enseignant":
           redirectRoute = "/dashboard-enseignant";
           break;
+        case "ChefDepartement":
+          redirectRoute = "/dashboard-chef-departement";
+          break;
         case "Admin":
           redirectRoute = "/dashboard-admin";
           break;
@@ -175,8 +188,11 @@ export default function LoginPage() {
           redirectRoute = "/dashboard-etudiant";
       }
       
-      console.log(`Connexion ${data.user.role} réussie! Redirection vers ${redirectRoute}`);
-      router.push(redirectRoute);
+      console.log(`✅ Connexion ${data.user.role} réussie! Redirection vers ${redirectRoute}`);
+      
+      // Utiliser window.location.href pour une redirection complète avec rechargement
+      // Cela garantit que les cookies sont bien pris en compte
+      window.location.href = redirectRoute;
       
     } catch (error) {
       console.error('Erreur de connexion détaillée:', error);
@@ -230,7 +246,7 @@ export default function LoginPage() {
             <Settings className="w-5 h-5 text-gray-600" />
             Sélectionnez votre profil
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {roles.map((r) => (
               <button
                 key={r.key}

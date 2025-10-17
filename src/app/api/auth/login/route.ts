@@ -11,11 +11,18 @@ async function verifyPassword(password: string, hashedPassword: string): Promise
 }
 
 // Fonction pour générer le token JWT
-function generateToken(userId: number, role: string): string {
+function generateToken(
+  userId: number, 
+  role: string, 
+  isChefDepartement?: boolean,
+  departementId?: number
+): string {
   return jwt.sign(
     { 
       userId, 
       role,
+      isChefDepartement,
+      departementId,
       iss: 'school-management',
       aud: 'school-management'
     },
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!role || !['Etudiant', 'Enseignant', 'Admin'].includes(role)) {
+    if (!role || !['Etudiant', 'Enseignant', 'ChefDepartement', 'Admin'].includes(role)) {
       return NextResponse.json(
         { 
           success: false,
@@ -63,6 +70,9 @@ export async function POST(request: NextRequest) {
 
     console.log(`Tentative de connexion: ${login}, rôle: ${role}`)
 
+    // Pour ChefDepartement, on cherche un Enseignant qui est chef
+    const searchRole = role === 'ChefDepartement' ? 'Enseignant' : role
+
     // Recherche de l'utilisateur avec les relations selon le rôle
     const utilisateur = await prisma.utilisateur.findFirst({
       where: {
@@ -70,7 +80,7 @@ export async function POST(request: NextRequest) {
           { identifiant: login },
           { email: login }
         ],
-        role: role
+        role: searchRole
       },
       include: {
         etudiant: {
@@ -126,6 +136,20 @@ export async function POST(request: NextRequest) {
 
     console.log(`Utilisateur trouvé: ${utilisateur.prenom} ${utilisateur.nom}`)
 
+    // Si le rôle demandé est ChefDepartement, vérifier que l'utilisateur est bien chef
+    if (role === 'ChefDepartement') {
+      if (!utilisateur.enseignant || !utilisateur.enseignant.est_chef_departement) {
+        console.log('Utilisateur n\'est pas chef de département')
+        return NextResponse.json(
+          { 
+            success: false,
+            message: 'Vous n\'êtes pas autorisé à accéder à cet espace' 
+          },
+          { status: 403 }
+        )
+      }
+    }
+
     // Vérification du mot de passe
     const isPasswordValid = await verifyPassword(password, utilisateur.mot_de_passe_hash)
     
@@ -140,8 +164,29 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Génération du token JWT
-    const token = generateToken(utilisateur.id_utilisateur, utilisateur.role)
+    // Déterminer si l'utilisateur est chef de département
+    let isChefDepartement = false
+    let departementId: number | undefined = undefined
+    
+    if (utilisateur.enseignant) {
+      isChefDepartement = utilisateur.enseignant.est_chef_departement
+      departementId = utilisateur.enseignant.id_departement || undefined
+      
+      // Si l'utilisateur demande le rôle ChefDepartement et qu'il est chef, ou si le rôle est Enseignant et qu'il est chef
+      if (isChefDepartement && (role === 'ChefDepartement' || (role === 'Enseignant' && isChefDepartement))) {
+        utilisateur.role = 'ChefDepartement'
+      }
+    }
+
+    console.log(`Rôle final: ${utilisateur.role}, Chef: ${isChefDepartement}`)
+
+    // Génération du token JWT avec les informations de chef de département
+    const token = generateToken(
+      utilisateur.id_utilisateur, 
+      utilisateur.role,
+      isChefDepartement,
+      departementId
+    )
 
     // Construction de la réponse utilisateur
     const userResponse: any = {
@@ -193,15 +238,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Ajout des données spécifiques au rôle ENSEIGNANT
-    if (role === 'Enseignant' && utilisateur.enseignant) {
+    if ((role === 'Enseignant' || role === 'ChefDepartement') && utilisateur.enseignant) {
       userResponse.id_enseignant = utilisateur.enseignant.id_enseignant; // ⚠️ IMPORTANT !
       userResponse.matricule = utilisateur.enseignant.matricule;
       userResponse.departement_nom = utilisateur.enseignant.departement_nom;
+      userResponse.est_chef_departement = utilisateur.enseignant.est_chef_departement;
+      userResponse.id_departement = utilisateur.enseignant.id_departement;
       
       userResponse.enseignant = {
         id_enseignant: utilisateur.enseignant.id_enseignant,
         matricule: utilisateur.enseignant.matricule,
         departement_nom: utilisateur.enseignant.departement_nom,
+        est_chef_departement: utilisateur.enseignant.est_chef_departement,
+        id_departement: utilisateur.enseignant.id_departement,
         departement: utilisateur.enseignant.departement ? {
           id_departement: utilisateur.enseignant.departement.id_departement,
           nom: utilisateur.enseignant.departement.nom

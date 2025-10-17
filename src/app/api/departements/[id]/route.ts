@@ -20,7 +20,22 @@ export async function GET(
     const departement = await prisma.departement.findUnique({
       where: { id_departement: id },
       include: {
-        specialites: true,
+        specialites: {
+          include: {
+            niveaux: {
+              include: {
+                groupes: {
+                  include: {
+                    _count: {
+                      select: { etudiants: true }
+                    }
+                  }
+                },
+                matieres: true
+              }
+            }
+          }
+        },
         enseignants: {
           include: {
             utilisateur: {
@@ -42,7 +57,46 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(departement, { status: 200 });
+    // Calculate statistics
+    let nombre_etudiants = 0;
+    let nombre_matieres = 0;
+    
+    const specialitesWithStats = departement.specialites.map(spec => {
+      let spec_etudiants = 0;
+      let spec_groupes = 0;
+      
+      spec.niveaux.forEach(niveau => {
+        nombre_matieres += niveau.matieres.length;
+        spec_groupes += niveau.groupes.length;
+        
+        niveau.groupes.forEach(groupe => {
+          spec_etudiants += groupe._count.etudiants;
+        });
+      });
+      
+      nombre_etudiants += spec_etudiants;
+      
+      return {
+        id_specialite: spec.id_specialite,
+        nom: spec.nom,
+        code: '', // Code not in schema
+        nombre_etudiants: spec_etudiants,
+        nombre_groupes: spec_groupes
+      };
+    });
+
+    const response = {
+      id_departement: departement.id_departement,
+      nom: departement.nom,
+      code: '', // Code not in schema
+      nombre_enseignants: departement.enseignants.length,
+      nombre_etudiants,
+      nombre_matieres,
+      specialites: specialitesWithStats,
+      enseignants: departement.enseignants
+    };
+
+    return NextResponse.json(response, { status: 200 });
   } catch (error) {
     return handleApiError(error);
   }
