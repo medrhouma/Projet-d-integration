@@ -131,7 +131,7 @@ Vérifier DATABASE_URL dans .env
 
 Régénérer Prisma : npx prisma generate && npx prisma db push
 ---
-📄 Licence
+📄 Licence 
 
 MIT License – voir fichier LICENSE
 
