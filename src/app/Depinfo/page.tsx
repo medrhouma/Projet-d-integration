@@ -20,6 +20,7 @@ export default function DepInfoDashboard() {
 
 
   const projets = [
+    
     'Système de gestion RH (Web & Mobile)',
     'Application de cybersécurité pour IoT',
     'Plateforme e-learning avec IA',
