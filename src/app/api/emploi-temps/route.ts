@@ -14,140 +14,81 @@ async function detecterConflits(data: {
 }) {
   const conflits = [];
 
-  // 1. Conflit de salle (même salle au même moment)
-  if (data.id_salle) {
-    const conflitSalle = await prisma.emploiTemps.findFirst({
-      where: {
-        id_salle: data.id_salle,
-        date: data.date,
-        id_emploi: data.excludeId ? { not: data.excludeId } : undefined,
-        OR: [
-          {
-            AND: [
-              { heure_debut: { lte: data.heure_debut } },
-              { heure_fin: { gt: data.heure_debut } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { lt: data.heure_fin } },
-              { heure_fin: { gte: data.heure_fin } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { gte: data.heure_debut } },
-              { heure_fin: { lte: data.heure_fin } }
-            ]
-          }
-        ]
-      },
-      include: {
-        salle: true,
-        matiere: true
-      }
-    });
+  // Convertir les heures en décimal pour la comparaison (ex: 8.5 = 8h30)
+  const heureDebutDecimal = data.heure_debut.getUTCHours() + data.heure_debut.getUTCMinutes() / 60;
+  const heureFinDecimal = data.heure_fin.getUTCHours() + data.heure_fin.getUTCMinutes() / 60;
 
-    if (conflitSalle) {
+  // Récupérer toutes les séances de la même date
+  const seancesDuJour = await prisma.emploiTemps.findMany({
+    where: {
+      date: data.date,
+      id_emploi: data.excludeId ? { not: data.excludeId } : undefined,
+      OR: [
+        { id_salle: data.id_salle },
+        { id_enseignant: data.id_enseignant },
+        { id_groupe: data.id_groupe }
+      ]
+    },
+    include: {
+      salle: true,
+      matiere: true,
+      groupe: true,
+      enseignant: {
+        include: {
+          utilisateur: true
+        }
+      }
+    }
+  });
+
+  // Vérifier les conflits manuellement
+  for (const seance of seancesDuJour) {
+    const seanceDebutDecimal = seance.heure_debut.getUTCHours() + seance.heure_debut.getUTCMinutes() / 60;
+    const seanceFinDecimal = seance.heure_fin.getUTCHours() + seance.heure_fin.getUTCMinutes() / 60;
+
+    // Vérifier si les horaires se chevauchent
+    const chevauche = (
+      (heureDebutDecimal >= seanceDebutDecimal && heureDebutDecimal < seanceFinDecimal) || // Début dans la séance
+      (heureFinDecimal > seanceDebutDecimal && heureFinDecimal <= seanceFinDecimal) ||     // Fin dans la séance
+      (heureDebutDecimal <= seanceDebutDecimal && heureFinDecimal >= seanceFinDecimal)     // Englobe la séance
+    );
+
+    if (!chevauche) continue;
+
+    // Conflit de salle
+    if (data.id_salle && seance.id_salle === data.id_salle) {
       conflits.push({
         type: 'salle',
-        message: `La salle ${conflitSalle.salle.code} est déjà occupée pour ${conflitSalle.matiere.nom}`,
-        details: conflitSalle
+        message: `La salle ${seance.salle.code} est déjà occupée pour ${seance.matiere.nom} (${seance.groupe.nom})`,
+        details: seance
       });
     }
-  }
 
-  // 2. Conflit d'enseignant (même enseignant au même moment)
-  if (data.id_enseignant) {
-    const conflitEnseignant = await prisma.emploiTemps.findFirst({
-      where: {
-        id_enseignant: data.id_enseignant,
-        date: data.date,
-        id_emploi: data.excludeId ? { not: data.excludeId } : undefined,
-        OR: [
-          {
-            AND: [
-              { heure_debut: { lte: data.heure_debut } },
-              { heure_fin: { gt: data.heure_debut } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { lt: data.heure_fin } },
-              { heure_fin: { gte: data.heure_fin } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { gte: data.heure_debut } },
-              { heure_fin: { lte: data.heure_fin } }
-            ]
-          }
-        ]
-      },
-      include: {
-        enseignant: {
-          include: {
-            utilisateur: true
-          }
-        },
-        matiere: true
-      }
-    });
-
-    if (conflitEnseignant) {
+    // Conflit d'enseignant
+    if (data.id_enseignant && seance.id_enseignant === data.id_enseignant && seance.enseignant) {
       conflits.push({
         type: 'enseignant',
-        message: `L'enseignant ${conflitEnseignant.enseignant.utilisateur.nom} ${conflitEnseignant.enseignant.utilisateur.prenom} a déjà cours (${conflitEnseignant.matiere.nom})`,
-        details: conflitEnseignant
+        message: `L'enseignant ${seance.enseignant.utilisateur.nom} ${seance.enseignant.utilisateur.prenom} a déjà cours (${seance.matiere.nom} avec ${seance.groupe.nom})`,
+        details: seance
       });
     }
-  }
 
-  // 3. Conflit de groupe (même groupe au même moment)
-  if (data.id_groupe) {
-    const conflitGroupe = await prisma.emploiTemps.findFirst({
-      where: {
-        id_groupe: data.id_groupe,
-        date: data.date,
-        id_emploi: data.excludeId ? { not: data.excludeId } : undefined,
-        OR: [
-          {
-            AND: [
-              { heure_debut: { lte: data.heure_debut } },
-              { heure_fin: { gt: data.heure_debut } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { lt: data.heure_fin } },
-              { heure_fin: { gte: data.heure_fin } }
-            ]
-          },
-          {
-            AND: [
-              { heure_debut: { gte: data.heure_debut } },
-              { heure_fin: { lte: data.heure_fin } }
-            ]
-          }
-        ]
-      },
-      include: {
-        groupe: true,
-        matiere: true
-      }
-    });
-
-    if (conflitGroupe) {
+    // Conflit de groupe
+    if (data.id_groupe && seance.id_groupe === data.id_groupe) {
       conflits.push({
         type: 'groupe',
-        message: `Le groupe ${conflitGroupe.groupe.nom} a déjà cours (${conflitGroupe.matiere.nom})`,
-        details: conflitGroupe
+        message: `Le groupe ${seance.groupe.nom} a déjà cours (${seance.matiere.nom})`,
+        details: seance
       });
     }
   }
 
-  return conflits;
+  // Retirer les doublons (si une séance cause plusieurs types de conflits)
+  const conflitsUniques = conflits.filter((conflit, index, self) =>
+    index === self.findIndex((c) => c.details.id_emploi === conflit.details.id_emploi && c.type === conflit.type)
+  );
+
+  return conflitsUniques;
 }
 
 // GET - Récupérer les emplois du temps (avec filtres)

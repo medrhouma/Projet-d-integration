@@ -40,6 +40,7 @@ export default function DashboardEnseignant() {
   const pathname = usePathname();
   const [enseignant, setEnseignant] = useState<Enseignant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState<string>('');
   const [stats, setStats] = useState({
     coursThisWeek: 0,
     totalEtudiants: 0,
@@ -49,6 +50,13 @@ export default function DashboardEnseignant() {
 
   useEffect(() => {
     checkAuth();
+    // Définir la date côté client pour éviter l'erreur d'hydratation
+    setCurrentDate(new Date().toLocaleDateString('fr-FR', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }));
   }, []);
 
   const checkAuth = async () => {
@@ -152,7 +160,7 @@ export default function DashboardEnseignant() {
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-enseignant' },
     { label: 'Mon Profil', icon: <User className="w-5 h-5" />, href: '/dashboard-enseignant/profil' },
     { label: 'Mes Cours', icon: <BookOpen className="w-5 h-5" />, href: '/dashboard-enseignant/cours' },
-    { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-enseignant/emploi-du-temps' },
+    { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-enseignant/emploi-temps' },
     { label: 'Mes Étudiants', icon: <Users className="w-5 h-5" />, href: '/dashboard-enseignant/etudiants' },
     { label: 'Absences', icon: <FileText className="w-5 h-5" />, href: '/dashboard-enseignant/absences' },
     { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-enseignant/notes' },
@@ -256,12 +264,7 @@ export default function DashboardEnseignant() {
               </h1>
               <p className="text-gray-600 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                {new Date().toLocaleDateString('fr-FR', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                {currentDate || 'Chargement...'}
               </p>
             </div>
             <Link

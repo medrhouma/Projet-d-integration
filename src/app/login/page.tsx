@@ -218,207 +218,297 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 px-4 py-8">
-      <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 px-4 py-8 relative overflow-hidden">
+      {/* Fond animé avec particules */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Grille de fond */}
+      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
+
+      <div className="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-2xl border border-white/20 animate-fade-in-up">
         
-        {/* En-tête */}
+        {/* En-tête avec logo amélioré */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
-            <School className="w-10 h-10 text-white" />
+          <div className="relative inline-block mb-4">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl shadow-xl transform hover:scale-110 transition-transform duration-300">
+              <School className="w-10 h-10 text-white" />
+            </div>
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            EduManager
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-2 animate-fade-in">
+            ISET Tozeur
           </h1>
-          <p className="text-gray-600 text-lg">Plateforme de gestion scolaire</p>
+          <p className="text-gray-600 text-base md:text-lg font-medium">Connexion à votre espace personnel</p>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-xs text-gray-500">Système sécurisé</span>
+          </div>
         </div>
 
         {/* Message d'erreur général */}
         {errors.general && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-pulse">
-            <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-            <p className="text-red-700 font-medium">{errors.general}</p>
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl flex items-center gap-3 shadow-md animate-shake">
+            <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <XCircle className="w-5 h-5 text-red-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-red-800 font-semibold text-sm">Erreur de connexion</p>
+              <p className="text-red-700 text-xs mt-0.5">{errors.general}</p>
+            </div>
           </div>
         )}
 
-        {/* Sélection du rôle */}
+        {/* Sélection du rôle avec design moderne */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <Settings className="w-5 h-5 text-gray-600" />
-            Sélectionnez votre profil
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <Settings className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-800">
+              Choisissez votre profil
+            </h3>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {roles.map((r) => (
               <button
                 key={r.key}
                 type="button"
                 onClick={() => setRole(r.key)}
-                className={`cursor-pointer border-2 rounded-2xl p-5 text-center transition-all duration-300 transform hover:scale-105 ${
+                className={`group relative cursor-pointer border-2 rounded-2xl p-4 text-center transition-all duration-300 transform hover:-translate-y-1 ${
                   role === r.key
-                    ? `border-transparent bg-gradient-to-r ${r.color} text-white shadow-xl scale-105`
-                    : `border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-md`
+                    ? `border-transparent bg-gradient-to-br ${r.color} text-white shadow-2xl scale-105`
+                    : `border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-lg`
                 }`}
               >
-                <div className={`flex justify-center mb-3 ${role === r.key ? 'text-white' : 'text-gray-600'}`}>
+                {/* Effet de brillance */}
+                {role === r.key && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-2xl transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                )}
+                
+                <div className={`flex justify-center mb-2 transform transition-transform duration-300 ${role === r.key ? 'scale-110 text-white' : 'text-gray-600 group-hover:scale-110'}`}>
                   {r.icon}
                 </div>
-                <h4 className="font-semibold text-base mb-1">{r.label}</h4>
-                <p className={`text-xs ${role === r.key ? 'text-blue-100' : 'text-gray-500'}`}>
+                <h4 className="font-bold text-sm mb-1 line-clamp-1">{r.label}</h4>
+                <p className={`text-xs line-clamp-2 ${role === r.key ? 'text-white/90' : 'text-gray-500'}`}>
                   {r.description}
                 </p>
+                
+                {/* Indicateur de sélection */}
+                {role === r.key && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                    <CheckCircle className="w-4 h-4 text-white" />
+                  </div>
+                )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Formulaire de connexion */}
+        {/* Formulaire de connexion avec design amélioré */}
         <form onSubmit={handleLogin} className="space-y-6">
           
-          {/* Champ Identifiant */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-              <User className="w-4 h-4" />
-              Identifiant *
+          {/* Champ Identifiant avec icône et validation */}
+          <div className="group">
+            <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+              <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
+                <User className="w-3 h-3 text-white" />
+              </div>
+              Identifiant
+              <span className="text-red-500">*</span>
             </label>
             <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <User className={`w-5 h-5 transition-colors ${
+                  getFieldStatus('login') === 'error' ? 'text-red-400' :
+                  getFieldStatus('login') === 'success' ? 'text-green-400' :
+                  'text-gray-400 group-hover:text-purple-500'
+                }`} />
+              </div>
               <input
                 type="text"
                 name="login"
                 value={form.login}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 ${
+                className={`w-full pl-12 pr-12 py-4 border-2 rounded-xl font-medium focus:ring-4 focus:outline-none transition-all duration-300 ${
                   getFieldStatus('login') === 'error' 
-                    ? 'border-red-300 bg-red-50 ring-2 ring-red-200' 
+                    ? 'border-red-400 bg-red-50 ring-4 ring-red-100 text-red-900 placeholder-red-400' 
                     : getFieldStatus('login') === 'success' 
-                    ? 'border-green-300 bg-green-50' 
-                    : 'border-gray-200 bg-gray-50 focus:border-blue-500'
+                    ? 'border-green-400 bg-green-50 ring-4 ring-green-100 text-green-900' 
+                    : 'border-gray-300 bg-gray-50 focus:border-purple-500 focus:ring-purple-100 hover:border-gray-400'
                 }`}
-                placeholder="Votre identifiant ou email"
+                placeholder="Email ou nom d'utilisateur"
                 required
                 disabled={isLoading}
               />
-              {getFieldStatus('login') === 'success' && (
-                <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-green-500" />
-              )}
-              {getFieldStatus('login') === 'error' && (
-                <XCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-red-500" />
-              )}
+              <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                {getFieldStatus('login') === 'success' && (
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center animate-scale-in">
+                    <CheckCircle className="w-4 h-4 text-white" />
+                  </div>
+                )}
+                {getFieldStatus('login') === 'error' && (
+                  <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center animate-shake">
+                    <XCircle className="w-4 h-4 text-white" />
+                  </div>
+                )}
+              </div>
             </div>
             {errors.login && (
-              <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                <XCircle className="w-3 h-3" />
-                {errors.login}
-              </p>
+              <div className="mt-2 p-2 bg-red-50 border-l-4 border-red-400 rounded-r-lg animate-slide-in-left">
+                <p className="text-red-700 text-xs font-semibold flex items-center gap-1">
+                  <XCircle className="w-3 h-3" />
+                  {errors.login}
+                </p>
+              </div>
             )}
           </div>
 
-          {/* Champ Mot de passe */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-              <BookOpen className="w-4 h-4" />
-              Mot de passe *
+          {/* Champ Mot de passe avec toggle et validation */}
+          <div className="group">
+            <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
+              <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
+                <BookOpen className="w-3 h-3 text-white" />
+              </div>
+              Mot de passe
+              <span className="text-red-500">*</span>
             </label>
             <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <BookOpen className={`w-5 h-5 transition-colors ${
+                  getFieldStatus('password') === 'error' ? 'text-red-400' :
+                  getFieldStatus('password') === 'success' ? 'text-green-400' :
+                  'text-gray-400 group-hover:text-purple-500'
+                }`} />
+              </div>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                className={`w-full px-4 py-4 pr-12 border-2 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:outline-none transition-all duration-200 ${
+                className={`w-full pl-12 pr-12 py-4 border-2 rounded-xl font-medium focus:ring-4 focus:outline-none transition-all duration-300 ${
                   getFieldStatus('password') === 'error' 
-                    ? 'border-red-300 bg-red-50 ring-2 ring-red-200' 
+                    ? 'border-red-400 bg-red-50 ring-4 ring-red-100 text-red-900 placeholder-red-400' 
                     : getFieldStatus('password') === 'success' 
-                    ? 'border-green-300 bg-green-50' 
-                    : 'border-gray-200 bg-gray-50 focus:border-blue-500'
+                    ? 'border-green-400 bg-green-50 ring-4 ring-green-100 text-green-900' 
+                    : 'border-gray-300 bg-gray-50 focus:border-purple-500 focus:ring-purple-100 hover:border-gray-400'
                 }`}
-                placeholder="••••••••"
+                placeholder="••••••••••"
                 required
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors p-1"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-purple-600 transition-colors group"
                 disabled={isLoading}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                <div className="p-1 rounded-lg hover:bg-purple-100 transition-colors">
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </div>
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                <XCircle className="w-3 h-3" />
-                {errors.password}
-              </p>
+              <div className="mt-2 p-2 bg-red-50 border-l-4 border-red-400 rounded-r-lg animate-slide-in-left">
+                <p className="text-red-700 text-xs font-semibold flex items-center gap-1">
+                  <XCircle className="w-3 h-3" />
+                  {errors.password}
+                </p>
+              </div>
             )}
           </div>
 
-          {/* Options supplémentaires */}
-          <div className="flex items-center justify-between">
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                disabled={isLoading}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-              />
-              <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
+          {/* Options supplémentaires avec design moderne */}
+          <div className="flex items-center justify-between py-2">
+            <label className="flex items-center cursor-pointer group">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  disabled={isLoading}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-pink-500"></div>
+              </div>
+              <span className="ml-3 text-sm text-gray-700 font-medium group-hover:text-purple-600 transition-colors">
+                Se souvenir de moi
+              </span>
             </label>
             
             <Link 
               href="/forgot-password" 
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors hover:underline"
+              className="text-sm bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:underline"
             >
               Mot de passe oublié ?
             </Link>
           </div>
 
-          {/* Bouton de connexion */}
+          {/* Bouton de connexion avec effet de dégradé animé */}
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full bg-gradient-to-r ${getRoleConfig(role).color} text-white py-4 rounded-xl font-semibold hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg`}
+            className={`relative w-full bg-gradient-to-r ${getRoleConfig(role).color} text-white py-4 rounded-xl font-bold text-base hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] shadow-lg overflow-hidden group`}
           >
+            {/* Effet de brillance au survol */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
             {isLoading ? (
-              <div className="flex items-center justify-center gap-3">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Connexion en cours...
+              <div className="flex items-center justify-center gap-3 relative z-10">
+                <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span className="font-semibold">Connexion en cours...</span>
               </div>
             ) : (
-              <div className="flex items-center justify-center gap-2">
-                <LogIn className="w-5 h-5" />
-                Se connecter en tant que {getRoleConfig(role).label}
+              <div className="flex items-center justify-center gap-2 relative z-10">
+                <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <span>Se connecter en tant que {getRoleConfig(role).label}</span>
               </div>
             )}
           </button>
         </form>
 
-        {/* Séparateur */}
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-gray-500">Première connexion ?</span>
+        {/* Informations de sécurité */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-xl">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-bold text-sm text-gray-800 mb-1">Connexion sécurisée</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Vos données sont protégées par un chiffrement SSL/TLS. Ne partagez jamais vos identifiants.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Lien vers l'inscription */}
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Vous n'avez pas encore de compte ?</p>
-          <Link 
-            href="/register" 
-            className="inline-flex items-center gap-2 px-6 py-3 border-2 border-blue-200 text-blue-600 rounded-xl font-semibold hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 hover:shadow-md"
-          >
-            Créer un compte
-            <GraduationCap className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-          <p className="text-xs text-gray-500">
-            © 2024 EduManager. Tous droits réservés.
-          </p>
+        {/* Footer amélioré */}
+        <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-4 text-xs text-gray-500">
+              <Link href="/privacy" className="hover:text-purple-600 transition-colors font-medium">
+                Politique de confidentialité
+              </Link>
+              <span className="text-gray-300">•</span>
+              <Link href="/terms" className="hover:text-purple-600 transition-colors font-medium">
+                Conditions d'utilisation
+              </Link>
+            </div>
+            <p className="text-xs text-gray-500 text-center">
+              © 2025 ISET Tozeur. Tous droits réservés.
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-500">Version 2.0.1</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

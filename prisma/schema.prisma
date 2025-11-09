@@ -138,10 +138,11 @@ model Enseignant {
   departement_nom     String? @db.VarChar(100)
 
   // Relations
-  utilisateur  Utilisateur   @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)
-  departement  Departement?  @relation(fields: [id_departement], references: [id_departement])
-  matieres     Matiere[]
-  emploi_temps EmploiTemps[]
+  utilisateur      Utilisateur         @relation(fields: [id_enseignant], references: [id_utilisateur], onDelete: Cascade)
+  departement      Departement?        @relation(fields: [id_departement], references: [id_departement])
+  matieres         Matiere[]
+  emploi_temps     EmploiTemps[]
+  absences         AbsenceEnseignant[]
 
   @@index([id_departement])
   @@map("enseignant")
@@ -213,6 +214,23 @@ model Absence {
   @@index([id_etudiant])
   @@index([id_emploi])
   @@map("absence")
+}
+
+// Table Absence Enseignant
+model AbsenceEnseignant {
+  id_absence     Int           @id @default(autoincrement())
+  id_enseignant  Int
+  id_emploi      Int
+  motif          String?       @db.VarChar(255)
+  statut         StatutAbsence
+  date_creation  DateTime      @default(now())
+
+  // Relations
+  enseignant   Enseignant @relation(fields: [id_enseignant], references: [id_enseignant], onDelete: Cascade)
+  
+  @@index([id_enseignant])
+  @@index([id_emploi])
+  @@map("absence_enseignant")
 }
 
 // Table Message

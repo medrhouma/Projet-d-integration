@@ -43,6 +43,7 @@ export default function DashboardEtudiant() {
   const pathname = usePathname();
   const [etudiant, setEtudiant] = useState<Etudiant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState<string>('');
   const [stats, setStats] = useState({
     coursThisWeek: 0,
     absences: 0,
@@ -165,7 +166,7 @@ const checkAuth = async () => {
   const menuItems = [
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-etudiant' },
     { label: 'Mon Profil', icon: <User className="w-5 h-5" />, href: '/dashboard-etudiant/profil' },
-    { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-etudiant/emploi-du-temps' },
+    { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-etudiant/emploi-temps' },
     { label: 'Mes Cours', icon: <BookOpen className="w-5 h-5" />, href: '/dashboard-etudiant/cours' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-etudiant/absences' },
     { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-etudiant/notes' },

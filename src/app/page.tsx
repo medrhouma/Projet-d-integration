@@ -1,30 +1,51 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { ChevronDown, User, BookOpen, Building, Zap, Cpu, Wrench, Search, Menu, X, Calendar, Clock, MapPin, ArrowRight, Star, GraduationCap, Users, Award, BookMarked } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronDown, User, BookOpen, Building, Zap, Cpu, Wrench, Search, Menu, X, Calendar, Clock, MapPin, ArrowRight, Star, GraduationCap, Users, Award, BookMarked, Mail, Phone, Send, Quote, ChevronLeft, ChevronRight, TrendingUp, Target, Lightbulb } from 'lucide-react';
 import Link from "next/link";
-import { link } from 'fs';
+import Image from "next/image";
+
 export default function Homepage() {
   const [showDepartments, setShowDepartments] = useState(false);
   const [showExtranet, setShowExtranet] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeNews, setActiveNews] = useState(0);
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [email, setEmail] = useState('');
+  const [statsVisible, setStatsVisible] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
 
   // Effet pour le scroll de la navbar
   useEffect(() => {
     const handleScroll = () => {
-      
       setScrolled(window.scrollY > 50);
+      
+      // Animation des stats au scroll
+      if (statsRef.current) {
+        const rect = statsRef.current.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
+        if (isVisible && !statsVisible) {
+          setStatsVisible(true);
+        }
+      }
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [statsVisible]);
 
   // Carousel automatique pour les actualités
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveNews((prev) => (prev + 1) % news.length);
     }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Carousel automatique pour les témoignages
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
     return () => clearInterval(interval);
   }, []);
 
@@ -36,7 +57,8 @@ export default function Homepage() {
     students: '450+ étudiants',
     programs: ['IA & Data Science', 'Développement Web', 'Cybersécurité', 'Cloud Computing'],
     stats: { success: '95%', internships: '120+', labs: '8' },
-    link: '/Depinfo' 
+    link: '/Depinfo',
+    image: 'informatique.jpg'
   },
 
    
@@ -47,7 +69,8 @@ export default function Homepage() {
       students: '320+ étudiants',
       programs: ['Construction Durable', 'Géotechnique', 'Infrastructures', 'BTP'],
       stats: { success: '92%', internships: '80+', labs: '6' },
-      link: '/Depcivil'
+      link: '/Depcivil',
+      image: 'genie-civil.jpg'
     
     },
     { 
@@ -57,7 +80,8 @@ export default function Homepage() {
       students: '280+ étudiants', 
       programs: ['Robotique', 'Thermodynamique', 'Mécatronique', 'Production'],
       stats: { success: '94%', internships: '90+', labs: '7' },
-      link: '/Depmecanique'
+      link: '/Depmecanique',
+      image: 'genie-mecanique.jpg'
     },
     { 
       name: 'Génie Électrique', 
@@ -66,7 +90,8 @@ export default function Homepage() {
       students: '350+ étudiants',
       programs: ['Énergies Renouvelables', 'Automatisme', 'Électronique', 'Réseaux'],
       stats: { success: '93%', internships: '100+', labs: '5' },
-      link: '/Depelectrique'
+      link: '/Depelectrique',
+      image: 'genie-electrique.jpg'
     }
   ];
 
@@ -88,7 +113,7 @@ const news = [
     date: "20 septembre 2025",
     readTime: "4 min de lecture",
     category: "Actualité",
-    image: "/images/iset-digital.jpg.jpg",
+    image: "/images/iset-digital.jpg",
     tags: ["informatique", "séminaire", "transformation digitale"]
   },
   {
@@ -137,17 +162,97 @@ const news = [
 
 ];
 
+  // Témoignages d'étudiants
+  const testimonials = [
+    {
+      name: "Ahmed Ben Salem",
+      role: "Étudiant en Informatique - Promotion 2024",
+      image: "/images/student1.jpg",
+      text: "L'ISET Tozeur m'a offert une formation de qualité avec des enseignants compétents. Aujourd'hui, je travaille comme développeur full-stack dans une entreprise internationale.",
+      rating: 5
+    },
+    {
+      name: "Fatma Jebali",
+      role: "Étudiante en Génie Civil - Promotion 2023",
+      image: "/images/student2.jpg",
+      text: "Les projets pratiques et les stages m'ont permis d'acquérir une expérience précieuse. Je recommande vivement l'ISET Tozeur pour sa qualité d'enseignement.",
+      rating: 5
+    },
+    {
+      name: "Mohamed Trabelsi",
+      role: "Étudiant en Génie Électrique - Promotion 2025",
+      image: "/images/student3.jpg",
+      text: "L'environnement d'apprentissage est exceptionnel. Les laboratoires sont bien équipés et les enseignants sont toujours disponibles pour nous aider.",
+      rating: 5
+    }
+  ];
+
+  // Galerie de photos
+  const galleryImages = [
+    { src: "/images/campus1.jpg", title: "Campus moderne" },
+    { src: "/images/lab1.jpg", title: "Laboratoires équipés" },
+    { src: "/images/library1.jpg", title: "Bibliothèque numérique" },
+    { src: "/images/event1.jpg", title: "Événements étudiants" },
+    { src: "/images/sport1.jpg", title: "Installations sportives" },
+    { src: "/images/cafeteria1.jpg", title: "Espaces de détente" }
+  ];
+
 
 
   const stats = [
-    { icon: <Users className="w-8 h-8" />, value: "5000+", label: "Étudiants" },
-    { icon: <GraduationCap className="w-8 h-8" />, value: "200+", label: "Enseignants" },
-    { icon: <Award className="w-8 h-8" />, value: "95%", label: "Réussite" },
-    { icon: <BookMarked className="w-8 h-8" />, value: "50+", label: "Programmes" }
+    { icon: <Users className="w-8 h-8" />, value: 5000, label: "Étudiants", suffix: "+" },
+    { icon: <GraduationCap className="w-8 h-8" />, value: 200, label: "Enseignants", suffix: "+" },
+    { icon: <Award className="w-8 h-8" />, value: 95, label: "Réussite", suffix: "%" },
+    { icon: <BookMarked className="w-8 h-8" />, value: 50, label: "Programmes", suffix: "+" }
   ];
+
+  // Animation des chiffres
+  const AnimatedNumber = ({ value, suffix }: { value: number; suffix: string }) => {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+      if (statsVisible) {
+        let start = 0;
+        const end = value;
+        const duration = 2000;
+        const increment = end / (duration / 16);
+
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= end) {
+            setCount(end);
+            clearInterval(timer);
+          } else {
+            setCount(Math.floor(start));
+          }
+        }, 16);
+
+        return () => clearInterval(timer);
+      }
+    }, [statsVisible, value]);
+
+    return <>{count}{suffix}</>;
+  };
+
+  // Fonction pour gérer la soumission de la newsletter
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Logique d'inscription à la newsletter
+    alert(`Merci de vous être inscrit avec l'email: ${email}`);
+    setEmail('');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Barre d'annonce en haut */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 text-center text-sm font-medium">
+        <span className="inline-flex items-center space-x-2">
+          <Star className="w-4 h-4 animate-pulse" />
+          <span>🎓 Inscriptions ouvertes pour l'année académique 2025-2026 - Candidatez maintenant !</span>
+          <Star className="w-4 h-4 animate-pulse" />
+        </span>
+      </div>
+
       {/* Navbar améliorée */}
       <nav className={`bg-white sticky top-0 z-50 transition-all duration-300 ${
         scrolled ? 'shadow-xl py-2' : 'shadow-lg py-4'
@@ -208,10 +313,11 @@ const news = [
                      {departments.map((dept, index) => (
     <Link key={index} href={dept.link}>
       <div className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 relative">
-        <img
-          src={`/images/${dept.name.toLowerCase().replace(/ /g, '-')}.jpg`}
-
+        <Image
+          src={`/images/${dept.image}`}
           alt={dept.name}
+          width={400}
+          height={192}
           className="w-full h-48 object-cover"
         />
         <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-25 transition-opacity duration-300 rounded-2xl"></div>
@@ -305,177 +411,253 @@ const news = [
 
       {/* Hero Section améliorée */}
       <section className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 text-white py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-pulse"></div>
+        {/* Fond animé avec particules */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+          <div className="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        </div>
         
         <div className="relative max-w-7xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6 animate-fade-in-down">
             <Star className="w-4 h-4" />
             <span className="text-sm font-medium">Classée parmi les meilleures institutions</span>
           </div>
           
-          <h1 className="text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in-up">
             Institut Supérieur des<br />
             <span className="bg-gradient-to-r from-yellow-300 to-amber-300 bg-clip-text text-transparent">
               Études Technologiques
             </span>
           </h1>
           
-          <p className="text-xl mb-8 max-w-3xl mx-auto opacity-90 leading-relaxed">
+          <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto opacity-90 leading-relaxed animate-fade-in">
             Formez-vous aux métiers de demain dans un environnement d'excellence. 
             Rejoignez une communauté de 5000+ étudiants et 200+ enseignants-chercheurs.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <button className="bg-white text-purple-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2">
-              <GraduationCap className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up animation-delay-500">
+            <button className="group bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-2">
+              <GraduationCap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
               <span>Découvrir nos programmes</span>
             </button>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
-              <Calendar className="w-5 h-5" />
+            <button className="group border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
+              <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform" />
               <span>Candidater maintenant</span>
             </button>
           </div>
 
-          {/* Statistiques */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+          {/* Statistiques animées */}
+          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 inline-flex items-center justify-center mb-2">
+              <div 
+                key={index} 
+                className="text-center transform hover:scale-110 transition-transform duration-300"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 inline-flex items-center justify-center mb-2 hover:bg-white/30 transition-colors">
                   {stat.icon}
                 </div>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-3xl font-bold">
+                  <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+                </div>
                 <div className="text-sm opacity-80">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Vague de séparation */}
+        <div className="absolute bottom-0 left-0 w-full">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="#F9FAFB"/>
+          </svg>
+        </div>
       </section>
 
-      {/* Section Départements améliorée */}
+      {/* Section Départements améliorée avec effets parallax */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Nos Départements d'Excellence</h2>
+            <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 rounded-full px-4 py-2 mb-4">
+              <Target className="w-4 h-4" />
+              <span className="text-sm font-semibold">Nos Spécialités</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Nos Départements d'Excellence</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Quatre départements spécialisés pour former les ingénieurs de demain
+              Quatre départements spécialisés pour former les ingénieurs et techniciens de demain
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {departments.map((dept, index) => (
-              <div key={index} className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 hover:border-purple-300 relative overflow-hidden">
-                <div className={`absolute top-0 left-0 w-full h-1 ${dept.color.replace('bg-gradient-to-br', 'bg-gradient-to-r')}`}></div>
-                
-                <div className="relative z-10">
-                  <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                    {dept.icon}
-                  </div>
+              <Link key={index} href={dept.link}>
+                <div className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 hover:border-purple-300 relative overflow-hidden transform hover:-translate-y-2">
+                  {/* Effet de brillance au survol */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
                   
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">{dept.name}</h3>
+                  <div className={`absolute top-0 left-0 w-full h-1 ${dept.color.replace('bg-gradient-to-br', 'bg-gradient-to-r')}`}></div>
                   
-                  <div className="space-y-3 mb-6">
-                    {dept.programs.map((program, i) => (
-                      <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        <span>{program}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">
-                      {dept.students}
-                    </span>
-                      
-                   <Link href={dept.link}>
-  <button className="text-purple-600 hover:text-purple-700 font-semibold flex items-center space-x-1">
-    <span>En savoir plus</span>
-    <ArrowRight className="w-4 h-4" />
-  </button>
-</Link>
+                  <div className="relative z-10">
+                    <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
+                      <div className="text-white">{dept.icon}</div>
+                    </div>
                     
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-purple-600 transition-colors">{dept.name}</h3>
+                    
+                    <div className="space-y-3 mb-6">
+                      {dept.programs.slice(0, 3).map((program, i) => (
+                        <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
+                          <div className="w-2 h-2 bg-purple-500 rounded-full group-hover:animate-pulse"></div>
+                          <span>{program}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="flex justify-between items-center text-sm pt-4 border-t border-gray-200">
+                      <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">
+                        {dept.students}
+                      </span>
+                      
+                      <button className="text-purple-600 hover:text-purple-700 font-semibold flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                        <span>Explorer</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
+          </div>
+
+          {/* Section Pourquoi nous choisir */}
+          <div className="mt-20 bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-12">
+            <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Pourquoi choisir l'ISET Tozeur ?</h3>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  icon: <TrendingUp className="w-8 h-8" />,
+                  title: "Taux de réussite élevé",
+                  description: "95% de nos étudiants réussissent leurs examens grâce à un encadrement de qualité"
+                },
+                {
+                  icon: <Target className="w-8 h-8" />,
+                  title: "Insertion professionnelle",
+                  description: "85% de nos diplômés trouvent un emploi dans les 6 mois suivant l'obtention de leur diplôme"
+                },
+                {
+                  icon: <Lightbulb className="w-8 h-8" />,
+                  title: "Innovation & Recherche",
+                  description: "Des projets innovants et des partenariats avec l'industrie pour une formation pratique"
+                }
+              ].map((item, index) => (
+                <div key={index} className="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition-shadow">
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    {item.icon}
+                  </div>
+                  <h4 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h4>
+                  <p className="text-gray-600">{item.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Section Actualités avec carousel */}
+      {/* Section Actualités avec carousel amélioré */}
       <section id="news-section" className="py-20 bg-gradient-to-br from-gray-50 to-purple-50">
-
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Actualités & Événements</h2>
+            <div className="inline-flex items-center space-x-2 bg-blue-100 text-blue-700 rounded-full px-4 py-2 mb-4">
+              <BookOpen className="w-4 h-4" />
+              <span className="text-sm font-semibold">Actualités</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Actualités & Événements</h2>
             <p className="text-lg text-gray-600">Restez informé des dernières nouveautés de l'institut</p>
           </div>
 
-          {/* Carousel */}
-          <div className="relative bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="relative h-96">
+          {/* Carousel avec contrôles améliorés */}
+          <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div className="relative h-auto md:h-96">
               {news.map((item, index) => (
-                <div key={index} className={`absolute inset-0 transition-opacity duration-500 ${
-                  index === activeNews ? 'opacity-100' : 'opacity-0'
+                <div key={index} className={`transition-opacity duration-700 ${
+                  index === activeNews ? 'opacity-100' : 'opacity-0 absolute inset-0'
                 }`}>
                   <div className="grid md:grid-cols-2 h-full">
-                    <div className="relative">
-                      <img 
+                    <div className="relative h-64 md:h-full">
+                      <Image 
                         src={item.image} 
                         alt={item.title}
+                        width={800}
+                        height={600}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
                     </div>
                     
-                    <div className="p-8 flex flex-col justify-center">
-                      <div className="flex items-center space-x-4 mb-4">
+                    <div className="p-6 md:p-8 flex flex-col justify-center">
+                      <div className="flex flex-wrap items-center gap-4 mb-4">
                         <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
                           {item.category}
                         </span>
-                        <div className="flex items-center space-x-2 text-gray-500">
+                        <div className="flex items-center space-x-2 text-gray-500 text-sm">
                           <Calendar className="w-4 h-4" />
                           <span>{item.date}</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-gray-500">
+                        <div className="flex items-center space-x-2 text-gray-500 text-sm">
                           <Clock className="w-4 h-4" />
                           <span>{item.readTime}</span>
                         </div>
                       </div>
                       
-                      <h3 className="text-2xl font-bold text-gray-800 mb-4">{item.title}</h3>
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">{item.title}</h3>
                       <p className="text-gray-600 mb-6 leading-relaxed">{item.description}</p>
                       
-                      <div className="flex items-center justify-between">
-  <div className="flex space-x-2">
-    {item.tags.map((tag, i) => (
-      <span key={i} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
-        #{tag}
-      </span>
-    ))}
-  </div>
-  <Link href="/lirearticle">
-    <button className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all duration-300">
-      Lire l'article
-    </button>
-  </Link>
-</div>
-
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex flex-wrap gap-2">
+                          {item.tags.map((tag, i) => (
+                            <span key={i} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                        <Link href="/lirearticle">
+                          <button className="group bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-300 flex items-center space-x-2">
+                            <span>Lire l'article</span>
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
             
-            {/* Contrôles du carousel */}
-            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            {/* Boutons de navigation */}
+            <button 
+              onClick={() => setActiveNews((prev) => (prev - 1 + news.length) % news.length)}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+            >
+              <ChevronLeft className="w-6 h-6 text-gray-800" />
+            </button>
+            <button 
+              onClick={() => setActiveNews((prev) => (prev + 1) % news.length)}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-300 z-10"
+            >
+              <ChevronRight className="w-6 h-6 text-gray-800" />
+            </button>
+            
+            {/* Indicateurs */}
+            <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
               {news.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveNews(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === activeNews ? 'bg-purple-600 scale-125' : 'bg-gray-300'
+                  className={`transition-all duration-300 ${
+                    index === activeNews 
+                      ? 'bg-purple-600 w-8 h-3 rounded-full' 
+                      : 'bg-gray-300 w-3 h-3 rounded-full hover:bg-gray-400'
                   }`}
                 />
               ))}
@@ -487,22 +669,140 @@ const news = [
       {/* Section Événements à venir */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Événements à Venir</h2>
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center space-x-2 bg-green-100 text-green-700 rounded-full px-4 py-2 mb-4">
+              <Calendar className="w-4 h-4" />
+              <span className="text-sm font-semibold">Événements</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Événements à Venir</h2>
+            <p className="text-gray-600">Ne manquez pas nos prochains événements</p>
+          </div>
+          
           <div className="grid md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="bg-gray-50 rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer group">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center mb-4">
-                  <div className="text-2xl font-bold">2{item} Oct</div>
-                  <div className="text-sm">2025</div>
+            {[
+              { date: '21', month: 'Oct', title: 'Journée Portes Ouvertes', desc: 'Découvrez nos formations et rencontrez nos enseignants', location: 'Campus Principal' },
+              { date: '28', month: 'Oct', title: 'Séminaire Innovation', desc: 'Les nouvelles technologies dans l\'éducation', location: 'Amphithéâtre A' },
+              { date: '05', month: 'Nov', title: 'Forum Entreprises', desc: 'Rencontrez les recruteurs et découvrez les opportunités', location: 'Salle des Conférences' }
+            ].map((event, index) => (
+              <div key={index} className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-purple-300 transform hover:-translate-y-1">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center mb-4 group-hover:scale-105 transition-transform">
+                  <div className="text-3xl font-bold">{event.date}</div>
+                  <div className="text-sm uppercase">{event.month} 2025</div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Journée Portes Ouvertes</h3>
-                <p className="text-gray-600 text-sm mb-4">Découvrez nos formations et rencontrez nos enseignants</p>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">{event.title}</h3>
+                <p className="text-gray-600 text-sm mb-4">{event.desc}</p>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <MapPin className="w-4 h-4" />
-                  <span>Campus Principal</span>
+                  <span>{event.location}</span>
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section Témoignages */}
+      <section className="py-20 bg-gradient-to-br from-purple-600 to-pink-600 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
+              <Quote className="w-4 h-4" />
+              <span className="text-sm font-semibold">Témoignages</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Ce que disent nos étudiants</h2>
+            <p className="text-lg opacity-90">Découvrez l'expérience de nos diplômés</p>
+          </div>
+
+          <div className="relative">
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl">
+              {testimonials.map((testimonial, index) => (
+                <div 
+                  key={index} 
+                  className={`transition-opacity duration-500 ${
+                    index === activeTestimonial ? 'opacity-100' : 'opacity-0 absolute inset-0 p-8 md:p-12'
+                  }`}
+                >
+                  <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="flex-shrink-0">
+                      <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-3xl font-bold shadow-xl">
+                        {testimonial.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 text-center md:text-left">
+                      <Quote className="w-12 h-12 mb-4 opacity-50 mx-auto md:mx-0" />
+                      <p className="text-xl md:text-2xl mb-6 leading-relaxed">{testimonial.text}</p>
+                      
+                      <div className="flex items-center justify-center md:justify-start gap-1 mb-4">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                      
+                      <div>
+                        <p className="font-bold text-lg">{testimonial.name}</p>
+                        <p className="opacity-80">{testimonial.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Contrôles navigation */}
+            <div className="flex justify-center mt-8 gap-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveTestimonial(index)}
+                  className={`transition-all duration-300 ${
+                    index === activeTestimonial 
+                      ? 'bg-white w-8 h-3 rounded-full' 
+                      : 'bg-white/50 w-3 h-3 rounded-full hover:bg-white/70'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section Newsletter */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-white text-center shadow-2xl">
+            <Mail className="w-16 h-16 mx-auto mb-6" />
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Restez Informé</h2>
+            <p className="text-lg mb-8 opacity-90">
+              Inscrivez-vous à notre newsletter pour recevoir les dernières actualités, événements et opportunités
+            </p>
+            
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Votre adresse email"
+                required
+                className="flex-1 px-6 py-4 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
+              />
+              <button 
+                type="submit"
+                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 flex items-center justify-center space-x-2 group"
+              >
+                <span>S'inscrire</span>
+                <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </form>
+            
+            <p className="text-sm mt-4 opacity-75">
+              En vous inscrivant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
+            </p>
           </div>
         </div>
       </section>
