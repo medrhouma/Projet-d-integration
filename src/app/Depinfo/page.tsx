@@ -412,124 +412,6 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
-      {/* Laboratoires */}
-      <section className="py-12 bg-purple-50 border-t">
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-bold text-purple-600 mb-6">Laboratoires & Salles</h2>
-          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
-            {laboratoires.map((lab, i) => <li key={i}>{lab}</li>)}
-          </ul>
-        </div>
-      </section>
-
-      {/* Technologies & Compétences */}
-      <section className="py-20 bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 rounded-full px-4 py-2 mb-4">
-              <Zap className="w-4 h-4" />
-              <span className="text-sm font-bold">Technologies</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              Maîtrise Technologique
-            </h2>
-            <p className="text-lg text-gray-600">
-              Les technologies enseignées dans notre département
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {technologies.map((tech, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white">
-                    {tech.icon}
-                  </div>
-                  <h3 className="font-bold text-gray-800">{tech.name}</h3>
-                </div>
-                <div className="relative w-full h-3 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-1000"
-                    style={{ width: `${tech.level}%` }}
-                  ></div>
-                </div>
-                <p className="text-right text-sm text-gray-600 mt-2 font-semibold">{tech.level}%</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Projets Étudiants */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 rounded-full px-4 py-2 mb-4">
-              <Rocket className="w-4 h-4" />
-              <span className="text-sm font-bold">Innovation</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              Projets Innovants
-            </h2>
-            <p className="text-lg text-gray-600">
-              Découvrez les projets réalisés par nos étudiants
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {projets.map((projet, idx) => (
-              <div key={idx} className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                  {projet.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{projet.title}</h3>
-                <p className="text-gray-600 mb-4">{projet.desc}</p>
-                <div className="flex flex-wrap gap-2">
-                  {projet.tech.map((t, i) => (
-                    <span key={i} className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Clubs & Activités */}
-      <section className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-orange-100 text-orange-700 rounded-full px-4 py-2 mb-4">
-              <Users className="w-4 h-4" />
-              <span className="text-sm font-bold">Vie Étudiante</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-              Clubs & Activités
-            </h2>
-            <p className="text-lg text-gray-600">
-              Rejoignez nos clubs pour développer vos compétences
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {clubs.map((club, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                <div className={`w-16 h-16 ${club.color} rounded-2xl flex items-center justify-center text-white mb-4 shadow-lg`}>
-                  {club.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{club.name}</h3>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Users className="w-4 h-4" />
-                  <span className="font-semibold">{club.members} membres</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Spécialités avec design premium */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
@@ -640,6 +522,15 @@ export default function DepInfoDashboard() {
         </div>
       </section>
 
+      {/* Laboratoires */}
+      <section className="py-12 bg-purple-50 border-t">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <h2 className="text-2xl font-bold text-purple-600 mb-6">Laboratoires & Salles</h2>
+          <ul className="list-disc list-inside text-gray-700 inline-block text-left space-y-2">
+            {laboratoires.map((lab, i) => <li key={i}>{lab}</li>)}
+          </ul>
+        </div>
+      </section>
 
       {/* Plan d'étude */}
       <section className="py-12 bg-purple-50 border-t">
@@ -676,11 +567,7 @@ export default function DepInfoDashboard() {
       <div className="text-center py-12">
         <Link href="/">
           <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition">
-
             Retour à l'accueil
-
-            Retour à l’accueil
-
           </button>
         </Link>
       </div>
