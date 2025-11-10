@@ -172,10 +172,11 @@ export async function POST(request: NextRequest) {
       isChefDepartement = utilisateur.enseignant.est_chef_departement
       departementId = utilisateur.enseignant.id_departement || undefined
       
-      // Si l'utilisateur demande le rôle ChefDepartement et qu'il est chef, ou si le rôle est Enseignant et qu'il est chef
-      if (isChefDepartement && (role === 'ChefDepartement' || (role === 'Enseignant' && isChefDepartement))) {
+      // Modifier le rôle UNIQUEMENT si l'utilisateur demande explicitement le rôle ChefDepartement
+      if (role === 'ChefDepartement' && isChefDepartement) {
         utilisateur.role = 'ChefDepartement'
       }
+      // Si l'utilisateur choisit "Enseignant", garder ce rôle même s'il est chef
     }
 
     console.log(`Rôle final: ${utilisateur.role}, Chef: ${isChefDepartement}`)

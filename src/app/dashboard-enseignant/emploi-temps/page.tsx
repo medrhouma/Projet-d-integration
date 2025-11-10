@@ -64,25 +64,40 @@ export default function EmploiTempsEnseignantPage() {
       if (!userRes.ok) {
         throw new Error('Non authentifié');
       }
-      const userData = await userRes.json();
+      const userDataResponse = await userRes.json();
+      console.log('📥 Réponse /api/auth/me:', userDataResponse);
+      
+      // Extraire l'objet user de la réponse
+      const userData = userDataResponse.success ? userDataResponse.user : userDataResponse;
+      console.log('👤 Données utilisateur:', userData);
       setUserInfo(userData);
 
       // Récupérer l'emploi du temps de l'enseignant
       if (userData.enseignant?.id_enseignant) {
+        console.log('🔍 Recherche emploi pour enseignant ID:', userData.enseignant.id_enseignant);
+        
         const params = new URLSearchParams({
           enseignantId: userData.enseignant.id_enseignant.toString(),
         });
 
         const emploiRes = await fetch(`/api/emploi-temps/public?${params.toString()}`);
+        console.log('📡 Requête emploi du temps:', emploiRes.status);
+        
         if (emploiRes.ok) {
           const emploiData = await emploiRes.json();
+          console.log('✅ Emplois du temps récupérés:', emploiData.length, 'séances');
           setEmplois(emploiData);
         } else {
+          const errorText = await emploiRes.text();
+          console.error('❌ Erreur API emploi-temps:', errorText);
           setError('Erreur lors du chargement de l\'emploi du temps');
         }
+      } else {
+        console.warn('⚠️ Aucun id_enseignant trouvé dans:', userData);
+        setError('Impossible de charger l\'emploi du temps - ID enseignant manquant');
       }
     } catch (err) {
-      console.error('Erreur:', err);
+      console.error('❌ Erreur:', err);
       setError('Erreur lors du chargement des données');
     } finally {
       setLoading(false);

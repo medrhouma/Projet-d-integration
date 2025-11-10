@@ -63,7 +63,8 @@ export default function DashboardEnseignant() {
     const userData = localStorage.getItem('userData');
     const userRole = localStorage.getItem('userRole');
 
-    if (!userData || userRole !== 'Enseignant') {
+    // Autoriser Enseignant et ChefDepartement (car un chef peut aussi être enseignant)
+    if (!userData || (userRole !== 'Enseignant' && userRole !== 'ChefDepartement')) {
       router.push('/login');
       return;
     }
