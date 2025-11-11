@@ -193,16 +193,16 @@ export default function DashboardEnseignant() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900/50 backdrop-blur-xl border-r border-white/10 shadow-2xl flex flex-col">
-        <div className="p-6 flex items-center space-x-3 border-b border-white/10 bg-gradient-to-r from-green-600 to-emerald-600">
-          <div className="w-10 h-10 bg-white/20 backdrop-blur-lg rounded-lg flex items-center justify-center shadow-md">
-            <UserCheck className="w-6 h-6 text-white" />
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-6 flex items-center space-x-3 border-b border-gray-200">
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <UserCheck className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">Espace Enseignant</h1>
-            <p className="text-xs text-green-100">Portail Professeur</p>
+            <h1 className="text-lg font-bold text-gray-900">Espace Enseignant</h1>
+            <p className="text-xs text-gray-500">Portail Professeur</p>
           </div>
         </div>
 
@@ -213,8 +213,8 @@ export default function DashboardEnseignant() {
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
                 pathname === item.href
-                  ? 'bg-green-500/30 text-white font-medium shadow-lg border-l-4 border-green-400 backdrop-blur-lg'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white hover:backdrop-blur-lg'
+                  ? 'bg-blue-50 text-blue-700 font-medium border-l-4 border-blue-600'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
             >
               {item.icon}
@@ -223,24 +223,24 @@ export default function DashboardEnseignant() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10 bg-gray-900/30">
-          <div className="flex items-center space-x-3 mb-4 p-3 bg-white/10 backdrop-blur-lg rounded-lg shadow-sm border border-white/20">
-            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center shadow-lg">
-              <span className="text-white text-sm font-bold">
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center space-x-3 mb-4 p-3 bg-white rounded-lg border border-gray-200">
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-blue-700 text-sm font-bold">
                 {getInitiales()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold text-gray-900 truncate">
                 {getPrenom()} {getNom()}
               </p>
-              <p className="text-xs text-gray-400 truncate">Enseignant</p>
+              <p className="text-xs text-gray-500 truncate">Enseignant</p>
             </div>
           </div>
          
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-500/30 bg-red-500/20 border border-red-400/30 rounded-lg transition-all hover:shadow-lg backdrop-blur-lg"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 bg-red-50 border border-red-200 rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
             <span>Déconnexion</span>
@@ -254,17 +254,17 @@ export default function DashboardEnseignant() {
         <div className="mb-8">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2 bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
                 Bonjour, {getPrenom()}  👨‍🏫
               </h1>
-              <p className="text-gray-300 flex items-center gap-2">
+              <p className="text-gray-600 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 {currentDate || 'Chargement...'}
               </p>
             </div>
             <Link
               href="/dashboard-enseignant/profil"
-              className="px-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all flex items-center gap-2 shadow-lg"
+              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-all flex items-center gap-2"
             >
               <User className="w-4 h-4" />
               Mon Profil
@@ -273,10 +273,10 @@ export default function DashboardEnseignant() {
         </div>
 
         {/* Carte de profil rapide */}
-        <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-6 text-white mb-8 border border-white/20 backdrop-blur-lg">
+        <div className="bg-blue-600 rounded-xl p-6 text-white mb-8 border border-blue-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-lg rounded-full flex items-center justify-center border-2 border-white/30 shadow-xl">
+              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center border-2 border-white/30">
                 <span className="text-white text-3xl font-bold">
                   {getInitiales()}
                 </span>
@@ -285,7 +285,7 @@ export default function DashboardEnseignant() {
                 <h2 className="text-2xl font-bold mb-1">
                   {getNom()} {getPrenom()}
                 </h2>
-                <p className="text-green-100 mb-2">
+                <p className="text-blue-100 mb-2">
                   Matricule: {enseignant?.matricule || 'N/A'}
                 </p>
                 <div className="flex items-center gap-4 text-sm">
@@ -302,7 +302,7 @@ export default function DashboardEnseignant() {
             </div>
             <Link
               href="/dashboard-enseignant/profil"
-              className="px-4 py-2 bg-white/20 backdrop-blur-lg text-white rounded-lg hover:bg-white/30 transition-all font-medium border border-white/30"
+              className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all font-medium border border-white/30"
             >
               Voir mon profil complet →
             </Link>
@@ -314,16 +314,16 @@ export default function DashboardEnseignant() {
           {statCards.map((stat, index) => (
             <div
               key={index}
-              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all transform hover:-translate-y-1 hover:bg-white/20"
+              className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all transform hover:-translate-y-1"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 bg-${stat.color}-500/20 rounded-lg flex items-center justify-center backdrop-blur-lg border border-${stat.color}-400/30`}>
-                  <div className={`text-${stat.color}-400`}>{stat.icon}</div>
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <div className="text-blue-600">{stat.icon}</div>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-300 mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -332,60 +332,60 @@ export default function DashboardEnseignant() {
         {/* Prochains cours et Notifications */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Prochains cours */}
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-green-400" />
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-blue-600" />
               Prochains Cours
             </h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-green-500/20 rounded-lg hover:bg-green-500/30 transition-all backdrop-blur-lg border border-green-400/30">
+              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-all border border-blue-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">Programmation Web</p>
-                    <p className="text-sm text-gray-300">Aujourd'hui à 10:00 - DSI21 - Salle A101</p>
+                    <p className="font-medium text-gray-900">Programmation Web</p>
+                    <p className="text-sm text-gray-600">Aujourd'hui à 10:00 - DSI21 - Salle A101</p>
                   </div>
                 </div>
-                <span className="bg-green-600 text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg">
+                <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
                   Dans 2h
                 </span>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-all backdrop-blur-lg border border-white/20">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">Base de Données</p>
-                    <p className="text-sm text-gray-300">Aujourd'hui à 14:00 - DSI22 - Salle B202</p>
+                    <p className="font-medium text-gray-900">Base de Données</p>
+                    <p className="text-sm text-gray-600">Aujourd'hui à 14:00 - DSI22 - Salle B202</p>
                   </div>
                 </div>
-                <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-medium">
+                <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">
                   Dans 6h
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-white/10 rounded-lg hover:bg-white/20 transition-all backdrop-blur-lg border border-white/20">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all border border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">Réseaux Informatiques</p>
-                    <p className="text-sm text-gray-300">Demain à 08:00 - RSI21 - Labo 1</p>
+                    <p className="font-medium text-gray-900">Réseaux Informatiques</p>
+                    <p className="text-sm text-gray-600">Demain à 08:00 - RSI21 - Labo 1</p>
                   </div>
                 </div>
-                <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-medium">
+                <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">
                   Demain
                 </span>
               </div>
 
               <Link
                 href="/dashboard-enseignant/emploi-temps"
-                className="block text-center py-3 text-green-400 hover:text-green-300 font-medium text-sm"
+                className="block text-center py-3 text-blue-600 hover:text-blue-700 font-medium text-sm"
               >
                 Voir tout l'emploi du temps →
               </Link>
@@ -393,50 +393,50 @@ export default function DashboardEnseignant() {
           </div>
 
           {/* Notifications et tâches */}
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Bell className="w-5 h-5 text-orange-400" />
+          <div className="bg-white border border-gray-200 rounded-xl p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-blue-600" />
               Notifications & Tâches
             </h2>
             <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-red-500/20 rounded-lg border border-red-400/30 backdrop-blur-lg">
-                <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-100">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">⚠️ Absences à valider</p>
-                  <p className="text-sm text-gray-300">5 absences en attente de validation</p>
+                  <p className="font-medium text-gray-900">⚠️ Absences à valider</p>
+                  <p className="text-sm text-gray-600">5 absences en attente de validation</p>
                   <Link 
                     href="/dashboard-enseignant/absences"
-                    className="text-xs text-red-400 hover:text-red-300 mt-1 inline-block"
+                    className="text-xs text-red-600 hover:text-red-700 mt-1 inline-block"
                   >
                     Valider maintenant →
                   </Link>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-yellow-500/20 rounded-lg border border-yellow-400/30 backdrop-blur-lg">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">📝 Notes à saisir</p>
-                  <p className="text-sm text-gray-300">Examen DSI21 - À rendre avant le 20/12</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 1 jour</p>
+                  <p className="font-medium text-gray-900">📝 Notes à saisir</p>
+                  <p className="text-sm text-gray-600">Examen DSI21 - À rendre avant le 20/12</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 1 jour</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-blue-500/20 rounded-lg border border-blue-400/30 backdrop-blur-lg">
-                <div className="w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">👥 Nouvelle classe assignée</p>
-                  <p className="text-sm text-gray-300">Groupe MDW31 ajouté à vos cours</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 2 jours</p>
+                  <p className="font-medium text-gray-900">👥 Nouvelle classe assignée</p>
+                  <p className="text-sm text-gray-600">Groupe MDW31 ajouté à vos cours</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 2 jours</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-green-500/20 rounded-lg border border-green-400/30 backdrop-blur-lg">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">✅ Emploi du temps mis à jour</p>
-                  <p className="text-sm text-gray-300">Nouvel horaire pour le cours de lundi</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 3 jours</p>
+                  <p className="font-medium text-gray-900">✅ Emploi du temps mis à jour</p>
+                  <p className="text-sm text-gray-600">Nouvel horaire pour le cours de lundi</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 3 jours</p>
                 </div>
               </div>
             </div>
@@ -444,37 +444,37 @@ export default function DashboardEnseignant() {
         </div>
 
         {/* Mes classes */}
-        <div className="mt-6 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6">
-          <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users className="w-5 h-5 text-blue-400" />
+        <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Users className="w-5 h-5 text-blue-600" />
             Mes Classes
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 p-6 rounded-xl border border-blue-400/30 hover:shadow-lg transition-all cursor-pointer backdrop-blur-lg hover:from-blue-500/30 hover:to-blue-600/30">
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 hover:shadow-md transition-all cursor-pointer hover:bg-blue-100">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-bold text-white">DSI 21</h3>
-                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full shadow-lg">32 étudiants</span>
+                <h3 className="text-lg font-bold text-gray-900">DSI 21</h3>
+                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">32 étudiants</span>
               </div>
-              <p className="text-sm text-gray-300 mb-2">Programmation Web</p>
-              <p className="text-xs text-gray-400">2ème Année - Développement</p>
+              <p className="text-sm text-gray-700 mb-2">Programmation Web</p>
+              <p className="text-xs text-gray-500">2ème Année - Développement</p>
             </div>
 
-            <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 p-6 rounded-xl border border-green-400/30 hover:shadow-lg transition-all cursor-pointer backdrop-blur-lg hover:from-green-500/30 hover:to-green-600/30">
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 hover:shadow-md transition-all cursor-pointer hover:bg-blue-100">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-bold text-white">DSI 22</h3>
-                <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full shadow-lg">28 étudiants</span>
+                <h3 className="text-lg font-bold text-gray-900">DSI 22</h3>
+                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">28 étudiants</span>
               </div>
-              <p className="text-sm text-gray-300 mb-2">Base de Données</p>
-              <p className="text-xs text-gray-400">2ème Année - Développement</p>
+              <p className="text-sm text-gray-700 mb-2">Base de Données</p>
+              <p className="text-xs text-gray-500">2ème Année - Développement</p>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 p-6 rounded-xl border border-purple-400/30 hover:shadow-lg transition-all cursor-pointer backdrop-blur-lg hover:from-purple-500/30 hover:to-purple-600/30">
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 hover:shadow-md transition-all cursor-pointer hover:bg-blue-100">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-bold text-white">RSI 21</h3>
-                <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full shadow-lg">25 étudiants</span>
+                <h3 className="text-lg font-bold text-gray-900">RSI 21</h3>
+                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">25 étudiants</span>
               </div>
-              <p className="text-sm text-gray-300 mb-2">Réseaux Informatiques</p>
-              <p className="text-xs text-gray-400">2ème Année - Réseaux</p>
+              <p className="text-sm text-gray-700 mb-2">Réseaux Informatiques</p>
+              <p className="text-xs text-gray-500">2ème Année - Réseaux</p>
             </div>
           </div>
         </div>
