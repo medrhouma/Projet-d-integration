@@ -244,12 +244,14 @@ const news = [
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Barre d'annonce en haut */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 text-center text-sm font-medium">
-        <span className="inline-flex items-center space-x-2">
-          <Star className="w-4 h-4 animate-pulse" />
-          <span>🎓 Inscriptions ouvertes pour l'année académique 2025-2026 - Candidatez maintenant !</span>
-          <Star className="w-4 h-4 animate-pulse" />
+      {/* Barre d'annonce en haut - Améliorée */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 text-white py-3 px-4 text-center text-sm font-medium shadow-lg relative overflow-hidden">
+        <div className="absolute inset-0 bg-white opacity-10 animate-pulse"></div>
+        <span className="inline-flex items-center space-x-3 relative z-10 animate-fade-in">
+          <Star className="w-5 h-5 animate-bounce text-yellow-300" />
+          <span className="font-semibold">🎓 Inscriptions ouvertes pour l'année académique 2025-2026 - Candidatez maintenant !</span>
+          <Star className="w-5 h-5 animate-bounce animation-delay-500 text-yellow-300" />
+          <span className="hidden md:inline bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-xs">Places limitées</span>
         </span>
       </div>
 
@@ -262,8 +264,14 @@ const news = [
             
             {/* Logo */}
             <div className="flex items-center space-x-3 cursor-pointer">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
-                <GraduationCap className="w-6 h-6 text-white" />
+              <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-lg bg-white p-1">
+                <Image 
+                  src="/images/isetlogo.jpeg" 
+                  alt="ISET Tozeur Logo" 
+                  width={64}
+                  height={64}
+                  className="object-contain w-full h-full"
+                />
               </div>
               <div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -307,22 +315,24 @@ const news = [
                 <div className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 transition-all duration-300 ${
                   showDepartments ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible translate-y-2'
                 }`}>
-                  <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 w-[800px] backdrop-blur-sm">
+                  <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 w-[1000px] backdrop-blur-sm">
                     <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Nos Départements d'Excellence</h3>
-                    <div className="grid grid-cols-2 gap-6">
+                    <div className="flex gap-4">
                      {departments.map((dept, index) => (
-    <Link key={index} href={dept.link}>
-      <div className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 relative">
+    <Link key={index} href={dept.link} className="flex-1">
+      <div className="group cursor-pointer overflow-hidden rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300 relative h-48">
         <Image
           src={`/images/${dept.image}`}
           alt={dept.name}
-          width={400}
+          width={300}
           height={192}
-          className="w-full h-48 object-cover"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-25 transition-opacity duration-300 rounded-2xl"></div>
-        <div className="absolute bottom-4 left-4 text-white font-bold text-lg shadow-lg">
-          {dept.name}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
+        <div className="absolute bottom-4 left-4 right-4 text-white">
+          <p className="font-bold text-lg shadow-lg">{dept.name}</p>
+          <p className="text-xs opacity-90 mt-1">{dept.students}</p>
         </div>
       </div>
     </Link>
@@ -409,156 +419,201 @@ const news = [
         </div>
       </nav>
 
-      {/* Hero Section améliorée */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 text-white py-24 overflow-hidden">
-        {/* Fond animé avec particules */}
+      {/* Hero Section ultra-moderne */}
+      <section className="relative bg-gradient-to-br from-purple-700 via-pink-600 to-red-600 text-white py-32 overflow-hidden">
+        {/* Fond animé avec particules et grille */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
           <div className="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
           <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
         </div>
+
+        {/* Grille de fond */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="h-full w-full bg-[linear-gradient(to_right,#ffffff11_1px,transparent_1px),linear-gradient(to_bottom,#ffffff11_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        </div>
         
         <div className="relative max-w-7xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6 animate-fade-in-down">
-            <Star className="w-4 h-4" />
-            <span className="text-sm font-medium">Classée parmi les meilleures institutions</span>
+          {/* Badge premium */}
+          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md rounded-full px-5 py-2.5 mb-8 border border-white/30 shadow-xl animate-fade-in-down hover:bg-white/30 transition-all">
+            <Award className="w-5 h-5 text-yellow-300" />
+            <span className="text-sm font-semibold">Classée #1 parmi les ISET de Tunisie 🏆</span>
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in-up">
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-8 leading-tight animate-fade-in-up">
             Institut Supérieur des<br />
-            <span className="bg-gradient-to-r from-yellow-300 to-amber-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-yellow-200 via-yellow-300 to-amber-200 bg-clip-text text-transparent drop-shadow-2xl">
               Études Technologiques
             </span>
           </h1>
           
-          <p className="text-lg md:text-xl mb-8 max-w-3xl mx-auto opacity-90 leading-relaxed animate-fade-in">
+          <p className="text-xl md:text-2xl mb-10 max-w-4xl mx-auto opacity-95 leading-relaxed animate-fade-in font-light">
             Formez-vous aux métiers de demain dans un environnement d'excellence. 
-            Rejoignez une communauté de 5000+ étudiants et 200+ enseignants-chercheurs.
+            Rejoignez une communauté de <span className="font-bold text-yellow-300">5000+ étudiants</span> et <span className="font-bold text-yellow-300">200+ enseignants-chercheurs</span>.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up animation-delay-500">
-            <button className="group bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-2">
-              <GraduationCap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-              <span>Découvrir nos programmes</span>
+          <div className="flex flex-col sm:flex-row gap-5 justify-center mb-16 animate-fade-in-up animation-delay-500">
+            <button className="group relative bg-white text-purple-700 px-10 py-5 rounded-2xl font-bold hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-3 overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-pink-600/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              <GraduationCap className="w-6 h-6 group-hover:rotate-12 transition-transform relative z-10" />
+              <span className="relative z-10">Découvrir nos programmes</span>
             </button>
-            <button className="group border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-purple-600 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2">
-              <Calendar className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <button className="group relative border-3 border-white bg-white/10 backdrop-blur-md text-white px-10 py-5 rounded-2xl font-bold hover:bg-white hover:text-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-3 shadow-xl">
+              <Calendar className="w-6 h-6 group-hover:scale-110 transition-transform" />
               <span>Candidater maintenant</span>
             </button>
           </div>
 
-          {/* Statistiques animées */}
-          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+          {/* Statistiques animées avec design moderne */}
+          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {stats.map((stat, index) => (
               <div 
                 key={index} 
-                className="text-center transform hover:scale-110 transition-transform duration-300"
+                className="group bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20 transform hover:scale-110 hover:bg-white/20 transition-all duration-300 shadow-xl"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 inline-flex items-center justify-center mb-2 hover:bg-white/30 transition-colors">
+                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 inline-flex items-center justify-center mb-3 group-hover:bg-white/30 transition-colors shadow-lg">
                   {stat.icon}
                 </div>
-                <div className="text-3xl font-bold">
+                <div className="text-4xl font-extrabold text-yellow-300 mb-1">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-sm opacity-80">{stat.label}</div>
+                <div className="text-sm opacity-90 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Vague de séparation */}
+        {/* Vague de séparation moderne */}
         <div className="absolute bottom-0 left-0 w-full">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
             <path d="M0 0L60 10C120 20 240 40 360 46.7C480 53 600 47 720 43.3C840 40 960 40 1080 46.7C1200 53 1320 67 1380 73.3L1440 80V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="#F9FAFB"/>
           </svg>
         </div>
       </section>
 
-      {/* Section Départements améliorée avec effets parallax */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-purple-100 text-purple-700 rounded-full px-4 py-2 mb-4">
-              <Target className="w-4 h-4" />
-              <span className="text-sm font-semibold">Nos Spécialités</span>
+      {/* Section Départements ultra-moderne avec animations */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Pattern de fond */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="h-full w-full bg-[radial-gradient(circle_at_center,#9333ea_1px,transparent_1px)] bg-[size:3rem_3rem]"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full px-5 py-2.5 mb-6 shadow-lg border border-purple-200">
+              <Target className="w-5 h-5" />
+              <span className="text-sm font-bold">Nos Spécialités</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Nos Départements d'Excellence</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Quatre départements spécialisés pour former les ingénieurs et techniciens de demain
+            <h2 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Nos Départements d'Excellence
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto font-light">
+              Quatre départements spécialisés équipés des dernières technologies pour former les ingénieurs de demain
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {departments.map((dept, index) => (
               <Link key={index} href={dept.link}>
-                <div className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 cursor-pointer border border-gray-200 hover:border-purple-300 relative overflow-hidden transform hover:-translate-y-2">
+                <div className="group bg-white rounded-3xl p-8 hover:shadow-2xl transition-all duration-500 cursor-pointer border-2 border-gray-100 hover:border-purple-400 relative overflow-hidden transform hover:-translate-y-3 hover:rotate-1">
                   {/* Effet de brillance au survol */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30 transform -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-40 transform -translate-x-full group-hover:translate-x-full transition-all duration-1000"></div>
                   
-                  <div className={`absolute top-0 left-0 w-full h-1 ${dept.color.replace('bg-gradient-to-br', 'bg-gradient-to-r')}`}></div>
+                  {/* Barre colorée en haut */}
+                  <div className={`absolute top-0 left-0 w-full h-2 ${dept.color.replace('bg-gradient-to-br', 'bg-gradient-to-r')} rounded-t-3xl`}></div>
                   
                   <div className="relative z-10">
-                    <div className={`w-16 h-16 ${dept.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
-                      <div className="text-white">{dept.icon}</div>
+                    {/* Icône avec effet 3D */}
+                    <div className={`w-20 h-20 ${dept.color} rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 shadow-2xl group-hover:shadow-3xl relative`}>
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 rounded-3xl"></div>
+                      <div className="text-white relative z-10">{dept.icon}</div>
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-800 mb-4 group-hover:text-purple-600 transition-colors">{dept.name}</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-5 group-hover:text-purple-700 transition-colors">{dept.name}</h3>
                     
                     <div className="space-y-3 mb-6">
                       {dept.programs.slice(0, 3).map((program, i) => (
-                        <div key={i} className="flex items-center space-x-2 text-sm text-gray-600">
-                          <div className="w-2 h-2 bg-purple-500 rounded-full group-hover:animate-pulse"></div>
-                          <span>{program}</span>
+                        <div key={i} className="flex items-center space-x-3 text-sm text-gray-700 group-hover:translate-x-1 transition-transform">
+                          <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full group-hover:animate-pulse flex-shrink-0"></div>
+                          <span className="font-medium">{program}</span>
                         </div>
                       ))}
                     </div>
                     
-                    <div className="flex justify-between items-center text-sm pt-4 border-t border-gray-200">
-                      <span className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">
+                    {/* Footer de la carte */}
+                    <div className="flex justify-between items-center pt-5 border-t-2 border-gray-100">
+                      <span className="bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-4 py-2 rounded-full font-bold text-sm shadow-sm">
                         {dept.students}
                       </span>
                       
-                      <button className="text-purple-600 hover:text-purple-700 font-semibold flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
+                      <button className="text-purple-600 hover:text-purple-700 font-bold flex items-center space-x-2 group-hover:translate-x-2 transition-transform">
                         <span>Explorer</span>
-                        <ArrowRight className="w-4 h-4" />
+                        <ArrowRight className="w-5 h-5" />
                       </button>
                     </div>
+
+                    {/* Badge "Nouveau" pour certains départements */}
+                    {index === 0 && (
+                      <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+                        🔥 Populaire
+                      </div>
+                    )}
                   </div>
                 </div>
               </Link>
             ))}
           </div>
 
-          {/* Section Pourquoi nous choisir */}
-          <div className="mt-20 bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-12">
-            <h3 className="text-3xl font-bold text-center text-gray-800 mb-12">Pourquoi choisir l'ISET Tozeur ?</h3>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: <TrendingUp className="w-8 h-8" />,
-                  title: "Taux de réussite élevé",
-                  description: "95% de nos étudiants réussissent leurs examens grâce à un encadrement de qualité"
-                },
-                {
-                  icon: <Target className="w-8 h-8" />,
-                  title: "Insertion professionnelle",
-                  description: "85% de nos diplômés trouvent un emploi dans les 6 mois suivant l'obtention de leur diplôme"
-                },
-                {
-                  icon: <Lightbulb className="w-8 h-8" />,
-                  title: "Innovation & Recherche",
-                  description: "Des projets innovants et des partenariats avec l'industrie pour une formation pratique"
-                }
-              ].map((item, index) => (
-                <div key={index} className="bg-white rounded-2xl p-6 text-center hover:shadow-xl transition-shadow">
-                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    {item.icon}
+          {/* Section Pourquoi nous choisir - Version ultra-moderne */}
+          <div className="mt-24 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-3xl p-12 md:p-16 shadow-2xl relative overflow-hidden">
+            {/* Pattern de fond */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="h-full w-full bg-[linear-gradient(45deg,#ffffff_25%,transparent_25%,transparent_75%,#ffffff_75%,#ffffff),linear-gradient(45deg,#ffffff_25%,transparent_25%,transparent_75%,#ffffff_75%,#ffffff)] bg-[size:2rem_2rem] bg-[position:0_0,1rem_1rem]"></div>
+            </div>
+
+            <div className="relative z-10">
+              <h3 className="text-4xl md:text-5xl font-extrabold text-center text-white mb-16">Pourquoi choisir l'ISET Tozeur ?</h3>
+              <div className="grid md:grid-cols-3 gap-10">
+                {[
+                  {
+                    icon: <TrendingUp className="w-10 h-10" />,
+                    title: "Taux de réussite élevé",
+                    description: "95% de nos étudiants réussissent leurs examens grâce à un encadrement de qualité",
+                    stat: "95%"
+                  },
+                  {
+                    icon: <Target className="w-10 h-10" />,
+                    title: "Insertion professionnelle",
+                    description: "85% de nos diplômés trouvent un emploi dans les 6 mois suivant l'obtention de leur diplôme",
+                    stat: "85%"
+                  },
+                  {
+                    icon: <Lightbulb className="w-10 h-10" />,
+                    title: "Innovation & Recherche",
+                    description: "Des projets innovants et des partenariats avec l'industrie pour une formation pratique",
+                    stat: "50+"
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="group bg-white rounded-2xl p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="bg-gradient-to-br from-purple-500 to-pink-500 text-white w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-transform">
+                        {item.icon}
+                      </div>
+                      
+                      {/* Statistique en grand */}
+                      <div className="text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3">
+                        {item.stat}
+                      </div>
+                      
+                      <h4 className="text-2xl font-bold text-gray-900 mb-4">{item.title}</h4>
+                      <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                    </div>
                   </div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">{item.title}</h4>
-                  <p className="text-gray-600">{item.description}</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -772,37 +827,78 @@ const news = [
         </div>
       </section>
 
-      {/* Section Newsletter */}
-      <section className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 text-white text-center shadow-2xl">
-            <Mail className="w-16 h-16 mx-auto mb-6" />
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Restez Informé</h2>
-            <p className="text-lg mb-8 opacity-90">
-              Inscrivez-vous à notre newsletter pour recevoir les dernières actualités, événements et opportunités
-            </p>
-            
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Votre adresse email"
-                required
-                className="flex-1 px-6 py-4 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <button 
-                type="submit"
-                className="bg-white text-purple-600 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition-all duration-300 flex items-center justify-center space-x-2 group"
-              >
-                <span>S'inscrire</span>
-                <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </form>
-            
-            <p className="text-sm mt-4 opacity-75">
-              En vous inscrivant, vous acceptez de recevoir nos communications. Désinscription possible à tout moment.
-            </p>
+      {/* Section Newsletter ultra-moderne */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        {/* Fond avec dégradé animé */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 opacity-50"></div>
+        
+        <div className="relative max-w-5xl mx-auto px-4">
+          <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 rounded-3xl p-10 md:p-16 text-white text-center shadow-2xl relative overflow-hidden">
+            {/* Motif de fond */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="h-full w-full bg-[radial-gradient(circle_at_center,#ffffff_1px,transparent_1px)] bg-[size:2rem_2rem]"></div>
+            </div>
+
+            {/* Cercles décoratifs */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full opacity-10 blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-yellow-200 rounded-full opacity-10 blur-3xl"></div>
+
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl">
+                <Mail className="w-10 h-10" />
+              </div>
+              
+              <h2 className="text-4xl md:text-5xl font-extrabold mb-5">Restez Informé 📧</h2>
+              <p className="text-xl mb-10 opacity-95 max-w-2xl mx-auto font-light leading-relaxed">
+                Inscrivez-vous à notre newsletter pour recevoir les <span className="font-bold underline decoration-yellow-300">dernières actualités</span>, événements exclusifs et opportunités de carrière
+              </p>
+              
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
+                <div className="flex-1 relative">
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Votre adresse email"
+                    required
+                    className="w-full pl-12 pr-6 py-5 rounded-xl text-gray-800 focus:outline-none focus:ring-4 focus:ring-white/50 shadow-lg font-medium"
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  className="bg-white text-purple-700 px-10 py-5 rounded-xl font-bold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center space-x-3 group shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <span>S'inscrire</span>
+                  <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </button>
+              </form>
+              
+              <div className="mt-8 flex items-center justify-center space-x-6 text-sm opacity-90">
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span>Gratuit et sans engagement</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 bg-blue-400 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span>Désinscription facile</span>
+                </div>
+              </div>
+
+              {/* Compteur d'abonnés */}
+              <div className="mt-8 inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md rounded-full px-5 py-3 border border-white/30">
+                <Users className="w-5 h-5" />
+                <span className="font-semibold">Rejoignez 10,000+ abonnés</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

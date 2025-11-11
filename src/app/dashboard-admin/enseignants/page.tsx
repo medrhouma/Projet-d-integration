@@ -358,8 +358,8 @@ export default function EnseignantsPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
                           <Link
-                            href={`/dashboard-admin/enseignants/${enseignant.id_enseignant}/edit`}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            href={`/dashboard-admin/enseignants/${enseignant.id_enseignant}`}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit className="w-5 h-5" />

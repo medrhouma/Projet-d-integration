@@ -436,8 +436,8 @@ export default function EtudiantsPage() {
                             <User className="w-5 h-5" />
                           </Link>
                           <Link
-                            href={`/dashboard-admin/etudiants/${etudiant.id_etudiant}/edit`}
-                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            href={`/dashboard-admin/etudiants/${etudiant.id_etudiant}`}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                             title="Modifier"
                           >
                             <Edit className="w-5 h-5" />
