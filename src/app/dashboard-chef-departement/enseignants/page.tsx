@@ -139,35 +139,37 @@ export default function EnseignantsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
+        <div className="bg-red-500/20 backdrop-blur-lg border border-red-400/30 text-red-200 p-6 rounded-2xl">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 min-h-screen">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <UserCheck className="w-8 h-8 text-blue-600" />
-              <h1 className="text-3xl font-bold text-gray-900">Enseignants du Département</h1>
+              <UserCheck className="w-8 h-8 text-orange-400" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-amber-400 bg-clip-text text-transparent">
+                Enseignants du Département
+              </h1>
             </div>
-            <p className="text-gray-600">Liste complète du corps enseignant de votre département</p>
+            <p className="text-gray-300">Liste complète du corps enseignant de votre département</p>
           </div>
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 backdrop-blur-lg border border-green-400/30 text-white rounded-xl transition-all hover:scale-105"
           >
             <Download className="w-4 h-4" />
             Exporter CSV
@@ -177,25 +179,25 @@ export default function EnseignantsPage() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Enseignants</p>
-          <p className="text-3xl font-bold text-blue-600">{enseignants.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-orange-300 mb-1">Total Enseignants</p>
+          <p className="text-3xl font-bold text-white">{enseignants.length}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Grades Différents</p>
-          <p className="text-3xl font-bold text-green-600">{grades.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-red-300 mb-1">Grades Différents</p>
+          <p className="text-3xl font-bold text-white">{grades.length}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Résultats filtrés</p>
-          <p className="text-3xl font-bold text-purple-600">{filteredEnseignants.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-amber-300 mb-1">Résultats filtrés</p>
+          <p className="text-3xl font-bold text-white">{filteredEnseignants.length}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-6 shadow-xl">
         <div className="flex items-center gap-3 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Filtres</h2>
+          <Filter className="w-5 h-5 text-orange-400" />
+          <h2 className="text-lg font-semibold text-white">Filtres</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
@@ -205,17 +207,17 @@ export default function EnseignantsPage() {
               placeholder="Rechercher par nom, prénom, matricule, email ou spécialité..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <select
             value={selectedGrade}
             onChange={(e) => setSelectedGrade(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           >
-            <option value="all">Tous les grades</option>
+            <option value="all" className="bg-gray-900">Tous les grades</option>
             {grades.map((grade) => (
-              <option key={grade} value={grade}>
+              <option key={grade} value={grade} className="bg-gray-900">
                 {grade}
               </option>
             ))}
@@ -224,57 +226,57 @@ export default function EnseignantsPage() {
       </div>
 
       {/* Enseignants List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-900/30 border-b border-white/10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Matricule
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Nom & Prénom
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Grade & Spécialité
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Rôle
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/10">
               {filteredEnseignants.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-300">
                     Aucun enseignant trouvé
                   </td>
                 </tr>
               ) : (
                 filteredEnseignants.map((enseignant) => (
-                  <tr key={enseignant.id_enseignant} className="hover:bg-gray-50 transition-colors">
+                  <tr key={enseignant.id_enseignant} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <UserCheck className="w-5 h-5 text-gray-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-900">{enseignant.matricule}</span>
+                        <UserCheck className="w-5 h-5 text-amber-400 mr-2" />
+                        <span className="text-sm font-medium text-white">{enseignant.matricule}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-white">
                         {enseignant.nom} {enseignant.prenom}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-300">
                           <Mail className="w-4 h-4 mr-2 text-gray-400" />
                           {enseignant.email}
                         </div>
                         {enseignant.telephone && (
-                          <div className="flex items-center text-sm text-gray-600">
+                          <div className="flex items-center text-sm text-gray-300">
                             <Phone className="w-4 h-4 mr-2 text-gray-400" />
                             {enseignant.telephone}
                           </div>
@@ -284,19 +286,19 @@ export default function EnseignantsPage() {
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
                         {enseignant.grade && (
-                          <div className="flex items-center text-sm text-gray-900">
-                            <Award className="w-4 h-4 mr-2 text-blue-500" />
+                          <div className="flex items-center text-sm text-white">
+                            <Award className="w-4 h-4 mr-2 text-orange-400" />
                             <span className="font-medium">{enseignant.grade}</span>
                           </div>
                         )}
                         {enseignant.specialite && (
-                          <div className="flex items-center text-sm text-gray-600">
-                            <BookOpen className="w-4 h-4 mr-2 text-green-500" />
+                          <div className="flex items-center text-sm text-gray-300">
+                            <BookOpen className="w-4 h-4 mr-2 text-red-400" />
                             {enseignant.specialite}
                           </div>
                         )}
                         {enseignant._count && enseignant._count.matieres > 0 && (
-                          <div className="text-xs text-gray-500 mt-1">
+                          <div className="text-xs text-gray-400 mt-1">
                             {enseignant._count.matieres} matière(s) enseignée(s)
                           </div>
                         )}
@@ -304,11 +306,11 @@ export default function EnseignantsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {enseignant.est_chef_departement ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/20 text-orange-300 border border-orange-400/30">
                           Chef de département
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-400/30">
                           Enseignant
                         </span>
                       )}

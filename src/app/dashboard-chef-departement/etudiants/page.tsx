@@ -143,35 +143,37 @@ export default function EtudiantsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
+        <div className="bg-red-500/20 backdrop-blur-lg border border-red-400/30 text-red-200 p-6 rounded-2xl">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 min-h-screen">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <GraduationCap className="w-8 h-8 text-blue-600" />
-              <h1 className="text-3xl font-bold text-gray-900">Étudiants du Département</h1>
+              <GraduationCap className="w-8 h-8 text-orange-400" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-amber-400 bg-clip-text text-transparent">
+                Étudiants du Département
+              </h1>
             </div>
-            <p className="text-gray-600">Liste complète des étudiants inscrits dans votre département</p>
+            <p className="text-gray-300">Liste complète des étudiants inscrits dans votre département</p>
           </div>
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 backdrop-blur-lg border border-green-400/30 text-white rounded-xl transition-all hover:scale-105"
           >
             <Download className="w-4 h-4" />
             Exporter CSV
@@ -181,25 +183,25 @@ export default function EtudiantsPage() {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Total Étudiants</p>
-          <p className="text-3xl font-bold text-blue-600">{etudiants.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-orange-300 mb-1">Total Étudiants</p>
+          <p className="text-3xl font-bold text-white">{etudiants.length}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Spécialités</p>
-          <p className="text-3xl font-bold text-green-600">{specialites.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-red-300 mb-1">Spécialités</p>
+          <p className="text-3xl font-bold text-white">{specialites.length}</p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-sm text-gray-600 mb-1">Résultats filtrés</p>
-          <p className="text-3xl font-bold text-purple-600">{filteredEtudiants.length}</p>
+        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+          <p className="text-sm text-amber-300 mb-1">Résultats filtrés</p>
+          <p className="text-3xl font-bold text-white">{filteredEtudiants.length}</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-6 shadow-xl">
         <div className="flex items-center gap-3 mb-4">
-          <Filter className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Filtres</h2>
+          <Filter className="w-5 h-5 text-orange-400" />
+          <h2 className="text-lg font-semibold text-white">Filtres</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative">
@@ -209,17 +211,17 @@ export default function EtudiantsPage() {
               placeholder="Rechercher par nom, prénom, matricule ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
           <select
             value={selectedSpecialite}
             onChange={(e) => setSelectedSpecialite(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="px-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           >
-            <option value="all">Toutes les spécialités</option>
+            <option value="all" className="bg-gray-900">Toutes les spécialités</option>
             {specialites.map((spec) => (
-              <option key={spec} value={spec}>
+              <option key={spec} value={spec} className="bg-gray-900">
                 {spec}
               </option>
             ))}
@@ -228,62 +230,62 @@ export default function EtudiantsPage() {
       </div>
 
       {/* Étudiants List */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-900/30 border-b border-white/10">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Matricule
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Nom & Prénom
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Spécialité
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
                   Niveau & Groupe
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/10">
               {filteredEtudiants.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-300">
                     Aucun étudiant trouvé
                   </td>
                 </tr>
               ) : (
                 filteredEtudiants.map((etudiant) => (
-                  <tr key={etudiant.id_etudiant} className="hover:bg-gray-50 transition-colors">
+                  <tr key={etudiant.id_etudiant} className="hover:bg-white/5 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <UserCircle className="w-5 h-5 text-gray-400 mr-2" />
-                        <span className="text-sm font-medium text-gray-900">{etudiant.matricule}</span>
+                        <UserCircle className="w-5 h-5 text-amber-400 mr-2" />
+                        <span className="text-sm font-medium text-white">{etudiant.matricule}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-white">
                         {etudiant.nom} {etudiant.prenom}
                       </div>
                       {etudiant.date_naissance && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-400">
                           Né(e) le {new Date(etudiant.date_naissance).toLocaleDateString('fr-FR')}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center text-sm text-gray-600">
+                        <div className="flex items-center text-sm text-gray-300">
                           <Mail className="w-4 h-4 mr-2 text-gray-400" />
                           {etudiant.email}
                         </div>
                         {etudiant.telephone && (
-                          <div className="flex items-center text-sm text-gray-600">
+                          <div className="flex items-center text-sm text-gray-300">
                             <Phone className="w-4 h-4 mr-2 text-gray-400" />
                             {etudiant.telephone}
                           </div>
@@ -293,10 +295,10 @@ export default function EtudiantsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {etudiant.groupe?.niveau?.specialite ? (
                         <div>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-500/20 text-orange-300 border border-orange-400/30">
                             {etudiant.groupe.niveau.specialite.code}
                           </span>
-                          <div className="text-xs text-gray-500 mt-1">{etudiant.groupe.niveau.specialite.nom}</div>
+                          <div className="text-xs text-gray-400 mt-1">{etudiant.groupe.niveau.specialite.nom}</div>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">Non assigné</span>
@@ -304,9 +306,9 @@ export default function EtudiantsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {etudiant.groupe ? (
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-white">
                           <div className="font-medium">{etudiant.groupe.niveau.nom}</div>
-                          <div className="text-gray-500">{etudiant.groupe.nom}</div>
+                          <div className="text-gray-400">{etudiant.groupe.nom}</div>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">Non assigné</span>

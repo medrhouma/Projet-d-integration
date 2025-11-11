@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Calendar, Clock, MapPin, Users, BookOpen, ChevronLeft, ChevronRight, Filter, Download } from 'lucide-react';
 
 interface EmploiTemps {
@@ -231,6 +232,12 @@ export default function EmploiTempsChefPage() {
               {userInfo?.nom} {userInfo?.prenom} • {userInfo?.enseignant?.departement_nom}
             </p>
           </div>
+          <Link href="/dashboard-chef-departement/emploi-temps/gestion">
+            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl">
+              <Calendar size={20} />
+              <span className="font-semibold">Gérer l'emploi du temps</span>
+            </button>
+          </Link>
         </div>
       </div>
 

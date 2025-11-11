@@ -1,7 +1,9 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Users, BookOpen, ChevronLeft, ChevronRight, GraduationCap } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, BookOpen, GraduationCap, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface EmploiTemps {
   id_emploi: number;
@@ -10,36 +12,20 @@ interface EmploiTemps {
   heure_fin: string;
   matiere: {
     nom: string;
-    niveau: {
-      nom: string;
-    };
   };
   salle: {
     code: string;
-    type: string;
   };
   groupe: {
     nom: string;
   };
 }
 
-interface UserInfo {
-  nom: string;
-  prenom: string;
-  role: string;
-  enseignant?: {
-    id_enseignant: number;
-    matricule: string;
-    departement_nom: string;
-  };
-}
-
 export default function EmploiTempsEnseignantPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [emplois, setEmplois] = useState<EmploiTemps[]>([]);
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
-  const [currentWeek, setCurrentWeek] = useState(new Date());
-  const [error, setError] = useState('');
+  const [enseignantInfo, setEnseignantInfo] = useState<any>(null);
 
   const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const heures = [
@@ -52,373 +38,273 @@ export default function EmploiTempsEnseignantPage() {
   ];
 
   useEffect(() => {
-    loadUserAndEmplois();
-  }, [currentWeek]);
+    loadData();
+  }, []);
 
-  const loadUserAndEmplois = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       
-      // Récupérer les infos de l'utilisateur connecté
       const userRes = await fetch('/api/auth/me');
-      if (!userRes.ok) {
-        throw new Error('Non authentifié');
-      }
-      const userDataResponse = await userRes.json();
-      console.log('📥 Réponse /api/auth/me:', userDataResponse);
+      const userData = await userRes.json();
+      const user = userData.success ? userData.user : userData;
       
-      // Extraire l'objet user de la réponse
-      const userData = userDataResponse.success ? userDataResponse.user : userDataResponse;
-      console.log('👤 Données utilisateur:', userData);
-      setUserInfo(userData);
+      setEnseignantInfo(user);
 
-      // Récupérer l'emploi du temps de l'enseignant
-      if (userData.enseignant?.id_enseignant) {
-        console.log('🔍 Recherche emploi pour enseignant ID:', userData.enseignant.id_enseignant);
-        
-        const params = new URLSearchParams({
-          enseignantId: userData.enseignant.id_enseignant.toString(),
-        });
-
-        const emploiRes = await fetch(`/api/emploi-temps/public?${params.toString()}`);
-        console.log('📡 Requête emploi du temps:', emploiRes.status);
-        
-        if (emploiRes.ok) {
-          const emploiData = await emploiRes.json();
-          console.log('✅ Emplois du temps récupérés:', emploiData.length, 'séances');
-          setEmplois(emploiData);
-        } else {
-          const errorText = await emploiRes.text();
-          console.error('❌ Erreur API emploi-temps:', errorText);
-          setError('Erreur lors du chargement de l\'emploi du temps');
-        }
-      } else {
-        console.warn('⚠️ Aucun id_enseignant trouvé dans:', userData);
-        setError('Impossible de charger l\'emploi du temps - ID enseignant manquant');
+      if (user.enseignant?.id_enseignant) {
+        const emploiRes = await fetch(`/api/emploi-temps/public?enseignantId=${user.enseignant.id_enseignant}`);
+        const emploiData = await emploiRes.json();
+        setEmplois(emploiData);
       }
-    } catch (err) {
-      console.error('❌ Erreur:', err);
-      setError('Erreur lors du chargement des données');
+    } catch (error) {
+      console.error('Erreur chargement:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStartOfWeek = (date: Date) => {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Lundi
-    return new Date(d.setDate(diff));
-  };
-
-  const getDateForDay = (dayIndex: number) => {
-    const startOfWeek = getStartOfWeek(currentWeek);
-    const date = new Date(startOfWeek);
-    date.setDate(date.getDate() + dayIndex);
-    return date;
-  };
-
-  const getEmploiForSlot = (dayIndex: number, slotStart: number, slotEnd?: number) => {
-    const slotDate = getDateForDay(dayIndex);
-    const slotDateStr = slotDate.toISOString().split('T')[0];
-    
+  const getEmploiForSlot = (dayIndex: number, slotStart: number, slotEnd: number) => {
     return emplois.filter(emploi => {
-      const emploiDate = new Date(emploi.date).toISOString().split('T')[0];
-      if (emploiDate !== slotDateStr) return false;
+      const emploiDate = new Date(emploi.date);
+      const dayOfWeek = emploiDate.getDay();
+      const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      
+      if (adjustedDay !== dayIndex) return false;
       
       const heureDebut = new Date(emploi.heure_debut);
-      // Utiliser getUTCHours et getUTCMinutes pour éviter les problèmes de fuseau horaire
       const emploiHeureDebut = heureDebut.getUTCHours() + heureDebut.getUTCMinutes() / 60;
       
-      // Si slotEnd est fourni, vérifier que la séance commence dans cet intervalle
-      if (slotEnd !== undefined) {
-        return emploiHeureDebut >= slotStart && emploiHeureDebut < slotEnd;
-      }
-      
-      // Sinon, tolérance de 36 minutes
-      return Math.abs(emploiHeureDebut - slotStart) < 0.6;
+      return emploiHeureDebut >= slotStart && emploiHeureDebut < slotEnd;
     });
-  };
-
-  const previousWeek = () => {
-    const newWeek = new Date(currentWeek);
-    newWeek.setDate(newWeek.getDate() - 7);
-    setCurrentWeek(newWeek);
-  };
-
-  const nextWeek = () => {
-    const newWeek = new Date(currentWeek);
-    newWeek.setDate(newWeek.getDate() + 7);
-    setCurrentWeek(newWeek);
-  };
-
-  const formatWeekRange = () => {
-    const start = getStartOfWeek(currentWeek);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    
-    const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-    return `${start.toLocaleDateString('fr-FR', options)} - ${end.toLocaleDateString('fr-FR', options)}`;
   };
 
   const formatTime = (timeString: string) => {
     const date = new Date(timeString);
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' });
+  };
+
+  const stats = {
+    totalCours: emplois.length,
+    heuresTotal: emplois.reduce((acc, emploi) => {
+      const debut = new Date(emploi.heure_debut);
+      const fin = new Date(emploi.heure_fin);
+      return acc + (fin.getTime() - debut.getTime()) / (1000 * 60 * 60);
+    }, 0).toFixed(1),
+    groupes: new Set(emplois.map(e => e.groupe.nom)).size,
+    salles: new Set(emplois.map(e => e.salle.code)).size,
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-      </div>
-    );
+    return <LoadingSpinner color="green" message="Chargement de votre emploi du temps..." />;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-      {/* En-tête avec informations enseignant */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-              Mon Emploi du Temps
-            </h1>
-            {userInfo && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <GraduationCap size={20} />
-                <span>{userInfo.nom} {userInfo.prenom}</span>
-                <span className="text-gray-400">•</span>
-                <span>{userInfo.enseignant?.matricule}</span>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 p-8">
+      <div className="mb-6">
+        <button
+          onClick={() => router.push('/dashboard-enseignant')}
+          className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl border border-white/20 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-xl"
+        >
+          <ArrowLeft size={20} />
+          <span>Retour au Dashboard</span>
+        </button>
+      </div>
+
+      <div className="mb-8 text-center">
+        <div className="inline-flex items-center justify-center gap-3 mb-4">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-2xl shadow-2xl animate-pulse">
+            <Calendar size={40} className="text-white" />
+          </div>
+        </div>
+        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3">
+          Mon Emploi du Temps
+        </h1>
+        {enseignantInfo && (
+          <div className="text-gray-300 text-lg flex items-center justify-center gap-2">
+            <GraduationCap size={24} />
+            <span>{enseignantInfo.prenom} {enseignantInfo.nom}</span>
+            {enseignantInfo.enseignant?.matricule && (
+              <>
+                <span className="text-gray-500"></span>
+                <span className="text-green-400">{enseignantInfo.enseignant.matricule}</span>
+              </>
             )}
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Département</p>
-            <p className="font-semibold text-blue-600">{userInfo?.enseignant?.departement_nom}</p>
+        )}
+        <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-full"></div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+          <div className="flex items-center justify-between mb-3">
+            <BookOpen className="text-green-400" size={32} />
+            <span className="text-4xl font-bold text-white">{stats.totalCours}</span>
           </div>
+          <p className="text-gray-300 font-semibold">Total Cours</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+          <div className="flex items-center justify-between mb-3">
+            <Clock className="text-blue-400" size={32} />
+            <span className="text-4xl font-bold text-white">{stats.heuresTotal}h</span>
+          </div>
+          <p className="text-gray-300 font-semibold">Heures Total</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+          <div className="flex items-center justify-between mb-3">
+            <Users className="text-purple-400" size={32} />
+            <span className="text-4xl font-bold text-white">{stats.groupes}</span>
+          </div>
+          <p className="text-gray-300 font-semibold">Groupes</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+          <div className="flex items-center justify-between mb-3">
+            <MapPin className="text-orange-400" size={32} />
+            <span className="text-4xl font-bold text-white">{stats.salles}</span>
+          </div>
+          <p className="text-gray-300 font-semibold">Salles</p>
         </div>
       </div>
 
-      {/* Message d'erreur */}
-      {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">
-          <p className="font-bold">Erreur</p>
-          <p>{error}</p>
-        </div>
-      )}
-
-      {/* Navigation semaine */}
-      <div className="bg-white rounded-2xl shadow-xl p-4 mb-6">
-        <div className="flex justify-between items-center">
-          <button
-            onClick={previousWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl"
-          >
-            <ChevronLeft size={20} />
-            <span className="hidden sm:inline">Semaine précédente</span>
-          </button>
-          
-          <div className="text-center">
-            <div className="flex items-center gap-2 justify-center text-gray-600 mb-1">
-              <Calendar size={20} />
-              <span className="text-sm">Semaine du</span>
+      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+        <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6">
+          <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-xl">
+              <Calendar size={28} />
             </div>
-            <div className="text-lg font-bold text-gray-800">{formatWeekRange()}</div>
-          </div>
-          
-          <button
-            onClick={nextWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-xl"
-          >
-            <span className="hidden sm:inline">Semaine suivante</span>
-            <ChevronRight size={20} />
-          </button>
+            Emploi du temps de la semaine
+          </h2>
+          <p className="text-white/80 text-sm">Vue hebdomadaire de vos cours</p>
         </div>
-      </div>
 
-      {/* Calendrier */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full border-collapse min-w-[800px]">
+          <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                <th className="border border-blue-300 p-3 text-white font-semibold sticky left-0 bg-blue-600 z-10">
-                  <Clock size={20} className="mx-auto" />
+              <tr className="bg-gradient-to-r from-gray-800 to-gray-900">
+                <th className="border border-gray-700 p-4 sticky left-0 bg-gray-900 z-10 min-w-[150px]">
+                  <div className="flex items-center justify-center gap-2 text-green-400">
+                    <Clock size={24} />
+                    <span className="font-bold">Horaires</span>
+                  </div>
                 </th>
-                {jours.map((jour, index) => {
-                  const date = getDateForDay(index);
-                  const isToday = new Date().toDateString() === date.toDateString();
-                  return (
-                    <th 
-                      key={index} 
-                      className={`border border-blue-300 p-3 text-white font-semibold min-w-[150px] ${
-                        isToday ? 'bg-yellow-500' : ''
-                      }`}
-                    >
-                      <div>{jour}</div>
-                      <div className="text-xs font-normal mt-1">
-                        {date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                      </div>
-                    </th>
-                  );
-                })}
+                {jours.map((jour, i) => (
+                  <th key={i} className="border border-gray-700 p-4 font-bold text-white min-w-[200px]">
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      {jour}
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
-              <tbody>
-                {heures.map((heure, index) => (
-                  <tr key={index} className="hover:bg-blue-50 transition-colors">
-                    <td className="border border-gray-200 p-2 text-sm font-medium text-center sticky left-0 bg-white z-10">
-                      <div className="flex flex-col items-center">
-                        <span className="text-blue-600 font-bold">{heure.label}</span>
+            <tbody>
+              {heures.map((heure, i) => (
+                <tr key={i} className={heure.isPause ? 'bg-orange-500/20' : 'hover:bg-white/5 transition-colors'}>
+                  <td className={`border border-gray-700 p-4 text-center font-bold sticky left-0 z-10 ${
+                    heure.isPause ? 'bg-orange-500/30 text-orange-200' : 'bg-gray-800/50 text-green-300'
+                  }`}>
+                    <div className="flex items-center justify-center gap-2">
+                      {!heure.isPause && <Clock size={16} />}
+                      {heure.label}
+                    </div>
+                  </td>
+                  {heure.isPause ? (
+                    <td colSpan={6} className="border border-gray-700 p-6 text-center">
+                      <div className="inline-flex items-center gap-3 bg-orange-500/30 px-8 py-4 rounded-2xl backdrop-blur-sm">
+                        <span className="text-3xl"></span>
+                        <span className="text-orange-200 font-bold text-lg">PAUSE DÉJEUNER</span>
                       </div>
                     </td>
-                    {jours.map((_, dayIndex) => {
+                  ) : (
+                    jours.map((_, dayIndex) => {
                       const emploisSlot = getEmploiForSlot(dayIndex, heure.start, heure.end);
-                      const hasMultiple = emploisSlot.length > 1;
-                    
-                    return (
-                      <td
-                        key={dayIndex}
-                        className={`border border-gray-200 p-1 align-top ${
-                          emploisSlot.length > 0 ? 'bg-gradient-to-br from-blue-50 to-indigo-50' : 'bg-white'
-                        }`}
-                      >
-                        {emploisSlot.map((emploi) => (
-                          <div
-                            key={emploi.id_emploi}
-                            className={`bg-gradient-to-br from-blue-500 to-indigo-500 text-white rounded-lg p-2 mb-1 shadow-md hover:shadow-lg transition-all ${
-                              hasMultiple ? 'text-xs' : 'text-sm'
-                            }`}
-                          >
-                            {/* Matière */}
-                            <div className="font-bold mb-1 flex items-start gap-1">
-                              <BookOpen size={14} className="flex-shrink-0 mt-0.5" />
-                              <span className="line-clamp-2">{emploi.matiere.nom}</span>
+                      return (
+                        <td key={dayIndex} className="border border-gray-700 p-2">
+                          {emploisSlot.length > 0 ? (
+                            <div className="space-y-2">
+                              {emploisSlot.map((emploi) => (
+                                <div key={emploi.id_emploi} className="relative group">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
+                                  <div className="relative bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                                    <div className="font-bold text-sm mb-2 flex items-center gap-2">
+                                      <div className="bg-white/20 p-1 rounded">
+                                        <BookOpen size={14} />
+                                      </div>
+                                      <span className="line-clamp-1">{emploi.matiere.nom}</span>
+                                    </div>
+                                    <div className="text-xs opacity-90 flex items-center gap-1 mb-1 bg-white/10 px-2 py-1 rounded">
+                                      <Users size={12} />
+                                      <span className="line-clamp-1">{emploi.groupe.nom}</span>
+                                    </div>
+                                    <div className="text-xs opacity-90 flex items-center gap-1 mb-1 bg-white/10 px-2 py-1 rounded">
+                                      <Clock size={12} />
+                                      <span>{formatTime(emploi.heure_debut)} - {formatTime(emploi.heure_fin)}</span>
+                                    </div>
+                                    <div className="text-xs opacity-90 flex items-center gap-1 bg-white/10 px-2 py-1 rounded">
+                                      <MapPin size={12} />
+                                      <span>{emploi.salle.code}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                            
-                            {/* Groupe */}
-                            <div className="flex items-center gap-1 text-xs opacity-90 mb-1">
-                              <Users size={12} />
-                              <span>{emploi.groupe.nom}</span>
-                              {!hasMultiple && (
-                                <span className="ml-1">• {emploi.matiere.niveau.nom}</span>
-                              )}
-                            </div>
-                            
-                            {/* Horaire */}
-                            <div className="flex items-center gap-1 text-xs opacity-90 mb-1">
-                              <Clock size={12} />
-                              <span>{formatTime(emploi.heure_debut)} - {formatTime(emploi.heure_fin)}</span>
-                            </div>
-                            
-                            {/* Salle */}
-                            {emploi.salle && (
-                              <div className="flex items-center gap-1 text-xs opacity-90">
-                                <MapPin size={12} />
-                                <span>{emploi.salle.code}</span>
-                                {!hasMultiple && (
-                                  <span className="ml-1">({emploi.salle.type})</span>
-                                )}
+                          ) : (
+                            <div className="h-24 flex items-center justify-center text-gray-500 text-xs rounded-lg bg-gray-800/20 border border-dashed border-gray-700">
+                              <div className="text-center">
+                                <div className="text-2xl mb-1"></div>
+                                <div>Libre</div>
                               </div>
-                            )}
-                          </div>
-                        ))}
-                      </td>
-                    );
-                  })}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        {emplois.length === 0 && (
+          <div className="p-12 text-center bg-gradient-to-br from-gray-800/50 to-gray-900/50">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-4">
+              <Calendar size={48} className="text-green-400" />
+            </div>
+            <p className="text-gray-300 text-lg font-semibold">Aucun cours programmé</p>
+            <p className="text-gray-500 text-sm mt-2">Votre emploi du temps est vide pour le moment</p>
+          </div>
+        )}
       </div>
 
-      {/* Statistiques de la semaine */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-blue-500 to-indigo-500 p-3 rounded-lg">
-              <BookOpen className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total de cours</p>
-              <p className="text-2xl font-bold text-gray-800">{emplois.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-3 rounded-lg">
-              <Clock className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Heures de cours</p>
-              <p className="text-2xl font-bold text-gray-800">
-                {emplois.reduce((acc, emploi) => {
-                  const debut = new Date(emploi.heure_debut);
-                  const fin = new Date(emploi.heure_fin);
-                  return acc + (fin.getTime() - debut.getTime()) / (1000 * 60 * 60);
-                }, 0).toFixed(1)}h
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-3 rounded-lg">
-              <Users className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Groupes différents</p>
-              <p className="text-2xl font-bold text-gray-800">
-                {new Set(emplois.map(e => e.groupe.nom)).size}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-orange-500 to-red-500 p-3 rounded-lg">
-              <MapPin className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Salles différentes</p>
-              <p className="text-2xl font-bold text-gray-800">
-                {new Set(emplois.map(e => e.salle?.code).filter(Boolean)).size}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Liste des matières enseignées cette semaine */}
       {emplois.length > 0 && (
-        <div className="mt-6 bg-white rounded-2xl shadow-xl p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <BookOpen size={24} className="text-blue-600" />
-            Matières enseignées cette semaine
+        <div className="mt-8 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-white/20">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <BookOpen size={28} className="text-green-400" />
+            Matières enseignées
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {Array.from(new Set(emplois.map(e => JSON.stringify({ 
-              nom: e.matiere.nom, 
-              niveau: e.matiere.niveau.nom 
-            }))))
-              .map(str => JSON.parse(str))
-              .map((matiere, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from(new Set(emplois.map(e => e.matiere.nom))).map((matiere, index) => {
+              const count = emplois.filter(e => e.matiere.nom === matiere).length;
+              return (
                 <div 
                   key={index}
-                  className="border-l-4 border-blue-500 bg-blue-50 p-3 rounded"
+                  className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-l-4 border-green-500 p-4 rounded-xl backdrop-blur-sm hover:from-green-600/30 hover:to-emerald-600/30 transition-all"
                 >
-                  <p className="font-semibold text-gray-800">{matiere.nom}</p>
-                  <p className="text-sm text-gray-600">{matiere.niveau}</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {emplois.filter(e => e.matiere.nom === matiere.nom).length} séance(s)
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-bold text-white text-lg">{matiere}</p>
+                      <p className="text-sm text-gray-400 mt-1">{count} séance(s)</p>
+                    </div>
+                    <div className="bg-green-500/30 px-3 py-1 rounded-full">
+                      <span className="text-green-300 font-bold">{count}</span>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         </div>
       )}

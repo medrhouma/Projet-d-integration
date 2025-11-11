@@ -8,6 +8,7 @@ import {
   TrendingUp, Activity
 } from 'lucide-react';
 import Link from 'next/link';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Stats {
   etudiants: number;
@@ -126,11 +127,9 @@ export default function DashboardAdmin() {
     router.push('/login');
   };
 
-  if (isLoading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-    </div>
-  );
+  if (isLoading) {
+    return <LoadingSpinner color="indigo" message="Chargement du tableau de bord..." />;
+  }
 
   const menuItems = [
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-admin' },

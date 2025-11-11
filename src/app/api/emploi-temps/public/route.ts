@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     
     // Récupération des filtres
+    const departementId = searchParams.get('departementId');
     const groupeId = searchParams.get('groupeId');
     const enseignantId = searchParams.get('enseignantId');
     const salleId = searchParams.get('salleId');
@@ -41,6 +42,17 @@ export async function GET(request: NextRequest) {
 
     // Construction de la requête
     const where: any = {};
+
+    if (departementId) {
+      // Filtrer par département via la relation groupe -> niveau -> specialite -> departement
+      where.groupe = {
+        niveau: {
+          specialite: {
+            id_departement: parseInt(departementId)
+          }
+        }
+      };
+    }
 
     if (groupeId) {
       where.id_groupe = parseInt(groupeId);

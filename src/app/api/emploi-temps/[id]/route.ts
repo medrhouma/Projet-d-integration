@@ -2,6 +2,83 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { withChefDepartement, AuthUser, canAccessDepartement } from '@/middleware/auth';
 
+// GET - Récupérer un emploi du temps spécifique
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: idParam } = await params;
+    const id = parseInt(idParam);
+
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'ID invalide' },
+        { status: 400 }
+      );
+    }
+
+    const emploi = await prisma.emploiTemps.findUnique({
+      where: { id_emploi: id },
+      include: {
+        matiere: {
+          select: {
+            id_matiere: true,
+            nom: true,
+          }
+        },
+        salle: {
+          select: {
+            id_salle: true,
+            code: true,
+            type: true,
+            capacite: true,
+          }
+        },
+        groupe: {
+          select: {
+            id_groupe: true,
+            nom: true,
+            niveau: {
+              select: {
+                nom: true,
+              }
+            }
+          }
+        },
+        enseignant: {
+          select: {
+            id_enseignant: true,
+            matricule: true,
+            utilisateur: {
+              select: {
+                nom: true,
+                prenom: true,
+                email: true,
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!emploi) {
+      return NextResponse.json(
+        { error: 'Séance non trouvée' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(emploi);
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la séance:', error);
+    return NextResponse.json(
+      { error: 'Erreur serveur' },
+      { status: 500 }
+    );
+  }
+}
+
 // Fonction pour détecter les conflits d'emploi du temps
 async function detecterConflits(data: {
   date: Date;

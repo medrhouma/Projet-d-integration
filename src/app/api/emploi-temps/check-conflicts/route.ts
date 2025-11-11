@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { 
-      date, 
+      jour, // 0-5 pour Lundi-Samedi
       heure_debut, 
       heure_fin, 
       id_salle, 
@@ -14,36 +14,34 @@ export async function POST(request: NextRequest) {
       id_emploi // Pour exclure la séance actuelle lors de la modification
     } = body;
 
-    if (!date || !heure_debut || !heure_fin) {
+    if (jour === undefined || !heure_debut || !heure_fin) {
       return NextResponse.json(
         { error: 'Paramètres manquants' },
         { status: 400 }
       );
     }
 
-    const conflicts: any = {
-      hasConflict: false,
-      salleConflict: null,
-      enseignantConflict: null,
-      groupeConflict: null,
+    const conflits: any[] = [];
+
+    // Fonction pour comparer les horaires (format "HH:MM")
+    const hasTimeOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+      const [h1Start, m1Start] = start1.split(':').map(Number);
+      const [h1End, m1End] = end1.split(':').map(Number);
+      const [h2Start, m2Start] = start2.split(':').map(Number);
+      const [h2End, m2End] = end2.split(':').map(Number);
+
+      const time1Start = h1Start * 60 + m1Start;
+      const time1End = h1End * 60 + m1End;
+      const time2Start = h2Start * 60 + m2Start;
+      const time2End = h2End * 60 + m2End;
+
+      return time1Start < time2End && time2Start < time1End;
     };
 
-    // Convertir les dates
-    const checkDate = new Date(date);
-    const checkHeureDebut = new Date(heure_debut);
-    const checkHeureFin = new Date(heure_fin);
-
-    // Fonction pour vérifier si deux créneaux horaires se chevauchent
-    const hasTimeOverlap = (start1: Date, end1: Date, start2: Date, end2: Date) => {
-      return start1 < end2 && start2 < end1;
-    };
-
-    // Récupérer toutes les séances pour la même date
-    const emploisDuJour = await prisma.emploiTemps.findMany({
-      where: {
-        date: checkDate,
-        ...(id_emploi ? { NOT: { id_emploi: parseInt(id_emploi) } } : {}),
-      },
+    // Récupérer toutes les séances du département
+    // On filtre ensuite côté application car Prisma ne peut pas filtrer par jour de la semaine facilement
+    const allEmplois = await prisma.emploiTemps.findMany({
+      where: id_emploi ? { NOT: { id_emploi: parseInt(id_emploi) } } : {},
       include: {
         salle: true,
         enseignant: {
@@ -56,54 +54,52 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Filtrer pour le même jour de la semaine
+    const emploisDuJour = allEmplois.filter(emploi => {
+      const emploiDate = new Date(emploi.date);
+      const emploiJour = emploiDate.getDay(); // 0 = Dimanche, 1 = Lundi, ...
+      // Convertir notre index (0 = Lundi) au format de getDay (1 = Lundi)
+      const targetDay = jour === 6 ? 0 : jour + 1; // Samedi = 0 (Dimanche dans getDay)
+      return emploiJour === targetDay;
+    });
+
     // Vérifier les conflits
     for (const emploi of emploisDuJour) {
-      const emploiDebut = new Date(emploi.heure_debut);
-      const emploiFin = new Date(emploi.heure_fin);
+      // Convertir les DateTime en string HH:MM en UTC pour éviter les décalages de fuseau horaire
+      const debutDate = new Date(emploi.heure_debut);
+      const finDate = new Date(emploi.heure_fin);
+      const emploiHeureDebut = `${String(debutDate.getUTCHours()).padStart(2, '0')}:${String(debutDate.getUTCMinutes()).padStart(2, '0')}`;
+      const emploiHeureFin = `${String(finDate.getUTCHours()).padStart(2, '0')}:${String(finDate.getUTCMinutes()).padStart(2, '0')}`;
 
       // Vérifier si les horaires se chevauchent
-      if (hasTimeOverlap(checkHeureDebut, checkHeureFin, emploiDebut, emploiFin)) {
+      if (hasTimeOverlap(heure_debut, heure_fin, emploiHeureDebut, emploiHeureFin)) {
         // Conflit de salle
         if (id_salle && emploi.id_salle === parseInt(id_salle)) {
-          conflicts.hasConflict = true;
-          conflicts.salleConflict = {
-            salle: emploi.salle?.code || 'Inconnue',
-            matiere: emploi.matiere.nom,
-            groupe: emploi.groupe.nom,
-            heure_debut: emploi.heure_debut,
-            heure_fin: emploi.heure_fin,
-          };
+          conflits.push({
+            type: 'salle',
+            message: `La salle ${emploi.salle?.code} est déjà occupée de ${emploiHeureDebut} à ${emploiHeureFin} par ${emploi.groupe.nom} (${emploi.matiere.nom})`,
+          });
         }
 
         // Conflit d'enseignant
         if (id_enseignant && emploi.id_enseignant === parseInt(id_enseignant)) {
-          conflicts.hasConflict = true;
-          conflicts.enseignantConflict = {
-            enseignant: `${emploi.enseignant?.utilisateur?.nom} ${emploi.enseignant?.utilisateur?.prenom}`,
-            matiere: emploi.matiere.nom,
-            groupe: emploi.groupe.nom,
-            salle: emploi.salle?.code || 'Inconnue',
-            heure_debut: emploi.heure_debut,
-            heure_fin: emploi.heure_fin,
-          };
+          conflits.push({
+            type: 'enseignant',
+            message: `${emploi.enseignant?.utilisateur?.nom} ${emploi.enseignant?.utilisateur?.prenom} a déjà un cours de ${emploiHeureDebut} à ${emploiHeureFin} avec ${emploi.groupe.nom}`,
+          });
         }
 
         // Conflit de groupe
         if (id_groupe && emploi.id_groupe === parseInt(id_groupe)) {
-          conflicts.hasConflict = true;
-          conflicts.groupeConflict = {
-            groupe: emploi.groupe.nom,
-            matiere: emploi.matiere.nom,
-            enseignant: `${emploi.enseignant?.utilisateur?.nom} ${emploi.enseignant?.utilisateur?.prenom}`,
-            salle: emploi.salle?.code || 'Inconnue',
-            heure_debut: emploi.heure_debut,
-            heure_fin: emploi.heure_fin,
-          };
+          conflits.push({
+            type: 'groupe',
+            message: `Le groupe ${emploi.groupe.nom} a déjà un cours de ${emploiHeureDebut} à ${emploiHeureFin} (${emploi.matiere.nom})`,
+          });
         }
       }
     }
 
-    return NextResponse.json(conflicts);
+    return NextResponse.json({ conflits });
   } catch (error) {
     console.error('❌ Erreur check-conflicts:', error);
     return NextResponse.json(
