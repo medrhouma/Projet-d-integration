@@ -213,19 +213,19 @@ export default function EmploiTempsChefPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500"></div>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       {/* En-tête */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Emploi du Temps du Département
             </h1>
             <p className="text-gray-600">
@@ -233,7 +233,7 @@ export default function EmploiTempsChefPage() {
             </p>
           </div>
           <Link href="/dashboard-chef-departement/emploi-temps/gestion">
-            <button className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-lg hover:shadow-xl">
+            <button className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all shadow-sm">
               <Calendar size={20} />
               <span className="font-semibold">Gérer l'emploi du temps</span>
             </button>
@@ -243,17 +243,17 @@ export default function EmploiTempsChefPage() {
 
       {/* Message d'erreur */}
       {error && (
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-6">
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
           <p className="font-bold">Erreur</p>
           <p>{error}</p>
         </div>
       )}
 
       {/* Filtres */}
-      <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
         <div className="flex items-center gap-2 mb-4">
-          <Filter size={20} className="text-indigo-600" />
-          <h2 className="text-xl font-bold text-gray-800">Filtres</h2>
+          <Filter size={20} className="text-orange-600" />
+          <h2 className="text-xl font-bold text-gray-900">Filtres</h2>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -262,7 +262,7 @@ export default function EmploiTempsChefPage() {
               Mode d'affichage
             </label>
             <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               value={viewMode}
               onChange={(e) => {
                 setViewMode(e.target.value as 'groupe' | 'enseignant' | 'all');
@@ -281,7 +281,7 @@ export default function EmploiTempsChefPage() {
                 Groupe
               </label>
               <select
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 value={selectedGroupe || ''}
                 onChange={(e) => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
               >
@@ -301,7 +301,7 @@ export default function EmploiTempsChefPage() {
                 Enseignant
               </label>
               <select
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 value={selectedEnseignant || ''}
                 onChange={(e) => setSelectedEnseignant(e.target.value ? parseInt(e.target.value) : null)}
               >
@@ -318,7 +318,7 @@ export default function EmploiTempsChefPage() {
           <div className="flex items-end">
             <button
               onClick={resetFilters}
-              className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Réinitialiser
             </button>
@@ -327,11 +327,11 @@ export default function EmploiTempsChefPage() {
       </div>
 
       {/* Navigation semaine */}
-      <div className="bg-white rounded-2xl shadow-xl p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
         <div className="flex justify-between items-center">
           <button
             onClick={previousWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
           >
             <ChevronLeft size={20} />
             <span className="hidden sm:inline">Semaine précédente</span>
@@ -342,12 +342,12 @@ export default function EmploiTempsChefPage() {
               <Calendar size={20} />
               <span className="text-sm">Semaine du</span>
             </div>
-            <div className="text-lg font-bold text-gray-800">{formatWeekRange()}</div>
+            <div className="text-lg font-bold text-gray-900">{formatWeekRange()}</div>
           </div>
           
           <button
             onClick={nextWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl"
+            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
           >
             <span className="hidden sm:inline">Semaine suivante</span>
             <ChevronRight size={20} />
@@ -356,12 +356,12 @@ export default function EmploiTempsChefPage() {
       </div>
 
       {/* Calendrier */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-gradient-to-r from-indigo-600 to-purple-600">
-                <th className="border border-indigo-300 p-3 text-white font-semibold sticky left-0 bg-indigo-600 z-10">
+              <tr className="bg-orange-600">
+                <th className="border border-orange-300 p-3 text-white font-semibold sticky left-0 bg-orange-600 z-10">
                   <Clock size={20} className="mx-auto" />
                 </th>
                 {jours.map((jour, index) => {
@@ -370,8 +370,8 @@ export default function EmploiTempsChefPage() {
                   return (
                     <th 
                       key={index} 
-                      className={`border border-indigo-300 p-3 text-white font-semibold min-w-[180px] ${
-                        isToday ? 'bg-yellow-500' : ''
+                      className={`border border-orange-300 p-3 text-white font-semibold min-w-[180px] ${
+                        isToday ? 'bg-orange-700' : ''
                       }`}
                     >
                       <div>{jour}</div>
@@ -385,12 +385,12 @@ export default function EmploiTempsChefPage() {
             </thead>
             <tbody>
               {heures.map((heure) => (
-                <tr key={heure} className="hover:bg-indigo-50 transition-colors">
+                <tr key={heure} className="hover:bg-gray-50 transition-colors">
                   <td className="border border-gray-200 p-2 text-sm font-medium text-center sticky left-0 bg-white z-10">
                     <div className="flex flex-col items-center">
-                      <span className="text-indigo-600 font-bold">{heure}h</span>
+                      <span className="text-orange-600 font-bold">{heure}h</span>
                       <span className="text-gray-400 text-xs">-</span>
-                      <span className="text-indigo-600 font-bold">{heure + 1}h</span>
+                      <span className="text-orange-600 font-bold">{heure + 1}h</span>
                     </div>
                   </td>
                   {jours.map((_, dayIndex) => {
@@ -400,13 +400,13 @@ export default function EmploiTempsChefPage() {
                       <td
                         key={dayIndex}
                         className={`border border-gray-200 p-1 align-top ${
-                          emploisSlot.length > 0 ? 'bg-gradient-to-br from-indigo-50 to-purple-50' : 'bg-white'
+                          emploisSlot.length > 0 ? 'bg-orange-50' : 'bg-white'
                         }`}
                       >
                         {emploisSlot.map((emploi) => (
                           <div
                             key={emploi.id_emploi}
-                            className="bg-gradient-to-br from-indigo-500 to-purple-500 text-white rounded-lg p-2 mb-1 shadow-md hover:shadow-lg transition-all text-xs"
+                            className="bg-orange-600 text-white rounded-lg p-2 mb-1 shadow-sm hover:shadow-md transition-all text-xs border-l-4 border-orange-700"
                           >
                             {/* Matière */}
                             <div className="font-bold mb-1 flex items-start gap-1">
@@ -448,26 +448,26 @@ export default function EmploiTempsChefPage() {
 
       {/* Statistiques */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-500 p-3 rounded-lg">
+            <div className="bg-orange-600 p-3 rounded-lg">
               <BookOpen className="text-white" size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-600">Total séances</p>
-              <p className="text-2xl font-bold text-gray-800">{emplois.length}</p>
+              <p className="text-2xl font-bold text-orange-600">{emplois.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-3 rounded-lg">
+            <div className="bg-orange-600 p-3 rounded-lg">
               <Clock className="text-white" size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-600">Heures totales</p>
-              <p className="text-2xl font-bold text-gray-800">
+              <p className="text-2xl font-bold text-orange-600">
                 {emplois.reduce((acc, emploi) => {
                   const debut = new Date(emploi.heure_debut);
                   const fin = new Date(emploi.heure_fin);
@@ -478,28 +478,28 @@ export default function EmploiTempsChefPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-3 rounded-lg">
+            <div className="bg-orange-600 p-3 rounded-lg">
               <Users className="text-white" size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-600">Groupes actifs</p>
-              <p className="text-2xl font-bold text-gray-800">
+              <p className="text-2xl font-bold text-orange-600">
                 {new Set(emplois.map(e => e.groupe.nom)).size}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-orange-500 to-red-500 p-3 rounded-lg">
+            <div className="bg-orange-600 p-3 rounded-lg">
               <MapPin className="text-white" size={24} />
             </div>
             <div>
               <p className="text-sm text-gray-600">Salles utilisées</p>
-              <p className="text-2xl font-bold text-gray-800">
+              <p className="text-2xl font-bold text-orange-600">
                 {new Set(emplois.map(e => e.salle?.code).filter(Boolean)).size}
               </p>
             </div>

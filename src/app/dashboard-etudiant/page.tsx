@@ -198,18 +198,20 @@ const checkAuth = async () => {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900/50 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl">
-        <div className="p-6 flex items-center space-x-3 border-b border-white/10 bg-gradient-to-r from-blue-600/20 via-blue-500/20 to-purple-600/20">
-          <div className="w-10 h-10 bg-white/20 backdrop-blur-lg rounded-lg flex items-center justify-center shadow-lg border border-white/30">
-            <GraduationCap className="w-6 h-6 text-blue-300" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Espace Étudiant
-            </h1>
-            <p className="text-xs text-blue-200">ISET Tozeur</p>
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+              <GraduationCap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">
+                Espace Étudiant
+              </h1>
+              <p className="text-xs text-gray-500">ISET Tozeur</p>
+            </div>
           </div>
         </div>
 
@@ -218,10 +220,10 @@ const checkAuth = async () => {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${
+              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
                 pathname === item.href
-                  ? 'bg-blue-500/30 text-white font-medium shadow-lg border-l-4 border-blue-400 backdrop-blur-lg'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white hover:backdrop-blur-lg'
+                  ? 'bg-blue-50 text-blue-700 font-medium'
+                  : 'text-gray-700 hover:bg-gray-100'
               }`}
             >
               {item.icon}
@@ -230,24 +232,24 @@ const checkAuth = async () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/10 bg-gray-900/30">
-          <div className="flex items-center space-x-3 mb-4 p-3 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg border border-white/20">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+        <div className="p-4 border-t border-gray-200">
+          <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">
                 {getInitiales()}
               </span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
+              <p className="text-sm font-semibold text-gray-900 truncate">
                 {getPrenom()} {getNom()}
               </p>
-              <p className="text-xs text-gray-400 truncate">Étudiant</p>
+              <p className="text-xs text-gray-500 truncate">Étudiant</p>
             </div>
           </div>
          
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-medium text-white bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 rounded-xl transition-all hover:shadow-lg backdrop-blur-lg"
+            className="w-full flex items-center justify-center space-x-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
             <span>Déconnexion</span>
@@ -256,27 +258,25 @@ const checkAuth = async () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-8 overflow-y-auto bg-white">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 pb-6 border-b border-gray-200">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                Bonjour, {getPrenom()}  👋
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Bonjour, {getPrenom()} 👋
               </h1>
-              <p className="text-gray-300 flex items-center gap-2">
-                <Clock className="w-4 h-4" />
+              <p className="text-gray-600">
                 {new Date().toLocaleDateString('fr-FR', { 
                   weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                  day: 'numeric',
+                  month: 'long'
                 })}
               </p>
             </div>
             <Link
               href="/dashboard-etudiant/profil"
-              className="px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg border border-white/20 text-white rounded-xl transition-all hover:scale-105 flex items-center gap-2 shadow-lg"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2"
             >
               <User className="w-4 h-4" />
               Mon Profil
@@ -285,10 +285,10 @@ const checkAuth = async () => {
         </div>
 
         {/* Carte de profil rapide */}
-        <div className="bg-gradient-to-r from-blue-600/20 via-blue-500/20 to-purple-600/20 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 text-white mb-8">
+        <div className="bg-blue-600 rounded-lg p-6 text-white mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 bg-white/20 backdrop-blur-lg border-4 border-white/30 rounded-full flex items-center justify-center shadow-xl">
+              <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
                 <span className="text-white text-3xl font-bold">
                   {getInitiales()}
                 </span>
@@ -297,32 +297,34 @@ const checkAuth = async () => {
                 <h2 className="text-2xl font-bold mb-1">
                   {getNom()} {getPrenom()}
                 </h2>
-                <p className="text-blue-200 mb-2">
+                <p className="text-blue-100 mb-2">
                   N° Inscription: {etudiant?.numero_inscription || 'N/A'}
                 </p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                  <span className="flex items-center gap-1">
                     <BookOpen className="w-4 h-4" />
                     {etudiant?.specialite_nom || 'N/A'}
                   </span>
                   {etudiant?.niveau_nom && (
-                    <span className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
-                      {etudiant.niveau_nom}
-                    </span>
+                    <>
+                      <span>•</span>
+                      <span>{etudiant.niveau_nom}</span>
+                    </>
                   )}
                   {etudiant?.groupe_nom && (
-                    <span className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
-                      {etudiant.groupe_nom}
-                    </span>
+                    <>
+                      <span>•</span>
+                      <span>{etudiant.groupe_nom}</span>
+                    </>
                   )}
                 </div>
               </div>
             </div>
             <Link
               href="/dashboard-etudiant/profil"
-              className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-lg border border-white/30 text-white rounded-xl transition-all font-medium hover:scale-105 shadow-lg"
+              className="px-4 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all font-medium"
             >
-              Voir mon profil complet →
+              Voir mon profil →
             </Link>
           </div>
         </div>
@@ -332,16 +334,16 @@ const checkAuth = async () => {
           {statCards.map((stat, index) => (
             <div
               key={index}
-              className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all transform hover:-translate-y-1 hover:bg-white/20"
+              className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-blue-500 transition-all"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 bg-${stat.color}-500/20 backdrop-blur-lg border border-${stat.color}-400/30 rounded-xl flex items-center justify-center`}>
-                  <div className={`text-${stat.color}-400`}>{stat.icon}</div>
+                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                  <div className="text-blue-600">{stat.icon}</div>
                 </div>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-300 mb-1">{stat.label}</p>
-                <p className="text-3xl font-bold text-white">{stat.value}</p>
+                <p className="text-sm font-medium text-gray-600 mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
               </div>
             </div>
           ))}
@@ -350,45 +352,44 @@ const checkAuth = async () => {
         {/* Prochains cours et Activités récentes */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Prochains cours */}
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-blue-400" />
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               Prochains Cours
             </h2>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-4 bg-blue-500/20 backdrop-blur-sm border border-blue-400/30 rounded-xl hover:bg-blue-500/30 transition-all">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">Programmation Web</p>
-                    <p className="text-sm text-blue-200">Aujourd'hui à 10:00 - Salle A101</p>
+                    <p className="font-medium text-gray-900">Programmation Web</p>
+                    <p className="text-sm text-gray-500">Aujourd'hui à 10:00 - Salle A101</p>
                   </div>
                 </div>
-                <span className="bg-blue-500/30 backdrop-blur-lg border border-blue-400/30 text-blue-100 text-xs px-3 py-1 rounded-full font-medium">
+                <span className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium">
                   Dans 2h
                 </span>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl hover:bg-green-500/30 transition-all">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <p className="font-medium text-white">Base de Données</p>
-                    <p className="text-sm text-green-200">Aujourd'hui à 14:00 - Salle B202</p>
+                    <p className="font-medium text-gray-900">Base de Données</p>
+                    <p className="text-sm text-gray-500">Aujourd'hui à 14:00 - Salle B202</p>
                   </div>
                 </div>
-                <span className="bg-green-500/30 backdrop-blur-lg border border-green-400/30 text-green-100 text-xs px-3 py-1 rounded-full font-medium">
+                <span className="bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-medium">
                   Dans 6h
                 </span>
               </div>
 
               <Link
                 href="/dashboard-etudiant/emploi-temps"
-                className="block text-center py-3 text-blue-400 hover:text-blue-300 font-medium text-sm"
+                className="block text-center py-3 text-blue-600 hover:text-blue-700 font-medium text-sm"
               >
                 Voir tout l'emploi du temps →
               </Link>
@@ -396,36 +397,35 @@ const checkAuth = async () => {
           </div>
 
           {/* Activités récentes */}
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-purple-400" />
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
               Activités Récentes
             </h2>
             <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl">
-                <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">Note disponible</p>
-                  <p className="text-sm text-gray-300">Examen de Programmation Web - 16/20</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 2 heures</p>
+                  <p className="font-medium text-gray-900">Note disponible</p>
+                  <p className="text-sm text-gray-600">Examen de Programmation Web - 16/20</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 2 heures</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-yellow-500/20 backdrop-blur-sm border border-yellow-400/30 rounded-xl">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">Nouveau devoir</p>
-                  <p className="text-sm text-gray-300">TP Base de Données - À rendre le 20/12</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 1 jour</p>
+                  <p className="font-medium text-gray-900">Nouveau devoir</p>
+                  <p className="text-sm text-gray-600">TP Base de Données - À rendre le 20/12</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 1 jour</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-xl">
-                <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+              <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
                 <div className="flex-1">
-                  <p className="font-medium text-white">Absence enregistrée</p>
-                  <p className="text-sm text-gray-300">Cours de Réseaux - 10/12/2024</p>
-                  <p className="text-xs text-gray-400 mt-1">Il y a 2 jours</p>
+                  <p className="font-medium text-gray-900">Absence enregistrée</p>
+                  <p className="text-sm text-gray-600">Cours de Réseaux - 10/12/2024</p>
+                  <p className="text-xs text-gray-500 mt-1">Il y a 2 jours</p>
                 </div>
               </div>
             </div>

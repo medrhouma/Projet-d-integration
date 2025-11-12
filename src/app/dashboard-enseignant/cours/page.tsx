@@ -135,12 +135,12 @@ export default function MesCours() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       {/* Bouton retour */}
       <div className="mb-6">
         <button
           onClick={() => router.push('/dashboard-enseignant')}
-          className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl border border-white/20 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-xl"
+          className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 text-gray-900 font-semibold transition-colors shadow-sm"
         >
           <ArrowLeft size={20} />
           <span>Retour au Dashboard</span>
@@ -148,56 +148,57 @@ export default function MesCours() {
       </div>
 
       {/* Header */}
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center gap-3 mb-4">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-2xl shadow-2xl animate-pulse">
-            <BookOpen size={40} className="text-white" />
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-green-100 p-3 rounded-lg">
+            <BookOpen size={32} className="text-green-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Mes Cours
+            </h1>
+            <p className="text-gray-600">Gérez tous vos cours et suivez la progression</p>
           </div>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3">
-          Mes Cours
-        </h1>
-        <p className="text-gray-300 text-lg">Gérez tous vos cours et suivez la progression</p>
-        <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-full"></div>
       </div>
 
       {/* Statistiques */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <BookOpen className="text-green-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.totalCours}</span>
+            <BookOpen className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.totalCours}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Total Cours</p>
+          <p className="text-gray-600 font-semibold">Total Cours</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <Users className="text-blue-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.totalEtudiants}</span>
+            <Users className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.totalEtudiants}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Étudiants</p>
+          <p className="text-gray-600 font-semibold">Étudiants</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <Clock className="text-purple-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.totalHeures}h</span>
+            <Clock className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.totalHeures}h</span>
           </div>
-          <p className="text-gray-300 font-semibold">Heures Total</p>
+          <p className="text-gray-600 font-semibold">Heures Total</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <TrendingUp className="text-orange-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.progressionMoyenne}%</span>
+            <TrendingUp className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.progressionMoyenne}%</span>
           </div>
-          <p className="text-gray-300 font-semibold">Progression Moy.</p>
+          <p className="text-gray-600 font-semibold">Progression Moy.</p>
         </div>
       </div>
 
       {/* Filtres et recherche */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20 mb-6">
+      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Barre de recherche */}
           <div className="flex-1 relative">
@@ -207,7 +208,7 @@ export default function MesCours() {
               placeholder="Rechercher un cours ou un groupe..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-green-400 transition-colors"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors"
             />
           </div>
 
@@ -216,11 +217,11 @@ export default function MesCours() {
             <select
               value={filterMatiere}
               onChange={(e) => setFilterMatiere(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-green-400 transition-colors cursor-pointer"
+              className="appearance-none px-4 py-3 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors cursor-pointer"
             >
-              <option value="all" className="bg-gray-800">Toutes les matières</option>
+              <option value="all">Toutes les matières</option>
               {matieres.map((matiere, index) => (
-                <option key={index} value={matiere} className="bg-gray-800">{matiere}</option>
+                <option key={index} value={matiere}>{matiere}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
@@ -231,11 +232,11 @@ export default function MesCours() {
             <select
               value={filterGroupe}
               onChange={(e) => setFilterGroupe(e.target.value)}
-              className="appearance-none px-4 py-3 pr-10 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:border-green-400 transition-colors cursor-pointer"
+              className="appearance-none px-4 py-3 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors cursor-pointer"
             >
-              <option value="all" className="bg-gray-800">Tous les groupes</option>
+              <option value="all">Tous les groupes</option>
               {groupes.map((groupe, index) => (
-                <option key={index} value={groupe} className="bg-gray-800">{groupe}</option>
+                <option key={index} value={groupe}>{groupe}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
@@ -249,7 +250,7 @@ export default function MesCours() {
                 setFilterMatiere('all');
                 setFilterGroupe('all');
               }}
-              className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 rounded-xl text-white transition-all"
+              className="px-4 py-3 bg-red-100 hover:bg-red-200 border border-red-300 rounded-lg text-red-700 transition-colors"
             >
               Réinitialiser
             </button>
@@ -258,8 +259,8 @@ export default function MesCours() {
       </div>
 
       {/* Liste des cours */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 overflow-hidden">
-        <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-green-600 text-white p-6">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Filter size={24} />
             Cours ({filteredCours.length})
@@ -268,8 +269,8 @@ export default function MesCours() {
 
         {filteredCours.length === 0 ? (
           <div className="p-12 text-center">
-            <BookOpen className="mx-auto mb-4 text-gray-500" size={64} />
-            <p className="text-gray-300 text-lg font-semibold">Aucun cours trouvé</p>
+            <BookOpen className="mx-auto mb-4 text-gray-400" size={64} />
+            <p className="text-gray-900 text-lg font-semibold">Aucun cours trouvé</p>
             <p className="text-gray-500 text-sm mt-2">Essayez de modifier vos filtres</p>
           </div>
         ) : (
@@ -277,34 +278,34 @@ export default function MesCours() {
             {filteredCours.map((cours) => (
               <div
                 key={cours.id}
-                className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 hover:border-green-400/50 transition-all hover:shadow-2xl group"
+                className="bg-white rounded-lg p-6 border border-gray-200 hover:border-green-500 transition-all hover:shadow-md group"
               >
                 {/* En-tête du cours */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
                       {cours.matiere}
                     </h3>
                     <div className="flex items-center gap-2">
-                      <span className="bg-green-500/30 text-green-300 px-3 py-1 rounded-full text-sm font-medium">
+                      <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium border border-green-200">
                         {cours.groupe}
                       </span>
-                      <span className="bg-blue-500/30 text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
+                      <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium border border-gray-200">
                         {cours.niveau}
                       </span>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-white">{cours.progression}%</div>
-                    <p className="text-xs text-gray-400">Progression</p>
+                    <div className="text-3xl font-bold text-gray-900">{cours.progression}%</div>
+                    <p className="text-xs text-gray-500">Progression</p>
                   </div>
                 </div>
 
                 {/* Barre de progression */}
                 <div className="mb-4">
-                  <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
+                      className="h-full bg-green-600 transition-all duration-500"
                       style={{ width: `${cours.progression}%` }}
                     ></div>
                   </div>
@@ -312,43 +313,43 @@ export default function MesCours() {
 
                 {/* Informations du cours */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Users size={16} className="text-purple-400" />
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Users size={16} className="text-green-600" />
                     <span className="text-sm">{cours.nbEtudiants} étudiants</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Clock size={16} className="text-blue-400" />
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Clock size={16} className="text-green-600" />
                     <span className="text-sm">{cours.nbHeures}h total</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <MapPin size={16} className="text-orange-400" />
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin size={16} className="text-green-600" />
                     <span className="text-sm">Salle {cours.salle}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Calendar size={16} className="text-green-400" />
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar size={16} className="text-green-600" />
                     <span className="text-sm">{cours.jour}</span>
                   </div>
                 </div>
 
                 {/* Horaire */}
-                <div className="bg-white/5 rounded-lg p-3 mb-4">
+                <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-200">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-400 text-sm">Horaire</span>
-                    <span className="text-white font-semibold">{cours.horaire}</span>
+                    <span className="text-gray-600 text-sm">Horaire</span>
+                    <span className="text-gray-900 font-semibold">{cours.horaire}</span>
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div className="grid grid-cols-3 gap-2">
-                  <button className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 rounded-lg text-blue-300 text-xs font-medium transition-all flex items-center justify-center gap-1">
+                  <button className="px-3 py-2 bg-green-100 hover:bg-green-200 border border-green-200 rounded-lg text-green-700 text-xs font-medium transition-colors flex items-center justify-center gap-1">
                     <Users size={14} />
                     Étudiants
                   </button>
-                  <button className="px-3 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-400/30 rounded-lg text-green-300 text-xs font-medium transition-all flex items-center justify-center gap-1">
+                  <button className="px-3 py-2 bg-green-100 hover:bg-green-200 border border-green-200 rounded-lg text-green-700 text-xs font-medium transition-colors flex items-center justify-center gap-1">
                     <FileText size={14} />
                     Absences
                   </button>
-                  <button className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/30 rounded-lg text-purple-300 text-xs font-medium transition-all flex items-center justify-center gap-1">
+                  <button className="px-3 py-2 bg-green-100 hover:bg-green-200 border border-green-200 rounded-lg text-green-700 text-xs font-medium transition-colors flex items-center justify-center gap-1">
                     <Award size={14} />
                     Notes
                   </button>
@@ -360,9 +361,9 @@ export default function MesCours() {
       </div>
 
       {/* Résumé par matière */}
-      <div className="mt-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
-        <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-          <Award size={28} className="text-yellow-400" />
+      <div className="mt-8 bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Award size={28} className="text-green-600" />
           Résumé par Matière
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -375,21 +376,21 @@ export default function MesCours() {
             return (
               <div
                 key={index}
-                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-400/30 rounded-xl p-4 backdrop-blur-lg"
+                className="bg-green-50 border border-green-200 rounded-lg p-4"
               >
-                <h3 className="font-bold text-white text-lg mb-3">{matiere}</h3>
+                <h3 className="font-bold text-gray-900 text-lg mb-3">{matiere}</h3>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-gray-600">
                     <span>Groupes:</span>
-                    <span className="text-white font-semibold">{nbGroupes}</span>
+                    <span className="text-gray-900 font-semibold">{nbGroupes}</span>
                   </div>
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-gray-600">
                     <span>Étudiants:</span>
-                    <span className="text-white font-semibold">{nbEtudiants}</span>
+                    <span className="text-gray-900 font-semibold">{nbEtudiants}</span>
                   </div>
-                  <div className="flex justify-between text-gray-300">
+                  <div className="flex justify-between text-gray-600">
                     <span>Progression moy:</span>
-                    <span className="text-green-400 font-semibold">{progressionMoy}%</span>
+                    <span className="text-green-600 font-semibold">{progressionMoy}%</span>
                   </div>
                 </div>
               </div>

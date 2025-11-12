@@ -143,16 +143,16 @@ export default function MonDepartementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-400"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
       </div>
     );
   }
 
   if (error || !departement) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
-        <div className="bg-red-500/20 backdrop-blur-lg border border-red-400/30 text-red-200 p-6 rounded-2xl">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white border border-gray-200 text-gray-700 p-6 rounded-lg shadow-sm">
           {error || 'Département non trouvé'}
         </div>
       </div>
@@ -160,26 +160,28 @@ export default function MonDepartementPage() {
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-screen">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-amber-400 bg-clip-text text-transparent mb-2">
+      <div className="mb-8 pb-6 border-b border-gray-200">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Mon Département
         </h1>
-        <p className="text-gray-300">Informations et gestion du département</p>
+        <p className="text-gray-600">Informations et gestion du département</p>
       </div>
 
       {/* Informations principales */}
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 mb-6 shadow-xl">
+      <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <Building className="w-8 h-8 text-orange-400" />
-            <h2 className="text-2xl font-bold text-white">Informations du Département</h2>
+            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+              <Building className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-gray-900">Informations du Département</h2>
           </div>
           {!isEditing ? (
             <button
               onClick={() => setIsEditing(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-orange-500/30 hover:bg-orange-500/40 backdrop-blur-lg border border-orange-400/30 text-white rounded-xl transition-all hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
             >
               <Edit className="w-4 h-4" />
               Modifier
@@ -188,7 +190,7 @@ export default function MonDepartementPage() {
             <div className="flex gap-2">
               <button
                 onClick={handleSave}
-                className="flex items-center gap-2 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 backdrop-blur-lg border border-green-400/30 text-white rounded-xl transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all"
               >
                 <Save className="w-4 h-4" />
                 Enregistrer
@@ -198,7 +200,7 @@ export default function MonDepartementPage() {
                   setIsEditing(false);
                   setEditForm({ nom: departement.nom, code: departement.code });
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-500/30 hover:bg-gray-500/40 backdrop-blur-lg border border-gray-400/30 text-white rounded-xl transition-all hover:scale-105"
+                className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all"
               >
                 <X className="w-4 h-4" />
                 Annuler
@@ -210,37 +212,37 @@ export default function MonDepartementPage() {
         {isEditing ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-orange-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Nom du département
               </label>
               <input
                 type="text"
                 value={editForm.nom}
                 onChange={(e) => setEditForm({ ...editForm, nom: e.target.value })}
-                className="w-full px-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-orange-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Code du département
               </label>
               <input
                 type="text"
                 value={editForm.code}
                 onChange={(e) => setEditForm({ ...editForm, code: e.target.value })}
-                className="w-full px-4 py-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <p className="text-sm text-orange-300 mb-1">Nom du département</p>
-              <p className="text-lg font-semibold text-white">{departement.nom}</p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">Nom du département</p>
+              <p className="text-lg font-semibold text-gray-900">{departement.nom}</p>
             </div>
-            <div>
-              <p className="text-sm text-orange-300 mb-1">Code</p>
-              <p className="text-lg font-semibold text-white">{departement.code}</p>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">Code</p>
+              <p className="text-lg font-semibold text-gray-900">{departement.code}</p>
             </div>
           </div>
         )}
@@ -248,56 +250,56 @@ export default function MonDepartementPage() {
 
       {/* Statistiques */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-orange-300 mb-1">Enseignants</p>
-              <p className="text-3xl font-bold text-white">{departement.nombre_enseignants}</p>
+              <p className="text-sm text-gray-600 mb-1 font-medium">Enseignants</p>
+              <p className="text-4xl font-bold text-orange-600">{departement.nombre_enseignants}</p>
             </div>
-            <Users className="w-12 h-12 text-orange-400/50" />
+            <Users className="w-12 h-12 text-orange-600 opacity-20" />
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-red-300 mb-1">Étudiants</p>
-              <p className="text-3xl font-bold text-white">{departement.nombre_etudiants}</p>
+              <p className="text-sm text-gray-600 mb-1 font-medium">Étudiants</p>
+              <p className="text-4xl font-bold text-orange-600">{departement.nombre_etudiants}</p>
             </div>
-            <GraduationCap className="w-12 h-12 text-red-400/50" />
+            <GraduationCap className="w-12 h-12 text-orange-600 opacity-20" />
           </div>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-amber-300 mb-1">Matières</p>
-              <p className="text-3xl font-bold text-white">{departement.nombre_matieres}</p>
+              <p className="text-sm text-gray-600 mb-1 font-medium">Matières</p>
+              <p className="text-4xl font-bold text-orange-600">{departement.nombre_matieres}</p>
             </div>
-            <BookOpen className="w-12 h-12 text-amber-400/50" />
+            <BookOpen className="w-12 h-12 text-orange-600 opacity-20" />
           </div>
         </div>
       </div>
 
       {/* Spécialités */}
-      <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 shadow-xl mb-6">
-        <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-4">
+      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm mb-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
           Spécialités du Département
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {departement.specialites.map((specialite) => (
             <div
               key={specialite.id_specialite}
-              className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-4 hover:bg-white/10 transition-all hover:scale-105"
+              className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-orange-500 transition-all"
             >
-              <h3 className="font-semibold text-lg text-white mb-2">{specialite.nom}</h3>
-              <p className="text-sm text-gray-300 mb-3">Code: {specialite.code}</p>
+              <h3 className="font-semibold text-lg text-gray-900 mb-2">{specialite.nom}</h3>
+              <p className="text-sm text-gray-600 mb-3">Code: {specialite.code}</p>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-300">
-                  <span className="font-semibold text-orange-400">{specialite.nombre_etudiants}</span> étudiants
+                <span className="text-gray-700">
+                  <span className="font-semibold text-orange-600">{specialite.nombre_etudiants}</span> étudiants
                 </span>
-                <span className="text-gray-300">
-                  <span className="font-semibold text-red-400">{specialite.nombre_groupes}</span> groupes
+                <span className="text-gray-700">
+                  <span className="font-semibold text-orange-600">{specialite.nombre_groupes}</span> groupes
                 </span>
               </div>
             </div>
@@ -307,15 +309,15 @@ export default function MonDepartementPage() {
 
       {/* Liste des Enseignants */}
       {departement.enseignants && departement.enseignants.length > 0 && (
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 shadow-xl">
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Users className="w-6 h-6 text-orange-400" />
-              <h2 className="text-xl font-bold text-white">Enseignants du Département</h2>
+              <Users className="w-6 h-6 text-orange-600" />
+              <h2 className="text-xl font-bold text-gray-900">Enseignants du Département</h2>
             </div>
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-green-500/30 hover:bg-green-500/40 backdrop-blur-lg border border-green-400/30 text-white rounded-xl transition-all hover:scale-105"
+              className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
             >
               <Download className="w-4 h-4" />
               Exporter CSV
@@ -323,49 +325,49 @@ export default function MonDepartementPage() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-900/30 border-b border-white/10">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     Matricule
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     Nom & Prénom
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     Rôle
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
+              <tbody className="bg-white divide-y divide-gray-200">
                 {departement.enseignants.map((enseignant) => (
-                  <tr key={enseignant.id_enseignant} className="hover:bg-white/5 transition-colors">
+                  <tr key={enseignant.id_enseignant} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Award className="w-4 h-4 text-amber-400 mr-2" />
-                        <span className="text-sm font-medium text-white">{enseignant.matricule}</span>
+                        <Award className="w-4 h-4 text-orange-600 mr-2" />
+                        <span className="text-sm font-medium text-gray-900">{enseignant.matricule}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-white">
+                      <div className="text-sm font-medium text-gray-900">
                         {enseignant.utilisateur.nom} {enseignant.utilisateur.prenom}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center text-sm text-gray-300">
+                      <div className="flex items-center text-sm text-gray-600">
                         <Mail className="w-4 h-4 mr-2 text-gray-400" />
                         {enseignant.utilisateur.email}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {enseignant.est_chef_departement ? (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-300 border border-orange-400/30">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
                           Chef de département
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-400/30">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
                           Enseignant
                         </span>
                       )}

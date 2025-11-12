@@ -186,12 +186,12 @@ export default function PrendreAbsencesPage() {
 
   if (!emploi) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 p-8">
-        <div className="max-w-2xl mx-auto bg-red-500/20 backdrop-blur-lg border-2 border-red-400/30 rounded-2xl p-6">
-          <p className="text-red-100 text-center font-semibold text-lg">❌ Séance non trouvée</p>
+      <div className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-2xl mx-auto bg-red-50 border-2 border-red-200 rounded-lg p-6">
+          <p className="text-red-700 text-center font-semibold text-lg">❌ Séance non trouvée</p>
           <button
             onClick={() => router.push('/dashboard-enseignant/absences')}
-            className="mt-4 w-full px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg border border-white/20 rounded-xl text-white font-semibold transition-all"
+            className="mt-4 w-full px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-semibold transition-colors"
           >
             Retour aux absences
           </button>
@@ -207,46 +207,46 @@ export default function PrendreAbsencesPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-5xl mx-auto">
         {/* Bouton retour */}
         <button
           onClick={() => router.push('/dashboard-enseignant/absences')}
-          className="mb-6 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg border border-white/20 rounded-xl text-white font-semibold transition-all flex items-center gap-2 hover:scale-105"
+          className="mb-6 px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-semibold transition-colors flex items-center gap-2 shadow-sm"
         >
           <ArrowLeft className="w-5 h-5" />
           Retour aux absences
         </button>
 
         {/* Header */}
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 mb-6">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8 mb-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-4 bg-gradient-to-br from-green-500 via-emerald-500 to-teal-600 rounded-xl shadow-lg animate-pulse">
-              <Users className="w-8 h-8 text-white" />
+            <div className="p-4 bg-green-100 rounded-lg">
+              <Users className="w-8 h-8 text-green-600" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-gray-900">
                 Feuille de Présence
               </h1>
-              <p className="text-gray-300 mt-1">Enregistrement des absences</p>
+              <p className="text-gray-600 mt-1">Enregistrement des absences</p>
             </div>
           </div>
 
           {/* Infos séance */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="flex items-center gap-3 bg-green-500/20 backdrop-blur-lg border border-green-400/30 rounded-xl p-4">
-              <BookOpen className="w-5 h-5 text-green-400" />
+            <div className="flex items-center gap-3 bg-green-100 border border-green-200 rounded-lg p-4">
+              <BookOpen className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm text-green-300 font-semibold">Matière</p>
-                <p className="text-white font-bold">{emploi.matiere.nom}</p>
+                <p className="text-sm text-green-700 font-semibold">Matière</p>
+                <p className="text-gray-900 font-bold">{emploi.matiere.nom}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-blue-500/20 backdrop-blur-lg border border-blue-400/30 rounded-xl p-4">
-              <Calendar className="w-5 h-5 text-blue-400" />
+            <div className="flex items-center gap-3 bg-green-100 border border-green-200 rounded-lg p-4">
+              <Calendar className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm text-blue-300 font-semibold">Date</p>
-                <p className="text-white text-sm">
+                <p className="text-sm text-green-700 font-semibold">Date</p>
+                <p className="text-gray-900 text-sm">
                   {new Date(emploi.date).toLocaleDateString('fr-FR', {
                     day: 'numeric',
                     month: 'short'
@@ -255,59 +255,59 @@ export default function PrendreAbsencesPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-purple-500/20 backdrop-blur-lg border border-purple-400/30 rounded-xl p-4">
-              <Clock className="w-5 h-5 text-purple-400" />
+            <div className="flex items-center gap-3 bg-green-100 border border-green-200 rounded-lg p-4">
+              <Clock className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm text-purple-300 font-semibold">Horaire</p>
-                <p className="text-white text-sm">
+                <p className="text-sm text-green-700 font-semibold">Horaire</p>
+                <p className="text-gray-900 text-sm">
                   {emploi.heure_debut} - {emploi.heure_fin}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 bg-orange-500/20 backdrop-blur-lg border border-orange-400/30 rounded-xl p-4">
-              <MapPin className="w-5 h-5 text-orange-400" />
+            <div className="flex items-center gap-3 bg-green-100 border border-green-200 rounded-lg p-4">
+              <MapPin className="w-5 h-5 text-green-600" />
               <div>
-                <p className="text-sm text-orange-300 font-semibold">Salle / Groupe</p>
-                <p className="text-white text-sm">{emploi.salle.code} - {emploi.groupe.nom}</p>
+                <p className="text-sm text-green-700 font-semibold">Salle / Groupe</p>
+                <p className="text-gray-900 text-sm">{emploi.salle.code} - {emploi.groupe.nom}</p>
               </div>
             </div>
           </div>
 
           {/* Taux de présence */}
-          <div className="mt-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+          <div className="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-300 font-semibold">Taux de Présence</span>
-              <span className="text-2xl font-bold text-green-400">{tauxPresence}%</span>
+              <span className="text-gray-700 font-semibold">Taux de Présence</span>
+              <span className="text-2xl font-bold text-green-600">{tauxPresence}%</span>
             </div>
-            <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
               <div 
-                className="bg-gradient-to-r from-green-500 to-emerald-500 h-full rounded-full transition-all duration-500"
+                className="bg-green-600 h-full rounded-full transition-all duration-500"
                 style={{ width: `${tauxPresence}%` }}
               ></div>
             </div>
-            <p className="text-xs text-gray-400 mt-2">{nbPresents}/{etudiants.length} étudiants présents</p>
+            <p className="text-xs text-gray-600 mt-2">{nbPresents}/{etudiants.length} étudiants présents</p>
           </div>
         </div>
 
         {/* Message */}
         {message && (
-          <div className={`mb-6 p-4 rounded-xl backdrop-blur-lg ${
+          <div className={`mb-6 p-4 rounded-lg ${
             message.startsWith('✅') 
-              ? 'bg-green-500/20 border border-green-400/30 text-green-100'
-              : 'bg-red-500/20 border border-red-400/30 text-red-100'
+              ? 'bg-green-50 border border-green-200 text-green-700'
+              : 'bg-red-50 border border-red-200 text-red-700'
           }`}>
             {message}
           </div>
         )}
 
         {/* Liste des étudiants */}
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl overflow-hidden">
-          <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 p-6">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+          <div className="bg-green-600 p-6">
             <h2 className="text-xl font-bold text-white">
               Liste des Étudiants ({etudiants.length})
             </h2>
-            <p className="text-green-100 text-sm mt-1">
+            <p className="text-green-50 text-sm mt-1">
               {nbPresents} présents • {nbAbsents} absents
             </p>
           </div>

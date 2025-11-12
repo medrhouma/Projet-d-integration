@@ -122,13 +122,13 @@ export default function DashboardChefDepartement() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
-        <div className="bg-red-500/20 backdrop-blur-lg border border-red-400/30 rounded-2xl p-8 max-w-md">
-          <h2 className="text-red-300 text-xl font-bold mb-2">Erreur</h2>
-          <p className="text-red-200 mb-4">{error}</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white border border-gray-200 rounded-lg p-8 max-w-md shadow-sm">
+          <h2 className="text-red-600 text-xl font-bold mb-2">Erreur</h2>
+          <p className="text-gray-700 mb-4">{error}</p>
           <button
             onClick={() => router.push('/login')}
-            className="bg-red-500/30 hover:bg-red-500/40 backdrop-blur-lg border border-red-400/30 text-white px-6 py-3 rounded-xl transition-all hover:scale-105"
+            className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition-all"
           >
             Retour à la connexion
           </button>
@@ -138,14 +138,19 @@ export default function DashboardChefDepartement() {
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-gray-900/50 backdrop-blur-xl border-r border-white/10 flex flex-col shadow-2xl">
-        <div className="p-6 border-b border-white/10 bg-gradient-to-r from-orange-600/20 via-orange-500/20 to-yellow-600/20">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-400 bg-clip-text text-transparent">
-            Chef Département
-          </h2>
-          <p className="text-sm text-orange-200 mt-1">{stats?.departement.nom}</p>
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+              <Building className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Chef Département</h2>
+              <p className="text-xs text-gray-500">{stats?.departement.nom}</p>
+            </div>
+          </div>
         </div>
 
         <nav className="flex-1 p-4 overflow-y-auto">
@@ -156,10 +161,10 @@ export default function DashboardChefDepartement() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                       isActive
-                        ? 'bg-orange-500/30 text-white font-medium shadow-lg border-l-4 border-orange-400 backdrop-blur-lg'
-                        : 'text-gray-300 hover:bg-white/10 hover:text-white hover:backdrop-blur-lg'
+                        ? 'bg-orange-50 text-orange-700 font-medium'
+                        : 'text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     {item.icon}
@@ -171,77 +176,71 @@ export default function DashboardChefDepartement() {
           </ul>
         </nav>
 
-        <div className="p-4 border-t border-white/10 bg-gray-900/30">
-          <div className="mb-3 p-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl">
-            <p className="text-sm font-medium text-white">
+        <div className="p-4 border-t border-gray-200">
+          <div className="mb-3 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium text-gray-900">
               {user?.nom} {user?.prenom}
             </p>
-            <p className="text-xs text-gray-400 mt-1">{user?.email}</p>
+            <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-lg border border-red-400/30 text-white rounded-xl transition-all hover:shadow-lg"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg transition-all"
           >
             <LogOut className="w-4 h-4" />
-            <span className="text-sm">Déconnexion</span>
+            <span>Déconnexion</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto p-8">
+      <main className="flex-1 overflow-y-auto p-8 bg-white">
         {stats && (
           <>
             {/* Header */}
-            <div className="mb-8">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-amber-400 bg-clip-text text-transparent mb-2">
+            <div className="mb-8 pb-6 border-b border-gray-200">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
                 Tableau de Bord
               </h1>
-              <p className="text-gray-300">
+              <p className="text-gray-600">
                 Vue d'ensemble de votre département
               </p>
             </div>
 
             {/* Statistiques générales */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-orange-500/30 to-orange-600/30 backdrop-blur-lg rounded-full p-3 border border-orange-400/30">
-                    <svg className="h-6 w-6 text-orange-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
+                  <div className="flex-shrink-0 bg-orange-50 rounded-lg p-3">
+                    <UserCheck className="h-6 w-6 text-orange-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-orange-300 font-medium">Enseignants</p>
-                    <p className="text-2xl font-bold text-white">{stats.nombre_enseignants}</p>
+                    <p className="text-sm text-gray-600 font-medium">Enseignants</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.nombre_enseignants}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-red-500/30 to-red-600/30 backdrop-blur-lg rounded-full p-3 border border-red-400/30">
-                    <svg className="h-6 w-6 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
+                  <div className="flex-shrink-0 bg-orange-50 rounded-lg p-3">
+                    <GraduationCap className="h-6 w-6 text-orange-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-red-300 font-medium">Étudiants</p>
-                    <p className="text-2xl font-bold text-white">{stats.nombre_etudiants}</p>
+                    <p className="text-sm text-gray-600 font-medium">Étudiants</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.nombre_etudiants}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
+              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-gradient-to-br from-amber-500/30 to-yellow-600/30 backdrop-blur-lg rounded-full p-3 border border-amber-400/30">
-                    <svg className="h-6 w-6 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+                  <div className="flex-shrink-0 bg-orange-50 rounded-lg p-3">
+                    <BookOpen className="h-6 w-6 text-orange-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm text-amber-300 font-medium">Matières</p>
-                    <p className="text-2xl font-bold text-white">{stats.nombre_matieres}</p>
+                    <p className="text-sm text-gray-600 font-medium">Matières</p>
+                    <p className="text-3xl font-bold text-gray-900">{stats.nombre_matieres}</p>
                   </div>
                 </div>
               </div>
@@ -249,44 +248,44 @@ export default function DashboardChefDepartement() {
 
             {/* Statistiques supplémentaires */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
-                <h3 className="text-sm font-semibold text-orange-300 mb-2">Spécialités</h3>
-                <p className="text-3xl font-bold text-white">{stats.nombre_specialites}</p>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Spécialités</h3>
+                <p className="text-4xl font-bold text-orange-600">{stats.nombre_specialites}</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
-                <h3 className="text-sm font-semibold text-red-300 mb-2">Niveaux</h3>
-                <p className="text-3xl font-bold text-white">{stats.nombre_niveaux}</p>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Niveaux</h3>
+                <p className="text-4xl font-bold text-orange-600">{stats.nombre_niveaux}</p>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all hover:scale-105 shadow-xl">
-                <h3 className="text-sm font-semibold text-amber-300 mb-2">Groupes</h3>
-                <p className="text-3xl font-bold text-white">{stats.nombre_groupes}</p>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">Groupes</h3>
+                <p className="text-4xl font-bold text-orange-600">{stats.nombre_groupes}</p>
               </div>
             </div>
 
             {/* Spécialités */}
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl mb-8 shadow-xl">
-              <div className="px-6 py-4 border-b border-white/20 bg-gradient-to-r from-orange-500/10 to-red-500/10">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">Spécialités</h2>
+            <div className="bg-white border border-gray-200 rounded-lg mb-8 shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200 bg-orange-50">
+                <h2 className="text-xl font-bold text-gray-900">Spécialités</h2>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {stats.specialites.map((specialite) => (
-                    <div key={specialite.id} className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-xl p-4 hover:bg-white/10 transition-all hover:scale-105">
-                      <h3 className="font-semibold text-lg text-white mb-3">{specialite.nom}</h3>
+                    <div key={specialite.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-orange-500 transition-all">
+                      <h3 className="font-semibold text-lg text-gray-900 mb-3">{specialite.nom}</h3>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
-                          <p className="text-orange-300">Niveaux</p>
-                          <p className="font-semibold text-white text-xl">{specialite.nombre_niveaux}</p>
+                          <p className="text-gray-600">Niveaux</p>
+                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_niveaux}</p>
                         </div>
                         <div>
-                          <p className="text-red-300">Groupes</p>
-                          <p className="font-semibold text-white text-xl">{specialite.nombre_groupes}</p>
+                          <p className="text-gray-600">Groupes</p>
+                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_groupes}</p>
                         </div>
                         <div>
-                          <p className="text-amber-300">Étudiants</p>
-                          <p className="font-semibold text-white text-xl">{specialite.nombre_etudiants}</p>
+                          <p className="text-gray-600">Étudiants</p>
+                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_etudiants}</p>
                         </div>
                       </div>
                     </div>
@@ -296,57 +295,57 @@ export default function DashboardChefDepartement() {
             </div>
 
             {/* Liste des enseignants */}
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl">
-              <div className="px-6 py-4 border-b border-white/20 bg-gradient-to-r from-orange-500/10 to-red-500/10">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">Enseignants du département</h2>
+            <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="px-6 py-4 border-b border-gray-200 bg-orange-50">
+                <h2 className="text-xl font-bold text-gray-900">Enseignants du département</h2>
               </div>
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-white/10">
-                  <thead className="bg-gray-900/30">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Enseignant
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Matricule
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Email
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Matières
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-orange-300 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Statut
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10">
+                  <tbody className="bg-white divide-y divide-gray-200">
                     {stats.enseignants.map((enseignant) => (
-                      <tr key={enseignant.id} className="hover:bg-white/5 transition-colors">
+                      <tr key={enseignant.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-white">
+                          <div className="text-sm font-medium text-gray-900">
                             {enseignant.prenom} {enseignant.nom}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-300">{enseignant.matricule}</div>
+                          <div className="text-sm text-gray-600">{enseignant.matricule}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-300">{enseignant.email}</div>
+                          <div className="text-sm text-gray-600">{enseignant.email}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30">
+                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                             {enseignant.nombre_matieres} matière(s)
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {enseignant.est_chef ? (
-                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-500/20 text-orange-300 border border-orange-400/30">
+                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                               Chef de Département
                             </span>
                           ) : (
-                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-500/20 text-gray-300 border border-gray-400/30">
+                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-200">
                               Enseignant
                             </span>
                           )}

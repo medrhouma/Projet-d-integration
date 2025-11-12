@@ -99,98 +99,97 @@ export default function EmploiTempsEnseignantPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-green-900 to-slate-900 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="mb-6">
         <button
           onClick={() => router.push('/dashboard-enseignant')}
-          className="flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 backdrop-blur-lg rounded-xl border border-white/20 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-xl"
+          className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-200 text-gray-900 font-semibold transition-colors shadow-sm"
         >
           <ArrowLeft size={20} />
           <span>Retour au Dashboard</span>
         </button>
       </div>
 
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center gap-3 mb-4">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-500 p-3 rounded-2xl shadow-2xl animate-pulse">
-            <Calendar size={40} className="text-white" />
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="bg-green-100 p-3 rounded-lg">
+            <Calendar size={32} className="text-green-600" />
           </div>
-        </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent mb-3">
-          Mon Emploi du Temps
-        </h1>
-        {enseignantInfo && (
-          <div className="text-gray-300 text-lg flex items-center justify-center gap-2">
-            <GraduationCap size={24} />
-            <span>{enseignantInfo.prenom} {enseignantInfo.nom}</span>
-            {enseignantInfo.enseignant?.matricule && (
-              <>
-                <span className="text-gray-500"></span>
-                <span className="text-green-400">{enseignantInfo.enseignant.matricule}</span>
-              </>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Mon Emploi du Temps
+            </h1>
+            {enseignantInfo && (
+              <div className="text-gray-600 flex items-center gap-2">
+                <GraduationCap size={20} />
+                <span>{enseignantInfo.prenom} {enseignantInfo.nom}</span>
+                {enseignantInfo.enseignant?.matricule && (
+                  <>
+                    <span className="text-gray-400">•</span>
+                    <span className="text-green-600">{enseignantInfo.enseignant.matricule}</span>
+                  </>
+                )}
+              </div>
             )}
           </div>
-        )}
-        <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 rounded-full"></div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <BookOpen className="text-green-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.totalCours}</span>
+            <BookOpen className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.totalCours}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Total Cours</p>
+          <p className="text-gray-600 font-semibold">Total Cours</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <Clock className="text-blue-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.heuresTotal}h</span>
+            <Clock className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.heuresTotal}h</span>
           </div>
-          <p className="text-gray-300 font-semibold">Heures Total</p>
+          <p className="text-gray-600 font-semibold">Heures Total</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <Users className="text-purple-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.groupes}</span>
+            <Users className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.groupes}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Groupes</p>
+          <p className="text-gray-600 font-semibold">Groupes</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <MapPin className="text-orange-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.salles}</span>
+            <MapPin className="text-green-600" size={32} />
+            <span className="text-4xl font-bold text-gray-900">{stats.salles}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Salles</p>
+          <p className="text-gray-600 font-semibold">Salles</p>
         </div>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-        <div className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white p-6">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+        <div className="bg-green-600 text-white p-6">
           <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
-            <div className="bg-white/20 p-2 rounded-xl">
-              <Calendar size={28} />
-            </div>
+            <Calendar size={28} />
             Emploi du temps de la semaine
           </h2>
-          <p className="text-white/80 text-sm">Vue hebdomadaire de vos cours</p>
+          <p className="text-green-50 text-sm">Vue hebdomadaire de vos cours</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gradient-to-r from-gray-800 to-gray-900">
-                <th className="border border-gray-700 p-4 sticky left-0 bg-gray-900 z-10 min-w-[150px]">
-                  <div className="flex items-center justify-center gap-2 text-green-400">
-                    <Clock size={24} />
+              <tr className="bg-gray-50">
+                <th className="border border-gray-200 p-4 sticky left-0 bg-white z-10 min-w-[150px]">
+                  <div className="flex items-center justify-center gap-2 text-gray-900">
+                    <Clock size={20} />
                     <span className="font-bold">Horaires</span>
                   </div>
                 </th>
                 {jours.map((jour, i) => (
-                  <th key={i} className="border border-gray-700 p-4 font-bold text-white min-w-[200px]">
+                  <th key={i} className="border border-gray-200 p-4 font-bold text-gray-900 min-w-[200px]">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-green-500"></div>
                       {jour}
@@ -201,9 +200,9 @@ export default function EmploiTempsEnseignantPage() {
             </thead>
             <tbody>
               {heures.map((heure, i) => (
-                <tr key={i} className={heure.isPause ? 'bg-orange-500/20' : 'hover:bg-white/5 transition-colors'}>
-                  <td className={`border border-gray-700 p-4 text-center font-bold sticky left-0 z-10 ${
-                    heure.isPause ? 'bg-orange-500/30 text-orange-200' : 'bg-gray-800/50 text-green-300'
+                <tr key={i} className={heure.isPause ? 'bg-orange-50' : 'hover:bg-gray-50 transition-colors'}>
+                  <td className={`border border-gray-200 p-4 text-center font-bold sticky left-0 z-10 ${
+                    heure.isPause ? 'bg-orange-100 text-orange-700' : 'bg-gray-50 text-gray-900'
                   }`}>
                     <div className="flex items-center justify-center gap-2">
                       {!heure.isPause && <Clock size={16} />}
@@ -211,49 +210,44 @@ export default function EmploiTempsEnseignantPage() {
                     </div>
                   </td>
                   {heure.isPause ? (
-                    <td colSpan={6} className="border border-gray-700 p-6 text-center">
-                      <div className="inline-flex items-center gap-3 bg-orange-500/30 px-8 py-4 rounded-2xl backdrop-blur-sm">
-                        <span className="text-3xl"></span>
-                        <span className="text-orange-200 font-bold text-lg">PAUSE DÉJEUNER</span>
+                    <td colSpan={6} className="border border-gray-200 p-6 text-center">
+                      <div className="inline-flex items-center gap-3 bg-orange-100 px-8 py-4 rounded-lg border border-orange-200">
+                        <span className="text-3xl">🍽️</span>
+                        <span className="text-orange-700 font-bold text-lg">PAUSE DÉJEUNER</span>
                       </div>
                     </td>
                   ) : (
                     jours.map((_, dayIndex) => {
                       const emploisSlot = getEmploiForSlot(dayIndex, heure.start, heure.end);
                       return (
-                        <td key={dayIndex} className="border border-gray-700 p-2">
+                        <td key={dayIndex} className="border border-gray-200 p-2">
                           {emploisSlot.length > 0 ? (
                             <div className="space-y-2">
                               {emploisSlot.map((emploi) => (
-                                <div key={emploi.id_emploi} className="relative group">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                                  <div className="relative bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                                    <div className="font-bold text-sm mb-2 flex items-center gap-2">
-                                      <div className="bg-white/20 p-1 rounded">
-                                        <BookOpen size={14} />
-                                      </div>
-                                      <span className="line-clamp-1">{emploi.matiere.nom}</span>
-                                    </div>
-                                    <div className="text-xs opacity-90 flex items-center gap-1 mb-1 bg-white/10 px-2 py-1 rounded">
-                                      <Users size={12} />
-                                      <span className="line-clamp-1">{emploi.groupe.nom}</span>
-                                    </div>
-                                    <div className="text-xs opacity-90 flex items-center gap-1 mb-1 bg-white/10 px-2 py-1 rounded">
-                                      <Clock size={12} />
-                                      <span>{formatTime(emploi.heure_debut)} - {formatTime(emploi.heure_fin)}</span>
-                                    </div>
-                                    <div className="text-xs opacity-90 flex items-center gap-1 bg-white/10 px-2 py-1 rounded">
-                                      <MapPin size={12} />
-                                      <span>{emploi.salle.code}</span>
-                                    </div>
+                                <div key={emploi.id_emploi} className="bg-green-600 text-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all border-l-4 border-green-800">
+                                  <div className="font-bold text-sm mb-2 flex items-center gap-2">
+                                    <BookOpen size={14} />
+                                    <span className="line-clamp-1">{emploi.matiere.nom}</span>
+                                  </div>
+                                  <div className="text-xs flex items-center gap-1 mb-1 bg-green-700/50 px-2 py-1 rounded">
+                                    <Users size={12} />
+                                    <span className="line-clamp-1">{emploi.groupe.nom}</span>
+                                  </div>
+                                  <div className="text-xs flex items-center gap-1 mb-1 bg-green-700/50 px-2 py-1 rounded">
+                                    <Clock size={12} />
+                                    <span>{formatTime(emploi.heure_debut)} - {formatTime(emploi.heure_fin)}</span>
+                                  </div>
+                                  <div className="text-xs flex items-center gap-1 bg-green-700/50 px-2 py-1 rounded">
+                                    <MapPin size={12} />
+                                    <span>{emploi.salle.code}</span>
                                   </div>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <div className="h-24 flex items-center justify-center text-gray-500 text-xs rounded-lg bg-gray-800/20 border border-dashed border-gray-700">
+                            <div className="h-24 flex items-center justify-center text-gray-400 text-xs rounded-lg bg-gray-50 border border-dashed border-gray-300">
                               <div className="text-center">
-                                <div className="text-2xl mb-1"></div>
+                                <div className="text-2xl mb-1">📭</div>
                                 <div>Libre</div>
                               </div>
                             </div>
@@ -269,20 +263,20 @@ export default function EmploiTempsEnseignantPage() {
         </div>
 
         {emplois.length === 0 && (
-          <div className="p-12 text-center bg-gradient-to-br from-gray-800/50 to-gray-900/50">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 rounded-full mb-4">
-              <Calendar size={48} className="text-green-400" />
+          <div className="p-12 text-center bg-gray-50">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-4">
+              <Calendar size={48} className="text-green-600" />
             </div>
-            <p className="text-gray-300 text-lg font-semibold">Aucun cours programmé</p>
+            <p className="text-gray-900 text-lg font-semibold">Aucun cours programmé</p>
             <p className="text-gray-500 text-sm mt-2">Votre emploi du temps est vide pour le moment</p>
           </div>
         )}
       </div>
 
       {emplois.length > 0 && (
-        <div className="mt-8 bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-white/20">
-          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            <BookOpen size={28} className="text-green-400" />
+        <div className="mt-8 bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <BookOpen size={28} className="text-green-600" />
             Matières enseignées
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -291,15 +285,15 @@ export default function EmploiTempsEnseignantPage() {
               return (
                 <div 
                   key={index}
-                  className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-l-4 border-green-500 p-4 rounded-xl backdrop-blur-sm hover:from-green-600/30 hover:to-emerald-600/30 transition-all"
+                  className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg hover:bg-green-100 transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-bold text-white text-lg">{matiere}</p>
-                      <p className="text-sm text-gray-400 mt-1">{count} séance(s)</p>
+                      <p className="font-bold text-gray-900 text-lg">{matiere}</p>
+                      <p className="text-sm text-gray-600 mt-1">{count} séance(s)</p>
                     </div>
-                    <div className="bg-green-500/30 px-3 py-1 rounded-full">
-                      <span className="text-green-300 font-bold">{count}</span>
+                    <div className="bg-green-600 px-3 py-1 rounded-full">
+                      <span className="text-white font-bold">{count}</span>
                     </div>
                   </div>
                 </div>
