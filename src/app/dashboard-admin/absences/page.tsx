@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, Clock, Users, BookOpen, AlertTriangle, CheckCircle, XCircle, Filter, Search, Download } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { ArrowLeftCircle } from "lucide-react";
 
 interface Absence {
   id_absence: number;
@@ -173,6 +174,16 @@ export default function AbsencesAdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900 to-slate-900 p-8">
+      {/* 🔙 Bouton Retour */}
+            <button
+              onClick={() => router.push('/dashboard-admin')}
+              className="fixed top-4 left-4 z-50 bg-white/20 backdrop-blur-xl border border-white/30
+              hover:bg-white/30 transition px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg text-white"
+            >
+              <ArrowLeftCircle size={22} />
+                <span>Retour</span>
+              
+            </button>
       {/* En-tête */}
       <div className="mb-8 text-center">
         <div className="inline-flex items-center justify-center gap-3 mb-4">

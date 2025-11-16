@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeftCircle } from "lucide-react";
 import { 
   GraduationCap, Search, Plus, Edit, Trash2, Filter, 
   Download, Mail, Phone, User, BookOpen, Users, X
@@ -172,7 +173,17 @@ export default function EtudiantsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      {/* Header */}
+     
+      {/* 🔙 Bouton Retour */}
+      <button
+        onClick={() => router.push('/dashboard-admin')}
+        className="fixed top-6 left-6 z-[9999] bg-blue-600 hover:bg-blue-700 text-white font-medium 
+             px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg transition"
+      >
+        <ArrowLeftCircle size={22} />
+        Retour
+      </button>
+       {/* Header */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
