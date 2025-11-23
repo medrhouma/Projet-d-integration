@@ -164,6 +164,7 @@ const checkAuth = async () => {
     { label: 'Mes Cours', icon: <BookOpen className="w-5 h-5" />, href: '/dashboard-etudiant/cours' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-etudiant/absences' },
     { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-etudiant/notes' },
+    { label: 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-etudiant/messagerie' },
   ];
 
   const statCards: StatCard[] = [
