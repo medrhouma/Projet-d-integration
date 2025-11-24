@@ -54,7 +54,8 @@ export default function DashboardChefDepartement() {
     { label: 'Emplois du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-chef-departement/emploi-temps/gestion' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-chef-departement/absences/enseignants' },
     { label: 'Rapports', icon: <FileText className="w-5 h-5" />, href: '/dashboard-chef-departement/rapports' },
-    { label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-chef-departement/messagerie' }
+    { label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-chef-departement/messagerie' },
+    { label: 'Rattrapages', icon: <Clock className="w-5 h-5" />, href: '/dashboard-chef-departement/rattrapages' }
   ];
 
   useEffect(() => {

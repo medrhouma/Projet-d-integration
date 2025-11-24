@@ -1,76 +1,75 @@
-import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import jwt from 'jsonwebtoken';
 
-// =============================
-// GET : جلب جميع الرسائل بين المستخدم والمنشئ
-// =============================
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+const JWT_SECRET = process.env.JWT_SECRET || 'votre-secret-key';
+
+// GET - récupérer tous les messages entre l'utilisateur authentifié et :id
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const userId = 1; // ID متاع الي عامل login (بدّلها وقت تعمل auth)
-    const otherId = params?.id ? parseInt(params.id, 10) : NaN;
-    if (Number.isNaN(otherId)) {
-      return NextResponse.json({ error: 'Invalid recipient id' }, { status: 400 });
-    }
+    const token = request.cookies.get('token')?.value;
+    if (!token) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
+
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const userId = decoded.userId;
+
+    const otherIdRaw = params?.id;
+    if (!otherIdRaw) return NextResponse.json({ error: 'ID utilisateur manquant' }, { status: 400 });
+    const otherUserId = parseInt(otherIdRaw, 10);
+    if (isNaN(otherUserId)) return NextResponse.json({ error: 'ID utilisateur invalide' }, { status: 400 });
 
     const messages = await prisma.message.findMany({
       where: {
         OR: [
-          { id_expediteur: userId, id_destinataire: otherId },
-          { id_expediteur: otherId, id_destinataire: userId }
+          { id_expediteur: userId, id_destinataire: otherUserId },
+          { id_expediteur: otherUserId, id_destinataire: userId },
         ],
       },
-      orderBy: { date: "asc" },
+      include: {
+        expediteur: { select: { id_utilisateur: true, nom: true, prenom: true, role: true } },
+        destinataire: { select: { id_utilisateur: true, nom: true, prenom: true, role: true } },
+      },
+      orderBy: { date: 'asc' },
+    });
+
+    // Mark received messages as read
+    await prisma.message.updateMany({
+      where: { id_expediteur: otherUserId, id_destinataire: userId, lu: false },
+      data: { lu: true },
     });
 
     return NextResponse.json(messages);
   } catch (error) {
-    console.error("GET /messages error:", error);
-    return NextResponse.json(
-      { error: "Erreur serveur" },
-      { status: 500 }
-    );
+    console.error('Erreur GET /api/messages/[id]:', error);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
 
-// =============================
-// POST : إرسال رسالة جديدة
-// =============================
-export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+// POST - envoyer un message à :id
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const body = await req.json();
-    const userId = 1; // ID متاع الي عامل login (بدّلها لاحقاً)
-    const otherId = params?.id ? parseInt(params.id, 10) : NaN;
-    if (Number.isNaN(otherId)) {
-      return NextResponse.json({ error: 'Invalid recipient id' }, { status: 400 });
-    }
+    const token = request.cookies.get('token')?.value;
+    if (!token) return NextResponse.json({ error: 'Non authentifié' }, { status: 401 });
 
-    if (!body.contenu || body.contenu.trim() === "") {
-      return NextResponse.json(
-        { error: "Le contenu du message est vide" },
-        { status: 400 }
-      );
-    }
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: number };
+    const userId = decoded.userId;
+
+    const otherIdRaw = params?.id;
+    if (!otherIdRaw) return NextResponse.json({ error: 'ID utilisateur manquant' }, { status: 400 });
+    const otherUserId = parseInt(otherIdRaw, 10);
+    if (isNaN(otherUserId)) return NextResponse.json({ error: 'ID utilisateur invalide' }, { status: 400 });
+
+    const body = await request.json();
+    const contenu = body?.contenu;
+    if (!contenu || String(contenu).trim() === '') return NextResponse.json({ error: 'Contenu vide' }, { status: 400 });
 
     const message = await prisma.message.create({
-      data: {
-        contenu: body.contenu,
-        id_expediteur: userId,
-        id_destinataire: otherId,
-      },
+      data: { id_expediteur: userId, id_destinataire: otherUserId, contenu },
     });
 
-    return NextResponse.json(message);
+    return NextResponse.json(message, { status: 201 });
   } catch (error) {
-    console.error("POST /messages error:", error);
-    return NextResponse.json(
-      { error: "Erreur serveur" },
-      { status: 500 }
-    );
+    console.error('Erreur POST /api/messages/[id]:', error);
+    return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
   }
 }
