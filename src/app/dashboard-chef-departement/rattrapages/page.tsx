@@ -12,6 +12,7 @@ export default function RattrapagesPage() {
   const [salles, setSalles] = useState<any[]>([]);
   const [enseignants, setEnseignants] = useState<any[]>([]);
   const [groupesList, setGroupesList] = useState<any[]>([]);
+  const [filteredGroupes, setFilteredGroupes] = useState<any[]>([]);
 
   const [form, setForm] = useState({
     id_matiere: "",
@@ -57,20 +58,42 @@ export default function RattrapagesPage() {
   const openAdd = () => {
     setEditingId(null);
     setForm({ id_matiere: "", date: "", id_salle: "", id_enseignant: "", selected_groupes: [], motif: "" });
+    setFilteredGroupes([]);
     setShowForm(true);
   };
 
   const openEdit = (r: any) => {
     setEditingId(r.id_rattrapage);
+    const matiereId = String(r.id_matiere || "");
     setForm({
-      id_matiere: String(r.id_matiere || ""),
+      id_matiere: matiereId,
       date: r.date ? new Date(r.date).toISOString().slice(0, 10) : "",
       id_salle: String(r.id_salle || ""),
       id_enseignant: String(r.id_enseignant || ""),
       selected_groupes: (r.groupes || []).map((g: any) => String(g.groupe?.id_groupe)).filter(Boolean),
       motif: r.motif || "",
     });
+    // Filter groupes based on selected matiere
+    if (matiereId) {
+      filterGroupesByMatiere(matiereId);
+    }
     setShowForm(true);
+  };
+
+  const filterGroupesByMatiere = (matiereId: string) => {
+    const selectedMatiere = matieres.find(m => String(m.id_matiere) === matiereId);
+    if (selectedMatiere && selectedMatiere.id_niveau) {
+      // Filter groupes that belong to the same niveau as the matiere
+      const filtered = groupesList.filter(g => g.id_niveau === selectedMatiere.id_niveau);
+      setFilteredGroupes(filtered);
+    } else {
+      setFilteredGroupes([]);
+    }
+  };
+
+  const handleMatiereChange = (matiereId: string) => {
+    setForm({ ...form, id_matiere: matiereId, selected_groupes: [] });
+    filterGroupesByMatiere(matiereId);
   };
 
   const handleDelete = async (id: number) => {
@@ -230,7 +253,7 @@ export default function RattrapagesPage() {
             <form onSubmit={handleSave} className="grid grid-cols-2 gap-3">
               <label className="col-span-2">
                 Module:
-                <select required value={form.id_matiere} onChange={e => setForm({ ...form, id_matiere: e.target.value })} className="w-full p-2 border mt-1">
+                <select required value={form.id_matiere} onChange={e => handleMatiereChange(e.target.value)} className="w-full p-2 border mt-1">
                   <option value="">-- Choisir --</option>
                   {matieres.map(m => <option key={m.id_matiere} value={m.id_matiere}>{m.nom}</option>)}
                 </select>
@@ -259,11 +282,23 @@ export default function RattrapagesPage() {
 
               <label className="col-span-2">
                 Classe (Groupes) — choisissez une ou plusieurs classes:
-                <select multiple value={form.selected_groupes} onChange={e => {
-                  const opts = Array.from(e.target.selectedOptions).map(o => o.value);
-                  setForm({ ...form, selected_groupes: opts });
-                }} className="w-full p-2 border mt-1 h-32">
-                  {groupesList.map(g => (
+                {!form.id_matiere && (
+                  <p className="text-sm text-gray-500 mt-1">Veuillez d'abord sélectionner un module</p>
+                )}
+                {form.id_matiere && filteredGroupes.length === 0 && (
+                  <p className="text-sm text-red-500 mt-1">Aucun groupe trouvé pour ce module</p>
+                )}
+                <select 
+                  multiple 
+                  value={form.selected_groupes} 
+                  onChange={e => {
+                    const opts = Array.from(e.target.selectedOptions).map(o => o.value);
+                    setForm({ ...form, selected_groupes: opts });
+                  }} 
+                  className="w-full p-2 border mt-1 h-32"
+                  disabled={!form.id_matiere || filteredGroupes.length === 0}
+                >
+                  {filteredGroupes.map(g => (
                     <option key={g.id_groupe} value={g.id_groupe}>{g.nom}</option>
                   ))}
                 </select>

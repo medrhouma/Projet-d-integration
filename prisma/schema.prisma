@@ -56,7 +56,7 @@ model Message {
   id_message      Int       @id @default(autoincrement())
   sujet           String?   @db.VarChar(255)
   contenu         String?   @db.Text
-  date_creation   DateTime  @default(now())
+  date            DateTime  @default(now())
   id_expediteur   Int
   id_destinataire Int
   lu              Boolean   @default(false)
@@ -220,24 +220,14 @@ model EmploiTemps {
   id_enseignant Int
 
   // Relations
-<<<<<<< HEAD
   salle               Salle               @relation(fields: [id_salle], references: [id_salle])
   matiere             Matiere             @relation(fields: [id_matiere], references: [id_matiere])
   groupe              Groupe              @relation(fields: [id_groupe], references: [id_groupe])
   enseignant          Enseignant          @relation(fields: [id_enseignant], references: [id_enseignant])
   absences            Absence[]
   absence_enseignant  AbsenceEnseignant[]
-=======
-  salle      Salle      @relation(fields: [id_salle], references: [id_salle])
-  matiere    Matiere    @relation(fields: [id_matiere], references: [id_matiere])
-  groupe     Groupe     @relation(fields: [id_groupe], references: [id_groupe])
-  enseignant Enseignant @relation(fields: [id_enseignant], references: [id_enseignant])
-  absences   Absence[]
-  // Rattrapages liés si cet emploi a été annulé
-  rattrapages_annules Rattrapage[] @relation("RattrapageEmploiAnnule")
-  // Ajustements originaires pour cet emploi
+  rattrapages_annules Rattrapage[]        @relation("RattrapageEmploiAnnule")
   ajustements_origine AjustementEmploiTemps[] @relation("AjustementEmploiOrigine")
->>>>>>> c2538f417e0f45e8f9325fdf5a98a5c4ea3b4ee4
 
   @@index([date])
   @@index([id_groupe, date])
@@ -274,7 +264,8 @@ model AbsenceEnseignant {
   enseignant   Enseignant  @relation(fields: [id_enseignant], references: [id_enseignant], onDelete: Cascade)
   emploi_temps EmploiTemps @relation(fields: [id_emploi], references: [id_emploi], onDelete: Cascade)
   
-
+  @@index([id_enseignant])
+  @@index([id_emploi])
   @@map("absence_enseignant")
 }
 
