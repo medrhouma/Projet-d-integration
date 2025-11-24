@@ -26,9 +26,14 @@ export async function GET(request: NextRequest) {
     const dateDebut = searchParams.get('dateDebut');
     const dateFin = searchParams.get('dateFin');
 
-    // Récupérer le département du chef
-    const chef = await prisma.enseignant.findUnique({
-      where: { id_enseignant: decoded.enseignant?.id_enseignant }
+    // Récupérer le département du chef via la relation utilisateur
+    const chef = await prisma.enseignant.findFirst({
+      where: {
+        utilisateur: {
+          id_utilisateur: decoded.userId
+        },
+        est_chef_departement: true
+      }
     });
 
     if (!chef || !chef.id_departement) {

@@ -188,11 +188,12 @@ model EmploiTemps {
   id_enseignant Int
 
   // Relations
-  salle      Salle      @relation(fields: [id_salle], references: [id_salle])
-  matiere    Matiere    @relation(fields: [id_matiere], references: [id_matiere])
-  groupe     Groupe     @relation(fields: [id_groupe], references: [id_groupe])
-  enseignant Enseignant @relation(fields: [id_enseignant], references: [id_enseignant])
-  absences   Absence[]
+  salle               Salle               @relation(fields: [id_salle], references: [id_salle])
+  matiere             Matiere             @relation(fields: [id_matiere], references: [id_matiere])
+  groupe              Groupe              @relation(fields: [id_groupe], references: [id_groupe])
+  enseignant          Enseignant          @relation(fields: [id_enseignant], references: [id_enseignant])
+  absences            Absence[]
+  absence_enseignant  AbsenceEnseignant[]
 
   @@index([date])
   @@index([id_groupe, date])
@@ -226,7 +227,8 @@ model AbsenceEnseignant {
   date_creation  DateTime      @default(now())
 
   // Relations
-  enseignant   Enseignant @relation(fields: [id_enseignant], references: [id_enseignant], onDelete: Cascade)
+  enseignant   Enseignant  @relation(fields: [id_enseignant], references: [id_enseignant], onDelete: Cascade)
+  emploi_temps EmploiTemps @relation(fields: [id_emploi], references: [id_emploi], onDelete: Cascade)
   
   @@index([id_enseignant])
   @@index([id_emploi])

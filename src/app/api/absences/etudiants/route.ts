@@ -23,18 +23,44 @@ export async function GET(request: NextRequest) {
 
     // Si c'est un étudiant, récupérer SES absences
     if (decoded.role === 'Etudiant') {
+      // Récupérer l'id_etudiant depuis la base de données
+      const etudiant = await prisma.etudiant.findFirst({
+        where: {
+          utilisateur: {
+            id_utilisateur: decoded.userId
+          }
+        }
+      });
+
+      if (!etudiant) {
+        return NextResponse.json({ error: 'Étudiant non trouvé' }, { status: 404 });
+      }
+
       const absences = await prisma.absence.findMany({
         where: {
-          id_etudiant: decoded.etudiant?.id_etudiant || parseInt(id_etudiant || '0')
+          id_etudiant: etudiant.id_etudiant
         },
         include: {
           emploi_temps: {
             include: {
-              matiere: true,
-              salle: true,
+              matiere: {
+                select: {
+                  nom: true
+                }
+              },
+              salle: {
+                select: {
+                  code: true
+                }
+              },
               enseignant: {
                 include: {
-                  utilisateur: true
+                  utilisateur: {
+                    select: {
+                      nom: true,
+                      prenom: true
+                    }
+                  }
                 }
               }
             }

@@ -184,7 +184,25 @@ export const GET = withChefDepartement(async (request: NextRequest, user: AuthUs
       ]
     });
 
-    return NextResponse.json(emplois);
+    // Récupérer les absences enseignant pour ces emplois
+    const emploiIds = emplois.map(e => e.id_emploi);
+    const absences = await prisma.absenceEnseignant.findMany({
+      where: {
+        id_emploi: { in: emploiIds }
+      },
+      select: {
+        id_absence: true,
+        id_emploi: true
+      }
+    });
+
+    // Mapper les absences aux emplois
+    const emploisAvecAbsences = emplois.map(emploi => ({
+      ...emploi,
+      absence_enseignant: absences.filter(a => a.id_emploi === emploi.id_emploi)
+    }));
+
+    return NextResponse.json({ success: true, data: emploisAvecAbsences });
   } catch (error: any) {
     console.error('❌ Erreur GET /api/emploi-temps:', error);
     return NextResponse.json(

@@ -12,10 +12,10 @@ interface Absence {
     heure_debut: string;
     heure_fin: string;
     matiere: {
-      nom_matiere: string;
+      nom: string;
     };
     salle: {
-      nom_salle: string;
+      code: string;
     };
     enseignant: {
       utilisateur: {
@@ -187,7 +187,7 @@ export default function MesAbsencesPage() {
                           <div>
                             <p className="text-xs text-gray-600">Matière</p>
                             <p className="font-semibold text-gray-800">
-                              {absence.emploi_temps.matiere.nom_matiere}
+                              {absence.emploi_temps.matiere.nom}
                             </p>
                           </div>
                         </div>
@@ -197,7 +197,7 @@ export default function MesAbsencesPage() {
                           <div>
                             <p className="text-xs text-gray-600">Salle</p>
                             <p className="font-semibold text-gray-800">
-                              {absence.emploi_temps.salle.nom_salle}
+                              {absence.emploi_temps.salle.code}
                             </p>
                           </div>
                         </div>

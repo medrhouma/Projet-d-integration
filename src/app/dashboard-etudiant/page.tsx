@@ -44,7 +44,6 @@ export default function DashboardEtudiant() {
   const pathname = usePathname();
   const [etudiant, setEtudiant] = useState<Etudiant | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentDate, setCurrentDate] = useState<string>('');
   const [stats, setStats] = useState({
     coursThisWeek: 0,
     absences: 0,
@@ -55,8 +54,6 @@ export default function DashboardEtudiant() {
   useEffect(() => {
     checkAuth();
   }, []);
-
- // Modifier la fonction checkAuth :
 
 const checkAuth = async () => {
   const userData = localStorage.getItem('userData');
@@ -97,17 +94,40 @@ const checkAuth = async () => {
       setEtudiant(parsedData);
     }
 
-    setStats({
-      coursThisWeek: 12,
-      absences: 2,
-      matieres: 8,
-      notes: 15
-    });
+    // Charger les vraies absences
+    await loadAbsences();
   } catch (error) {
     console.error('❌ Erreur critique:', error);
     router.push('/login');
   } finally {
     setIsLoading(false);
+  }
+};
+
+const loadAbsences = async () => {
+  try {
+    const res = await fetch('/api/absences/etudiants');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && data.absences) {
+        setStats(prev => ({
+          ...prev,
+          absences: data.absences.length,
+          coursThisWeek: 12,
+          matieres: 8,
+          notes: 15
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('Erreur chargement absences:', error);
+    // Garder les valeurs par défaut en cas d'erreur
+    setStats({
+      coursThisWeek: 12,
+      absences: 0,
+      matieres: 8,
+      notes: 15
+    });
   }
 };
 
@@ -161,7 +181,7 @@ const checkAuth = async () => {
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-etudiant' },
     { label: 'Mon Profil', icon: <User className="w-5 h-5" />, href: '/dashboard-etudiant/profil' },
     { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-etudiant/emploi-temps' },
-    { label: 'Mes Cours', icon: <BookOpen className="w-5 h-5" />, href: '/dashboard-etudiant/cours' },
+    
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-etudiant/absences' },
     { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-etudiant/notes' },
     { label: 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-etudiant/messagerie' },

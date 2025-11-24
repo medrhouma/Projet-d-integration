@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { 
-  Building, Users, Calendar, FileText, AlertTriangle, Settings, LogOut, 
+import {
+  Building, Users, Calendar, FileText, AlertTriangle, Settings, LogOut,
   Home, BarChart3, GraduationCap, BookOpen, UserCheck, Clock,
   TrendingUp, Activity, Mail
 } from 'lucide-react';
@@ -21,6 +21,7 @@ interface DepartementStats {
   nombre_groupes: number;
   nombre_matieres: number;
   nombre_etudiants: number;
+
   specialites: Array<{
     id: number;
     nom: string;
@@ -28,6 +29,7 @@ interface DepartementStats {
     nombre_groupes: number;
     nombre_etudiants: number;
   }>;
+
   enseignants: Array<{
     id: number;
     nom: string;
@@ -49,13 +51,10 @@ export default function DashboardChefDepartement() {
 
   const menuItems = [
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-chef-departement' },
-    { label: 'Mon Département', icon: <Building className="w-5 h-5" />, href: '/dashboard-chef-departement/departement' },
-    { label: 'Étudiants', icon: <GraduationCap className="w-5 h-5" />, href: '/dashboard-chef-departement/etudiants' },
-    { label: 'Enseignants', icon: <UserCheck className="w-5 h-5" />, href: '/dashboard-chef-departement/enseignants' },
     { label: 'Emplois du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-chef-departement/emploi-temps/gestion' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-chef-departement/absences/enseignants' },
     { label: 'Rapports', icon: <FileText className="w-5 h-5" />, href: '/dashboard-chef-departement/rapports' },
-    { label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-chef-departement/messagerie' }
+    { label: 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-chef-departement/messagerie' }
   ];
 
   useEffect(() => {
@@ -88,10 +87,11 @@ export default function DashboardChefDepartement() {
   const loadStatistiques = async (departementId?: number) => {
     try {
       setLoading(true);
-      const url = departementId 
+
+      const url = departementId
         ? `/api/chefs-departement/statistiques?departementId=${departementId}`
         : '/api/chefs-departement/statistiques';
-      
+
       const response = await fetch(url);
       const data = await response.json();
 
@@ -108,6 +108,7 @@ export default function DashboardChefDepartement() {
     }
   };
 
+  // ✅ Correction (il manquait "=")
   const handleLogout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
@@ -140,6 +141,7 @@ export default function DashboardChefDepartement() {
 
   return (
     <div className="flex h-screen bg-gray-50">
+
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
         <div className="p-6 border-b border-gray-200">
@@ -184,6 +186,7 @@ export default function DashboardChefDepartement() {
             </p>
             <p className="text-xs text-gray-500 mt-1">{user?.email}</p>
           </div>
+
           <button
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg transition-all"
@@ -208,7 +211,7 @@ export default function DashboardChefDepartement() {
               </p>
             </div>
 
-            {/* Statistiques générales */}
+            {/* Statistiques principales */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-orange-500 transition-all">
                 <div className="flex items-center">
@@ -247,7 +250,7 @@ export default function DashboardChefDepartement() {
               </div>
             </div>
 
-            {/* Statistiques supplémentaires */}
+            {/* Autres statistiques */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
                 <h3 className="text-sm font-semibold text-gray-700 mb-2">Spécialités</h3>
@@ -273,20 +276,34 @@ export default function DashboardChefDepartement() {
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {stats.specialites.map((specialite) => (
-                    <div key={specialite.id} className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-orange-500 transition-all">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-3">{specialite.nom}</h3>
+                    <div
+                      key={specialite.id}
+                      className="bg-gray-50 border border-gray-200 rounded-lg p-4 hover:border-orange-500 transition-all"
+                    >
+                      <h3 className="font-semibold text-lg text-gray-900 mb-3">
+                        {specialite.nom}
+                      </h3>
+
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
                           <p className="text-gray-600">Niveaux</p>
-                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_niveaux}</p>
+                          <p className="font-semibold text-orange-600 text-xl">
+                            {specialite.nombre_niveaux}
+                          </p>
                         </div>
+
                         <div>
                           <p className="text-gray-600">Groupes</p>
-                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_groupes}</p>
+                          <p className="font-semibold text-orange-600 text-xl">
+                            {specialite.nombre_groupes}
+                          </p>
                         </div>
+
                         <div>
                           <p className="text-gray-600">Étudiants</p>
-                          <p className="font-semibold text-orange-600 text-xl">{specialite.nombre_etudiants}</p>
+                          <p className="font-semibold text-orange-600 text-xl">
+                            {specialite.nombre_etudiants}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -300,6 +317,7 @@ export default function DashboardChefDepartement() {
               <div className="px-6 py-4 border-b border-gray-200 bg-orange-50">
                 <h2 className="text-xl font-bold text-gray-900">Enseignants du département</h2>
               </div>
+
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -321,6 +339,7 @@ export default function DashboardChefDepartement() {
                       </th>
                     </tr>
                   </thead>
+
                   <tbody className="bg-white divide-y divide-gray-200">
                     {stats.enseignants.map((enseignant) => (
                       <tr key={enseignant.id} className="hover:bg-gray-50 transition-colors">
@@ -329,24 +348,28 @@ export default function DashboardChefDepartement() {
                             {enseignant.prenom} {enseignant.nom}
                           </div>
                         </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">{enseignant.matricule}</div>
                         </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-600">{enseignant.email}</div>
                         </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                          <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                             {enseignant.nombre_matieres} matière(s)
                           </span>
                         </td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           {enseignant.est_chef ? (
-                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
+                            <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                               Chef de Département
                             </span>
                           ) : (
-                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-200">
+                            <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-gray-100 text-gray-800 border border-gray-200">
                               Enseignant
                             </span>
                           )}
@@ -354,9 +377,11 @@ export default function DashboardChefDepartement() {
                       </tr>
                     ))}
                   </tbody>
+
                 </table>
               </div>
             </div>
+
           </>
         )}
       </main>
