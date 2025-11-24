@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { 
   Building, Users, Calendar, FileText, AlertTriangle, Settings, LogOut, 
   Home, BarChart3, GraduationCap, BookOpen, DoorOpen, UserCheck, Clock,
-  TrendingUp, Activity
+  TrendingUp, Activity, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -311,6 +311,7 @@ export default function DashboardAdmin() {
     { label: 'Emplois du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-admin/emplois-du-temps' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-admin/absences' },
     { label: 'Rapports', icon: <FileText className="w-5 h-5" />, href: '/dashboard-admin/rapports' },
+    {label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-admin/messagerie' },
     { label: 'Paramètres', icon: <Settings className="w-5 h-5" />, href: '/dashboard-admin/parametres' },
     { label: 'Événements', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-admin#evenements' },
   ];

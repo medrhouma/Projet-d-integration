@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   UserCheck, Calendar, BookOpen, Users, LogOut, 
-  Home, User, Clock, FileText, Bell, Award, BarChart3
+  Home, User, Clock, FileText, Bell, Award, BarChart3, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -159,6 +159,7 @@ export default function DashboardEnseignant() {
     { label: 'Mes Étudiants', icon: <Users className="w-5 h-5" />, href: '/dashboard-enseignant/etudiants' },
     { label: 'Absences', icon: <FileText className="w-5 h-5" />, href: '/dashboard-enseignant/absences' },
     { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-enseignant/notes' },
+    { label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-enseignant/messagerie' }
   ];
 
   const statCards: StatCard[] = [

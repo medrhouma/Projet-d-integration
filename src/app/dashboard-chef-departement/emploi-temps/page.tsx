@@ -222,147 +222,107 @@ export default function EmploiTempsChefPage() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* En-tête */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Emploi du Temps du Département
-            </h1>
-            <p className="text-gray-600">
-              {userInfo?.nom} {userInfo?.prenom} • {userInfo?.enseignant?.departement_nom}
+            <h1 className="text-2xl font-bold text-gray-800">Emploi du Temps</h1>
+            <p className="text-gray-600 mt-1">
+              {userInfo?.enseignant?.departement_nom}
             </p>
           </div>
           <Link href="/dashboard-chef-departement/emploi-temps/gestion">
-            <button className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all shadow-sm">
-              <Calendar size={20} />
-              <span className="font-semibold">Gérer l'emploi du temps</span>
+            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-all shadow-sm">
+              Gérer
             </button>
           </Link>
         </div>
       </div>
 
-      {/* Message d'erreur */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-6">
-          <p className="font-bold">Erreur</p>
-          <p>{error}</p>
+        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4">
+          {error}
         </div>
       )}
 
       {/* Filtres */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter size={20} className="text-orange-600" />
-          <h2 className="text-xl font-bold text-gray-900">Filtres</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Mode d'affichage
-            </label>
-            <select
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              value={viewMode}
-              onChange={(e) => {
-                setViewMode(e.target.value as 'groupe' | 'enseignant' | 'all');
-                resetFilters();
-              }}
-            >
-              <option value="all">Vue globale</option>
-              <option value="groupe">Par groupe</option>
-              <option value="enseignant">Par enseignant</option>
-            </select>
-          </div>
+      <div className="mb-6">
+        <div className="flex flex-wrap gap-3">
+          <select
+            className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-gray-500"
+            value={viewMode}
+            onChange={(e) => {
+              setViewMode(e.target.value as 'groupe' | 'enseignant' | 'all');
+              resetFilters();
+            }}
+          >
+            <option value="all">Vue globale</option>
+            <option value="groupe">Par groupe</option>
+            <option value="enseignant">Par enseignant</option>
+          </select>
 
           {viewMode === 'groupe' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Groupe
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                value={selectedGroupe || ''}
-                onChange={(e) => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
-              >
-                <option value="">Tous les groupes</option>
-                {groupes.map((groupe) => (
-                  <option key={groupe.id_groupe} value={groupe.id_groupe}>
-                    {groupe.nom} - {groupe.niveau.nom}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-gray-500"
+              value={selectedGroupe || ''}
+              onChange={(e) => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
+            >
+              <option value="">Tous les groupes</option>
+              {groupes.map((groupe) => (
+                <option key={groupe.id_groupe} value={groupe.id_groupe}>
+                  {groupe.nom} - {groupe.niveau.nom}
+                </option>
+              ))}
+            </select>
           )}
 
           {viewMode === 'enseignant' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Enseignant
-              </label>
-              <select
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                value={selectedEnseignant || ''}
-                onChange={(e) => setSelectedEnseignant(e.target.value ? parseInt(e.target.value) : null)}
-              >
-                <option value="">Tous les enseignants</option>
-                {enseignants.map((ens) => (
-                  <option key={ens.id_enseignant} value={ens.id_enseignant}>
-                    {ens.utilisateur.nom} {ens.utilisateur.prenom}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className="flex items-end">
-            <button
-              onClick={resetFilters}
-              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            <select
+              className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-gray-500"
+              value={selectedEnseignant || ''}
+              onChange={(e) => setSelectedEnseignant(e.target.value ? parseInt(e.target.value) : null)}
             >
-              Réinitialiser
-            </button>
-          </div>
+              <option value="">Tous les enseignants</option>
+              {enseignants.map((ens) => (
+                <option key={ens.id_enseignant} value={ens.id_enseignant}>
+                  {ens.utilisateur.nom} {ens.utilisateur.prenom}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
       {/* Navigation semaine */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+      <div className="mb-6">
         <div className="flex justify-between items-center">
           <button
             onClick={previousWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-all"
           >
-            <ChevronLeft size={20} />
-            <span className="hidden sm:inline">Semaine précédente</span>
+            ← Précédent
           </button>
           
           <div className="text-center">
-            <div className="flex items-center gap-2 justify-center text-gray-600 mb-1">
-              <Calendar size={20} />
-              <span className="text-sm">Semaine du</span>
-            </div>
-            <div className="text-lg font-bold text-gray-900">{formatWeekRange()}</div>
+            <div className="font-semibold text-gray-800">{formatWeekRange()}</div>
           </div>
           
           <button
             onClick={nextWeek}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all"
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-800 text-white rounded-lg transition-all"
           >
-            <span className="hidden sm:inline">Semaine suivante</span>
-            <ChevronRight size={20} />
+            Suivant →
           </button>
         </div>
       </div>
 
       {/* Calendrier */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-orange-600">
-                <th className="border border-orange-300 p-3 text-white font-semibold sticky left-0 bg-orange-600 z-10">
-                  <Clock size={20} className="mx-auto" />
+              <tr className="bg-gray-700">
+                <th className="border border-gray-600 p-2 text-white text-sm sticky left-0 bg-gray-700 z-10 w-20">
+                  Heure
                 </th>
                 {jours.map((jour, index) => {
                   const date = getDateForDay(index);
@@ -370,8 +330,8 @@ export default function EmploiTempsChefPage() {
                   return (
                     <th 
                       key={index} 
-                      className={`border border-orange-300 p-3 text-white font-semibold min-w-[180px] ${
-                        isToday ? 'bg-orange-700' : ''
+                      className={`border border-gray-600 p-2 text-white text-sm min-w-[150px] ${
+                        isToday ? 'bg-gray-800' : ''
                       }`}
                     >
                       <div>{jour}</div>
@@ -385,13 +345,9 @@ export default function EmploiTempsChefPage() {
             </thead>
             <tbody>
               {heures.map((heure) => (
-                <tr key={heure} className="hover:bg-gray-50 transition-colors">
-                  <td className="border border-gray-200 p-2 text-sm font-medium text-center sticky left-0 bg-white z-10">
-                    <div className="flex flex-col items-center">
-                      <span className="text-orange-600 font-bold">{heure}h</span>
-                      <span className="text-gray-400 text-xs">-</span>
-                      <span className="text-orange-600 font-bold">{heure + 1}h</span>
-                    </div>
+                <tr key={heure}>
+                  <td className="border border-gray-200 p-2 text-sm text-center sticky left-0 bg-white z-10">
+                    <div className="font-semibold text-gray-700">{heure}h-{heure + 1}h</div>
                   </td>
                   {jours.map((_, dayIndex) => {
                     const emploisSlot = getEmploiForSlot(dayIndex, heure);
@@ -399,40 +355,20 @@ export default function EmploiTempsChefPage() {
                     return (
                       <td
                         key={dayIndex}
-                        className={`border border-gray-200 p-1 align-top ${
-                          emploisSlot.length > 0 ? 'bg-orange-50' : 'bg-white'
-                        }`}
+                        className="border border-gray-200 p-2 align-top bg-white"
                       >
                         {emploisSlot.map((emploi) => (
                           <div
                             key={emploi.id_emploi}
-                            className="bg-orange-600 text-white rounded-lg p-2 mb-1 shadow-sm hover:shadow-md transition-all text-xs border-l-4 border-orange-700"
+                            className="bg-gray-600 text-white rounded-lg p-2 mb-2 text-xs shadow-sm"
                           >
-                            {/* Matière */}
-                            <div className="font-bold mb-1 flex items-start gap-1">
-                              <BookOpen size={12} className="flex-shrink-0 mt-0.5" />
-                              <span className="line-clamp-1">{emploi.matiere.nom}</span>
+                            <div className="font-semibold mb-1">{emploi.matiere.nom}</div>
+                            <div>{emploi.groupe.nom}</div>
+                            <div className="text-xs mt-1">
+                              {emploi.enseignant.utilisateur.prenom.charAt(0)}. {emploi.enseignant.utilisateur.nom}
                             </div>
-                            
-                            {/* Groupe */}
-                            <div className="flex items-center gap-1 opacity-90 mb-1">
-                              <Users size={10} />
-                              <span className="truncate">{emploi.groupe.nom}</span>
-                            </div>
-                            
-                            {/* Enseignant */}
-                            <div className="flex items-center gap-1 opacity-90 mb-1 truncate">
-                              <span className="truncate">
-                                {emploi.enseignant.utilisateur.nom} {emploi.enseignant.utilisateur.prenom}
-                              </span>
-                            </div>
-                            
-                            {/* Salle */}
                             {emploi.salle && (
-                              <div className="flex items-center gap-1 opacity-90">
-                                <MapPin size={10} />
-                                <span>{emploi.salle.code}</span>
-                              </div>
+                              <div className="text-xs">{emploi.salle.code}</div>
                             )}
                           </div>
                         ))}
@@ -447,63 +383,35 @@ export default function EmploiTempsChefPage() {
       </div>
 
       {/* Statistiques */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-600 p-3 rounded-lg">
-              <BookOpen className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Total séances</p>
-              <p className="text-2xl font-bold text-orange-600">{emplois.length}</p>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all">
+          <p className="text-sm text-gray-600 font-medium">Séances</p>
+          <p className="text-3xl font-bold text-gray-900">{emplois.length}</p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-600 p-3 rounded-lg">
-              <Clock className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Heures totales</p>
-              <p className="text-2xl font-bold text-orange-600">
-                {emplois.reduce((acc, emploi) => {
-                  const debut = new Date(emploi.heure_debut);
-                  const fin = new Date(emploi.heure_fin);
-                  return acc + (fin.getTime() - debut.getTime()) / (1000 * 60 * 60);
-                }, 0).toFixed(1)}h
-              </p>
-            </div>
-          </div>
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all">
+          <p className="text-sm text-gray-600 font-medium">Heures</p>
+          <p className="text-3xl font-bold text-gray-900">
+            {emplois.reduce((acc, emploi) => {
+              const debut = new Date(emploi.heure_debut);
+              const fin = new Date(emploi.heure_fin);
+              return acc + (fin.getTime() - debut.getTime()) / (1000 * 60 * 60);
+            }, 0).toFixed(1)}h
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-600 p-3 rounded-lg">
-              <Users className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Groupes actifs</p>
-              <p className="text-2xl font-bold text-orange-600">
-                {new Set(emplois.map(e => e.groupe.nom)).size}
-              </p>
-            </div>
-          </div>
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all">
+          <p className="text-sm text-gray-600 font-medium">Groupes</p>
+          <p className="text-3xl font-bold text-gray-900">
+            {new Set(emplois.map(e => e.groupe.nom)).size}
+          </p>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border-2 border-gray-200 hover:border-orange-500 transition-all p-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-600 p-3 rounded-lg">
-              <MapPin className="text-white" size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Salles utilisées</p>
-              <p className="text-2xl font-bold text-orange-600">
-                {new Set(emplois.map(e => e.salle?.code).filter(Boolean)).size}
-              </p>
-            </div>
-          </div>
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-gray-400 transition-all">
+          <p className="text-sm text-gray-600 font-medium">Salles</p>
+          <p className="text-3xl font-bold text-gray-900">
+            {new Set(emplois.map(e => e.salle?.code).filter(Boolean)).size}
+          </p>
         </div>
       </div>
     </div>

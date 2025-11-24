@@ -30,7 +30,12 @@ export default function EmploiTempsEtudiant() {
 
   const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
   const heuresJournee = [
-    '08:30', '10:00', '11:30', '13:00', '14:00', '15:30'
+    { heure: '08:30', type: 'cours' },  // Séance 1: 08:30 - 10:00
+    { heure: '10:15', type: 'cours' },  // Séance 2: 10:15 - 11:45
+    { heure: '11:50', type: 'cours' },  // Séance 3: 11:50 - 13:20
+    { heure: '13:20', type: 'pause' },  // Pause déjeuner
+    { heure: '14:30', type: 'cours' },  // Séance 4: 14:30 - 16:00
+    { heure: '16:15', type: 'cours' }   // Séance 5: 16:15 - 17:45
   ];
 
   useEffect(() => {
@@ -54,6 +59,7 @@ export default function EmploiTempsEtudiant() {
           const resEmploi = await fetch(`/api/emploi-temps/public?groupeId=${etudiant.groupe.id_groupe}`);
           if (resEmploi.ok) {
             const data = await resEmploi.json();
+            console.log('📅 Emplois récupérés:', data);
             setEmplois(data);
           }
         }
@@ -78,7 +84,17 @@ export default function EmploiTempsEtudiant() {
       const dayOfWeek = getDayOfWeek(emploi.date);
       if (dayOfWeek !== jourIndex) return false;
       
-      const emploiHeure = emploi.heure_debut.substring(11, 16);
+      // Extraire l'heure de début (format peut être "HH:MM:SS" ou "YYYY-MM-DDTHH:MM:SS")
+      let emploiHeure = '';
+      if (emploi.heure_debut.includes('T')) {
+        // Format ISO complet
+        emploiHeure = emploi.heure_debut.substring(11, 16); // HH:MM
+      } else if (emploi.heure_debut.includes(':')) {
+        // Format TIME simple (HH:MM:SS)
+        emploiHeure = emploi.heure_debut.substring(0, 5); // HH:MM
+      }
+      
+      // Correspondance exacte HH:MM
       return emploiHeure === heure;
     });
   };
@@ -141,20 +157,42 @@ export default function EmploiTempsEtudiant() {
                 </tr>
               </thead>
               <tbody>
-                {heuresJournee.map((heure, heureIndex) => (
-                  <tr key={heureIndex} className="hover:bg-gray-50 transition-colors">
-                    <td className="border border-gray-200 p-3 text-center sticky left-0 bg-gray-50 z-10">
-                      <div className="text-gray-900 font-semibold text-sm">{heure}</div>
-                    </td>
-                    {jours.map((_, jourIndex) => {
-                      const seances = getEmploisForDayAndTime(jourIndex, heure);
-                      return (
-                        <td 
-                          key={jourIndex}
-                          className={`border border-gray-200 p-2 align-top ${
-                            seances.length > 0 ? 'bg-blue-50/50' : 'bg-white'
-                          }`}
-                        >
+                {heuresJournee.map((creneau, heureIndex) => {
+                  // Si c'est la pause déjeuner, afficher une ligne spéciale
+                  if (creneau.type === 'pause') {
+                    return (
+                      <tr key={heureIndex} className="bg-amber-50">
+                        <td className="border border-gray-200 p-3 text-center sticky left-0 bg-amber-100 z-10">
+                          <div className="text-amber-800 font-semibold text-sm flex items-center justify-center gap-2">
+                            <span>🍽️</span>
+                            <span>{creneau.heure}</span>
+                          </div>
+                        </td>
+                        <td colSpan={6} className="border border-gray-200 p-4">
+                          <div className="text-center text-amber-700 font-medium">
+                            <div className="text-lg mb-1">Pause Déjeuner</div>
+                            <div className="text-sm text-amber-600">13:20 - 14:30</div>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  
+                  // Ligne normale de cours
+                  return (
+                    <tr key={heureIndex} className="hover:bg-gray-50 transition-colors">
+                      <td className="border border-gray-200 p-3 text-center sticky left-0 bg-gray-50 z-10">
+                        <div className="text-gray-900 font-semibold text-sm">{creneau.heure}</div>
+                      </td>
+                      {jours.map((_, jourIndex) => {
+                        const seances = getEmploisForDayAndTime(jourIndex, creneau.heure);
+                        return (
+                          <td 
+                            key={jourIndex}
+                            className={`border border-gray-200 p-2 align-top ${
+                              seances.length > 0 ? 'bg-blue-50/50' : 'bg-white'
+                            }`}
+                          >
                           {seances.map((seance) => (
                             <div
                               key={seance.id_emploi}
@@ -172,7 +210,11 @@ export default function EmploiTempsEtudiant() {
                               <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
                                 <Clock className="w-3 h-3" />
                                 <span>
-                                  {seance.heure_debut.substring(11, 16)} - {seance.heure_fin.substring(11, 16)}
+                                  {seance.heure_debut.includes('T') 
+                                    ? seance.heure_debut.substring(11, 16) 
+                                    : seance.heure_debut.substring(0, 5)} - {seance.heure_fin.includes('T')
+                                    ? seance.heure_fin.substring(11, 16)
+                                    : seance.heure_fin.substring(0, 5)}
                                 </span>
                               </div>
 
@@ -195,7 +237,8 @@ export default function EmploiTempsEtudiant() {
                       );
                     })}
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

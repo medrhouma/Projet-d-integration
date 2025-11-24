@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { 
   Building, Users, Calendar, FileText, AlertTriangle, Settings, LogOut, 
   Home, BarChart3, GraduationCap, BookOpen, UserCheck, Clock,
-  TrendingUp, Activity
+  TrendingUp, Activity, Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/LoadingSpinner';
