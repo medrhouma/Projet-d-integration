@@ -19,6 +19,8 @@ export default function RattrapagesPage() {
     date: "",
     id_salle: "",
     id_enseignant: "",
+    heure_debut: "",
+    heure_fin: "",
     selected_groupes: [] as string[],
     motif: "",
   });
@@ -68,6 +70,8 @@ export default function RattrapagesPage() {
     setForm({
       id_matiere: matiereId,
       date: r.date ? new Date(r.date).toISOString().slice(0, 10) : "",
+      heure_debut: r.heure_debut ? new Date(r.heure_debut).toLocaleTimeString('fr-FR', { hour12: false, hour: '2-digit', minute: '2-digit' }) : "",
+      heure_fin: r.heure_fin ? new Date(r.heure_fin).toLocaleTimeString('fr-FR', { hour12: false, hour: '2-digit', minute: '2-digit' }) : "",
       id_salle: String(r.id_salle || ""),
       id_enseignant: String(r.id_enseignant || ""),
       selected_groupes: (r.groupes || []).map((g: any) => String(g.groupe?.id_groupe)).filter(Boolean),
@@ -117,8 +121,8 @@ export default function RattrapagesPage() {
         id_enseignant: Number(form.id_enseignant) || undefined,
         id_salle: Number(form.id_salle) || undefined,
         date: form.date ? new Date(form.date).toISOString() : undefined,
-        heure_debut: new Date().toISOString(),
-        heure_fin: new Date().toISOString(),
+        heure_debut: (form.date && form.heure_debut) ? new Date(`${form.date}T${form.heure_debut}`).toISOString() : (form.heure_debut ? new Date(form.heure_debut).toISOString() : undefined),
+        heure_fin: (form.date && form.heure_fin) ? new Date(`${form.date}T${form.heure_fin}`).toISOString() : (form.heure_fin ? new Date(form.heure_fin).toISOString() : undefined),
         motif: form.motif,
         groupes: Array.isArray(form.selected_groupes) ? form.selected_groupes.map(s => Number(s)) : [],
         id_planificateur: Number(localStorage.getItem("userId") || "1"),
@@ -144,8 +148,8 @@ export default function RattrapagesPage() {
 
   const downloadCSV = () => {
     if (!list || list.length === 0) { alert("Rien à télécharger"); return; }
-    const headers = ["id_rattrapage", "matiere", "date", "salle", "enseignant", "motif"].join(",");
-    const rows = list.map(r => [r.id_rattrapage, r.matiere?.nom || "", r.date ? new Date(r.date).toLocaleString() : "", r.salle?.code || "", r.enseignant?.utilisateur ? `${r.enseignant.utilisateur.prenom} ${r.enseignant.utilisateur.nom}` : "", (r.motif || "")].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
+    const headers = ["id_rattrapage", "matiere", "date", "heure_debut", "heure_fin", "salle", "enseignant", "motif"].join(",");
+    const rows = list.map(r => [r.id_rattrapage, r.matiere?.nom || "", r.date ? new Date(r.date).toLocaleString() : "", r.heure_debut ? new Date(r.heure_debut).toLocaleTimeString() : "", r.heure_fin ? new Date(r.heure_fin).toLocaleTimeString() : "", r.salle?.code || "", r.enseignant?.utilisateur ? `${r.enseignant.utilisateur.prenom} ${r.enseignant.utilisateur.nom}` : "", (r.motif || "")].map(v => `"${String(v).replace(/"/g, '""')}"`).join(","));
     const csv = [headers, ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
