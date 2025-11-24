@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
   Building, Users, Calendar, FileText, AlertTriangle, Settings, LogOut, 
@@ -28,6 +28,8 @@ export default function DashboardAdmin() {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [todayLabel, setTodayLabel] = useState<string>('');
+  
   const [stats, setStats] = useState<Stats>({
     etudiants: 0,
     enseignants: 0,
@@ -40,6 +42,165 @@ export default function DashboardAdmin() {
     coursThisWeek: 0,
     absencesToday: 0
   });
+
+  // Events panel state
+  const [showEventsPanel, setShowEventsPanel] = useState(false);
+  const [eventsList, setEventsList] = useState<any[]>([]);
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<number | null>(null);
+  const [eventForm, setEventForm] = useState({
+    titre: '',
+    description: '',
+    type: '',
+    date_debut: '',
+    date_fin: '',
+    concerne_tous: false,
+  });
+
+  // Load events from API
+  const loadEvents = async () => {
+    setEventsLoading(true);
+    try {
+      const res = await fetch('/api/evenements');
+      if (!res.ok) {
+        console.error('Failed to load events', res.status);
+        setEventsList([]);
+        return;
+      }
+      const data = await res.json();
+      setEventsList(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('Error fetching events', e);
+      setEventsList([]);
+    } finally {
+      setEventsLoading(false);
+    }
+  };
+
+  const openEventsPanel = () => {
+    setShowEventsPanel(true);
+    try {
+      if (typeof window !== 'undefined') window.location.hash = 'evenements';
+    } catch {}
+    loadEvents();
+  };
+
+  const closeEventsPanel = () => {
+    setShowEventsPanel(false);
+    try {
+      if (typeof window !== 'undefined' && window.location.hash === '#evenements') {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    } catch {}
+  };
+
+  const openCreateForm = () => {
+    setEditingEventId(null);
+    setEventForm({ titre: '', description: '', type: '', date_debut: '', date_fin: '', concerne_tous: false });
+    setShowCreateForm(true);
+  };
+
+  const openEditForm = (ev: any) => {
+    setEditingEventId(ev.id_evenement ?? null);
+    setEventForm({
+      titre: ev.titre || '',
+      description: ev.description || '',
+      type: ev.type || '',
+      date_debut: ev.date_debut ? ev.date_debut : '',
+      date_fin: ev.date_fin ? ev.date_fin : '',
+      concerne_tous: !!ev.concerne_tous,
+    });
+    setShowCreateForm(true);
+  };
+
+  const handleSubmitEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const organiserId = user?.id_utilisateur ?? (typeof window !== 'undefined' && localStorage.getItem('userId') ? Number(localStorage.getItem('userId')) : 1);
+      const payload = { ...eventForm, id_organisateur: organiserId };
+      const method = editingEventId ? 'PATCH' : 'POST';
+      const url = editingEventId ? `/api/evenements/${editingEventId}` : '/api/evenements';
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        let msg = 'Erreur API';
+        try { const data = await res.json(); msg = data?.error || JSON.stringify(data); } catch {}
+        throw new Error(msg);
+      }
+      await loadEvents();
+      setShowCreateForm(false);
+      setEditingEventId(null);
+    } catch (err) {
+      console.error('Erreur saving event', err);
+      alert(`Impossible d'enregistrer l'événement: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
+  const handleDeleteEvent = async (id: number) => {
+    if (!confirm('Confirmer la suppression de cet événement ?')) return;
+    try {
+      const res = await fetch(`/api/evenements/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Suppression échouée');
+      await loadEvents();
+    } catch (err) {
+      console.error('Error deleting event', err);
+      alert('Impossible de supprimer l\'événement. Voir la console.');
+    }
+  };
+
+  const toggleMenu = (id: number) => {
+    setMenuOpenId(prev => (prev === id ? null : id));
+  };
+
+  const handleSaveEvent = async (ev: any) => {
+    try {
+      const id = ev.id_evenement;
+      const payload = {
+        titre: ev.titre,
+        description: ev.description,
+        date_debut: ev.date_debut,
+        date_fin: ev.date_fin,
+        type: ev.type,
+        concerne_tous: !!ev.concerne_tous,
+      };
+      const res = await fetch(`/api/evenements/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'Erreur sauvegarde');
+      }
+      await loadEvents();
+      alert('Événement enregistré.');
+    } catch (err) {
+      console.error('Error saving event', err);
+      alert(`Impossible d'enregistrer: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
+
+  // Open panel if URL contains #evenements and listen to hash changes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkHash = () => {
+      if (window.location.hash === '#evenements') {
+        setShowEventsPanel(true);
+        loadEvents();
+      } else {
+        setShowEventsPanel(false);
+      }
+    };
+    checkHash();
+    window.addEventListener('hashchange', checkHash);
+    return () => window.removeEventListener('hashchange', checkHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // Récupération des données admin depuis le localStorage
@@ -58,6 +219,17 @@ export default function DashboardAdmin() {
       router.push('/login');
     } finally {
       setIsLoading(false);
+    }
+    // compute client-side formatted date to avoid SSR/CSR mismatch
+    try {
+      const label = new Date().toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+      });
+      setTodayLabel(label);
+    } catch (e) {
+      setTodayLabel('');
     }
   }, [router]);
 
@@ -141,7 +313,9 @@ export default function DashboardAdmin() {
     { label: 'Rapports', icon: <FileText className="w-5 h-5" />, href: '/dashboard-admin/rapports' },
     {label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-admin/messagerie' },
     { label: 'Paramètres', icon: <Settings className="w-5 h-5" />, href: '/dashboard-admin/parametres' },
+    { label: 'Événements', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-admin#evenements' },
   ];
+  
 
   const mainStats = [
     { 
@@ -253,20 +427,38 @@ export default function DashboardAdmin() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
-                pathname === item.href
-                  ? 'bg-blue-50 text-blue-700 font-medium'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              {item.icon}
-              <span className="text-sm">{item.label}</span>
-            </Link>
-          ))}
+          {menuItems.map((item) => {
+            const isEvents = typeof item.href === 'string' && item.href.endsWith('#evenements');
+            const baseClass = `flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+              pathname === item.href
+                ? 'bg-blue-50 text-blue-700 font-medium'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`;
+
+            if (isEvents) {
+              return (
+                <button
+                  key={String(item.href)}
+                  onClick={() => openEventsPanel()}
+                  className={baseClass}
+                >
+                  {item.icon}
+                  <span className="text-sm">{item.label}</span>
+                </button>
+              );
+            }
+
+            return (
+              <Link
+                key={String(item.href)}
+                href={item.href}
+                className={baseClass}
+              >
+                {item.icon}
+                <span className="text-sm">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="p-4 border-t border-gray-200">
@@ -310,11 +502,7 @@ export default function DashboardAdmin() {
             <div className="text-right">
               <p className="text-sm text-gray-500">Aujourd'hui</p>
               <p className="text-base font-medium text-gray-900">
-                {new Date().toLocaleDateString('fr-FR', { 
-                  weekday: 'long', 
-                  day: 'numeric',
-                  month: 'long'
-                })}
+                {todayLabel || ''}
               </p>
             </div>
           </div>
@@ -450,6 +638,81 @@ export default function DashboardAdmin() {
           </div>
         </div>
       </main>
+
+      {/* Events Panel (right drawer) */}
+      {showEventsPanel && (
+        <div className="fixed inset-0 z-40 flex">
+          <div className="flex-1" onClick={closeEventsPanel} aria-hidden="true" />
+          <aside className="w-96 bg-white border-l border-gray-200 p-6 overflow-y-auto text-black">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Événements institutionnels</h3>
+              <button onClick={closeEventsPanel} aria-label="Fermer le panneau" className="p-2 rounded hover:bg-gray-100">
+                Fermer
+              </button>
+            </div>
+
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-sm text-black">Liste des événements à venir</p>
+              <div className="flex items-center gap-2">
+                <button onClick={openCreateForm} className="inline-flex items-center px-3 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700">Ajouter</button>
+                <button onClick={loadEvents} className="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200">Rafraîchir</button>
+              </div>
+            </div>
+
+            {/* Create / Edit form */}
+            {showCreateForm && (
+              <form onSubmit={handleSubmitEvent} className="mb-4 border p-3 rounded">
+                <div className="grid grid-cols-1 gap-2">
+                  <input required value={eventForm.titre} onChange={(e) => setEventForm({ ...eventForm, titre: e.target.value })} placeholder="Titre" className="p-2 border rounded placeholder-gray-700 text-black" />
+                  <input value={eventForm.type} onChange={(e) => setEventForm({ ...eventForm, type: e.target.value })} placeholder="Type (ex: Conférence)" className="p-2 border rounded placeholder-gray-700 text-black" />
+                  <textarea value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} placeholder="Description" className="p-2 border rounded placeholder-gray-700 text-black" />
+                  <label htmlFor="date_debut" className="text-sm">Date début</label>
+                  <input id="date_debut" title="Date début" required type="datetime-local" value={eventForm.date_debut} onChange={(e) => setEventForm({ ...eventForm, date_debut: e.target.value })} className="p-2 border rounded text-black" />
+                  <label htmlFor="date_fin" className="text-sm">Date fin</label>
+                  <input id="date_fin" title="Date fin" required type="datetime-local" value={eventForm.date_fin} onChange={(e) => setEventForm({ ...eventForm, date_fin: e.target.value })} className="p-2 border rounded text-black" />
+                  <label className="flex items-center gap-2"><input type="checkbox" checked={eventForm.concerne_tous} onChange={(e) => setEventForm({ ...eventForm, concerne_tous: e.target.checked })} /> Concerne tous</label>
+                  <div className="flex gap-2">
+                    <button type="submit" className="px-3 py-2 bg-blue-600 text-white rounded">{editingEventId ? 'Enregistrer' : 'Créer'}</button>
+                    <button type="button" onClick={() => { setShowCreateForm(false); setEditingEventId(null); }} className="px-3 py-2 bg-gray-200 rounded">Annuler</button>
+                  </div>
+                </div>
+              </form>
+            )}
+
+            <div>
+              {eventsLoading ? (
+                <p>Chargement...</p>
+              ) : eventsList.length === 0 ? (
+                <p className="text-sm text-black">Aucun événement trouvé.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {eventsList.map((ev: any) => (
+                    <li key={ev.id_evenement} className="border rounded-lg p-3 flex items-start justify-between relative">
+                      <div>
+                        <p className="font-medium text-black">{ev.titre}</p>
+                        <p className="text-xs text-black">{new Date(ev.date_debut).toLocaleString()} — {new Date(ev.date_fin).toLocaleString()}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => toggleMenu(ev.id_evenement)} aria-label="Options" className="p-1 rounded hover:bg-gray-100">
+                          •••
+                        </button>
+
+                        {menuOpenId === ev.id_evenement && (
+                          <div className="absolute right-3 top-10 bg-white border border-gray-200 rounded shadow-md z-50 w-40">
+                            <button onClick={() => { setMenuOpenId(null); handleSaveEvent(ev); }} className="w-full text-left px-3 py-2 hover:bg-gray-50">Enregistrer</button>
+                            <button onClick={() => { setMenuOpenId(null); openEditForm(ev); }} className="w-full text-left px-3 py-2 hover:bg-gray-50">Modifier</button>
+                            <button onClick={() => { setMenuOpenId(null); handleDeleteEvent(ev.id_evenement); }} className="w-full text-left px-3 py-2 text-red-600 hover:bg-gray-50">Supprimer</button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 }

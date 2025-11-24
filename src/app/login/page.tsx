@@ -220,28 +220,40 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
-      
-      <div className="bg-white p-8 md:p-10 rounded-lg w-full max-w-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-200">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 px-4 py-8 relative overflow-hidden">
+      {/* Fond animé avec particules */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Grille de fond */}
+      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
+
+      <div className="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-2xl border border-white/20 animate-fade-in-up">
         
         {/* En-tête avec logo amélioré */}
         <div className="text-center mb-8">
           <div className="relative inline-block mb-4">
-            
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl shadow-xl transform hover:scale-110 transition-transform duration-300">
+              <School className="w-10 h-10 text-white" />
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-2 animate-fade-in">
             ISET Tozeur
           </h1>
           <p className="text-gray-600 text-base md:text-lg font-medium">Connexion à votre espace personnel</p>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-xs text-gray-500">Système sécurisé</span>
           </div>
         </div>
 
         {/* Message d'erreur général */}
         {errors.general && (
-          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg flex items-center gap-3">
+          <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl flex items-center gap-3 shadow-md animate-shake">
             <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
               <XCircle className="w-5 h-5 text-red-600" />
             </div>
@@ -255,7 +267,7 @@ export default function LoginPage() {
         {/* Sélection du rôle avec design moderne */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
               <Settings className="w-5 h-5 text-white" />
             </div>
             <h3 className="text-lg font-bold text-gray-800">
@@ -269,9 +281,9 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => setRole(r.key)}
                 className={`group relative cursor-pointer border-2 rounded-2xl p-4 text-center transition-all duration-300 transform hover:-translate-y-1 ${
-                  role === r.key
-                    ? `border-transparent bg-gradient-to-br ${r.color} text-white shadow-2xl scale-105`
-                    : `border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-lg`
+                    role === r.key
+                      ? `border-transparent bg-gradient-to-br ${r.color} text-white shadow-2xl scale-105`
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:shadow-lg'
                 }`}
               >
                 {/* Effet de brillance */}
@@ -465,7 +477,20 @@ export default function LoginPage() {
         </form>
 
         {/* Informations de sécurité */}
-        
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-xl">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-bold text-sm text-gray-800 mb-1">Connexion sécurisée</h4>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                Vos données sont protégées par un chiffrement SSL/TLS. Ne partagez jamais vos identifiants.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Footer amélioré */}
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex flex-col items-center gap-3">
@@ -481,10 +506,13 @@ export default function LoginPage() {
             <p className="text-xs text-gray-500 text-center">
               © 2025 ISET Tozeur. Tous droits réservés.
             </p>
-            
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-500">Version 2.0.1</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>
+  );
 }
