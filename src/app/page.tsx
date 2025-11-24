@@ -14,6 +14,23 @@ export default function Homepage() {
   const [email, setEmail] = useState('');
   const [statsVisible, setStatsVisible] = useState(false);
   const statsRef = useRef<HTMLDivElement>(null);
+  const [events, setEvents] = useState<any[]>([]);
+  const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/evenements');
+        if (res.ok) {
+          const data = await res.json();
+          setEvents(data);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchEvents();
+  }, []);
 
   // Effet pour le scroll de la navbar
   useEffect(() => {
@@ -734,25 +751,55 @@ const news = [
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { date: '21', month: 'Oct', title: 'Journée Portes Ouvertes', desc: 'Découvrez nos formations et rencontrez nos enseignants', location: 'Campus Principal' },
-              { date: '28', month: 'Oct', title: 'Séminaire Innovation', desc: 'Les nouvelles technologies dans l\'éducation', location: 'Amphithéâtre A' },
-              { date: '05', month: 'Nov', title: 'Forum Entreprises', desc: 'Rencontrez les recruteurs et découvrez les opportunités', location: 'Salle des Conférences' }
-            ].map((event, index) => (
-              <div key={index} className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-purple-300 transform hover:-translate-y-1">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center mb-4 group-hover:scale-105 transition-transform">
-                  <div className="text-3xl font-bold">{event.date}</div>
-                  <div className="text-sm uppercase">{event.month} 2025</div>
+            {events && events.length > 0 ? (
+              events.map((evt) => {
+                const start = new Date(evt.date_debut);
+                const day = start.getDate();
+                const month = start.toLocaleString('fr-FR', { month: 'short' });
+                return (
+                  <div key={evt.id_evenement} onClick={() => setSelectedEvent(evt)} role="button" tabIndex={0} className="group bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 hover:border-purple-300 transform hover:-translate-y-1">
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center mb-4 group-hover:scale-105 transition-transform">
+                      <div className="text-3xl font-bold">{day}</div>
+                      <div className="text-sm uppercase">{month}</div>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">{evt.titre}</h3>
+                    <p className="text-gray-600 text-sm mb-4">{evt.description || evt.type}</p>
+                    <div className="flex items-center space-x-2 text-sm text-gray-500">
+                      <MapPin className="w-4 h-4" />
+                      <span>{evt.type}</span>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="col-span-3 text-center text-gray-500">Aucun événement à venir</div>
+            )}
+          </div>
+
+          {/* Right-side drawer for selected event */}
+          {selectedEvent && (
+            <div className="fixed inset-y-0 right-0 z-50 w-full md:w-1/3 lg:w-1/4 bg-white shadow-2xl border-l border-gray-200 overflow-auto">
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{selectedEvent.titre}</h3>
+                    <p className="text-sm text-gray-500">{new Date(selectedEvent.date_debut).toLocaleString('fr-FR')} — {new Date(selectedEvent.date_fin).toLocaleString('fr-FR')}</p>
+                  </div>
+                  <button onClick={() => setSelectedEvent(null)} aria-label="Fermer" className="p-2 rounded-md hover:bg-gray-100">
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">{event.title}</h3>
-                <p className="text-gray-600 text-sm mb-4">{event.desc}</p>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <MapPin className="w-4 h-4" />
-                  <span>{event.location}</span>
+
+                <div className="prose prose-sm text-gray-700">
+                  <p>{selectedEvent.description || 'Pas de description fournie.'}</p>
+                </div>
+
+                <div className="mt-6">
+                  <span className="inline-block px-3 py-1 bg-gray-100 text-sm rounded">Type: {selectedEvent.type}</span>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       </section>
 

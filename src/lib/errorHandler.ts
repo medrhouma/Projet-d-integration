@@ -85,14 +85,15 @@ export function handleApiError(error: unknown): NextResponse {
   }
 
   // Erreurs JavaScript standard
-  if (error instanceof Error) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: error.message || 'Erreur interne du serveur'
-      },
-      { status: 500 }
-    )
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.message || 'Erreur interne du serveur',
+          ...(process.env.NODE_ENV !== 'production' ? { stack: error.stack } : {})
+        },
+        { status: 500 }
+      )
   }
 
   // Erreur inconnue
@@ -157,11 +158,18 @@ function handlePrismaError(error: Prisma.PrismaClientKnownRequestError): NextRes
       )
 
     default:
-      return NextResponse.json(
+        // In development include the Prisma message/meta to help debugging
+        const devDetail = process.env.NODE_ENV !== 'production' ? {
+          detail: (error as any).message || undefined,
+          meta: (error as any).meta || undefined
+        } : {}
+
+        return NextResponse.json(
         {
           success: false,
           error: 'Erreur de base de données',
-          code: error.code
+          code: error.code,
+          ...devDetail
         },
         { status: 500 }
       )

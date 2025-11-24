@@ -1,3 +1,5 @@
+"use client";
+
 interface LoadingSpinnerProps {
   color?: 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'pink' | 'indigo' | 'teal';
   message?: string;
@@ -70,9 +72,9 @@ export default function LoadingSpinner({ color = 'blue', message = 'Chargement..
       <p className={`mt-8 ${colors.text} text-xl font-semibold animate-pulse flex items-center gap-2`}>
         {message}
         <span className="flex gap-1">
-          <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-          <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-          <span className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          <span className="w-2 h-2 bg-current rounded-full animate-bounce delay-[0ms]"></span>
+          <span className="w-2 h-2 bg-current rounded-full animate-bounce delay-[150ms]"></span>
+          <span className="w-2 h-2 bg-current rounded-full animate-bounce delay-[300ms]"></span>
         </span>
       </p>
     </div>
