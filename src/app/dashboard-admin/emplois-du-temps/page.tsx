@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Users, BookOpen } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Calendar, Clock, MapPin, Users, BookOpen, ArrowLeftCircle } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Groupe {
@@ -32,6 +33,8 @@ interface Emploi {
 }
 
 export default function EmploiTempsAdminPage() {
+  const router = useRouter();
+
   const [groupes, setGroupes] = useState<Groupe[]>([]);
   const [emplois, setEmplois] = useState<Emploi[]>([]);
   const [selectedGroupe, setSelectedGroupe] = useState<number | null>(null);
@@ -48,7 +51,7 @@ export default function EmploiTempsAdminPage() {
 
   const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 
-  // Charger tous les groupes au démarrage
+  // Charger groupes
   useEffect(() => {
     fetch('/api/groupes')
       .then(res => res.json())
@@ -57,7 +60,7 @@ export default function EmploiTempsAdminPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Charger les emplois quand un groupe est sélectionné
+  // Charger emplois
   useEffect(() => {
     if (selectedGroupe) {
       fetch(`/api/emploi-temps/public?groupeId=${selectedGroupe}`)
@@ -74,12 +77,12 @@ export default function EmploiTempsAdminPage() {
       const emploiDate = new Date(emploi.date);
       const dayOfWeek = emploiDate.getDay();
       const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      
+
       if (adjustedDay !== dayIndex) return false;
-      
+
       const heureDebut = new Date(emploi.heure_debut);
       const emploiHeureDebut = heureDebut.getUTCHours() + heureDebut.getUTCMinutes() / 60;
-      
+
       return emploiHeureDebut >= slotStart && emploiHeureDebut < slotEnd;
     });
   };
@@ -91,32 +94,46 @@ export default function EmploiTempsAdminPage() {
   const selectedGroupeData = groupes.find(g => g.id_groupe === selectedGroupe);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8">
-      {/* En-tête avec animation */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 relative">
+      
+      {/* 🔙 Bouton Retour */}
+      <button
+        onClick={() => router.push('/dashboard-admin')}
+        className="fixed top-4 left-4 z-50 bg-white/20 backdrop-blur-xl border border-white/30
+        hover:bg-white/30 transition px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg text-white"
+      >
+        <ArrowLeftCircle size={22} />
+        Retour
+      </button>
+
+      {/* En-tête */}
       <div className="mb-8 text-center">
         <div className="inline-flex items-center justify-center gap-3 mb-4">
           <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl shadow-2xl animate-pulse">
             <Calendar size={40} className="text-white" />
           </div>
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3 animate-gradient">
+        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">
           Emploi du Temps
         </h1>
         <p className="text-gray-300 text-lg">Consultation des emplois du temps par groupe</p>
         <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full"></div>
       </div>
 
-      {/* Sélecteur de groupe avec effet glassmorphism */}
+      {/* Sélecteur de groupe */}
       <div className="max-w-2xl mx-auto mb-8">
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
           <label className="block text-xl font-bold text-white mb-4 flex items-center gap-2">
             <Users size={24} className="text-purple-400" />
             Sélectionner un groupe
           </label>
+
           <select
-            className="w-full bg-white/90 backdrop-blur-sm border-2 border-purple-300 rounded-2xl px-6 py-4 text-lg font-semibold text-gray-800 focus:ring-4 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
+            className="w-full bg-white/90 border-2 border-purple-300 rounded-2xl px-6 py-4 text-lg
+            font-semibold text-gray-800 focus:ring-4 focus:ring-purple-500 focus:border-purple-500 
+            transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
             value={selectedGroupe || ''}
-            onChange={(e) => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
+            onChange={e => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
           >
             <option value="">🎯 Choisir un groupe...</option>
             {groupes.map(groupe => (
@@ -132,7 +149,8 @@ export default function EmploiTempsAdminPage() {
       {selectedGroupe ? (
         <div className="max-w-7xl mx-auto">
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-            {/* En-tête du tableau */}
+
+            {/* Header tableau */}
             <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-8">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
@@ -144,6 +162,7 @@ export default function EmploiTempsAdminPage() {
                   </h2>
                   <p className="text-white/80 text-sm">Emploi du temps de la semaine</p>
                 </div>
+
                 {emplois.length > 0 && (
                   <div className="flex items-center gap-3 bg-white/20 px-6 py-3 rounded-2xl backdrop-blur-sm">
                     <div className="bg-white/30 p-2 rounded-lg">
@@ -158,7 +177,7 @@ export default function EmploiTempsAdminPage() {
               </div>
             </div>
 
-            {/* Tableau de l'emploi du temps */}
+            {/* Tableau */}
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
@@ -169,6 +188,7 @@ export default function EmploiTempsAdminPage() {
                         <span className="font-bold">Horaires</span>
                       </div>
                     </th>
+
                     {jours.map((jour, i) => (
                       <th key={i} className="border border-gray-700 p-4 font-bold text-white min-w-[200px]">
                         <div className="flex items-center justify-center gap-2">
@@ -179,17 +199,14 @@ export default function EmploiTempsAdminPage() {
                     ))}
                   </tr>
                 </thead>
+
                 <tbody>
                   {heures.map((heure, i) => (
-                    <tr key={i} className={heure.isPause ? 'bg-orange-500/20' : 'hover:bg-white/5 transition-colors'}>
-                      <td className={`border border-gray-700 p-4 text-center font-bold sticky left-0 z-10 ${
-                        heure.isPause ? 'bg-orange-500/30 text-orange-200' : 'bg-gray-800/50 text-purple-300'
-                      }`}>
-                        <div className="flex items-center justify-center gap-2">
-                          {!heure.isPause && <Clock size={16} />}
-                          {heure.label}
-                        </div>
+                    <tr key={i} className={heure.isPause ? 'bg-orange-500/20' : 'hover:bg-white/5'}>
+                      <td className={`border border-gray-700 p-4 font-bold sticky left-0 z-10 ${heure.isPause ? 'bg-orange-500/30 text-orange-200' : 'bg-gray-800/50 text-purple-300'}`}>
+                        {heure.label}
                       </td>
+
                       {heure.isPause ? (
                         <td colSpan={6} className="border border-gray-700 p-6 text-center">
                           <div className="inline-flex items-center gap-3 bg-orange-500/30 px-8 py-4 rounded-2xl backdrop-blur-sm">
@@ -200,30 +217,29 @@ export default function EmploiTempsAdminPage() {
                       ) : (
                         jours.map((_, dayIndex) => {
                           const emploi = getEmploiForSlot(dayIndex, heure.start, heure.end);
+
                           return (
                             <td key={dayIndex} className="border border-gray-700 p-2">
                               {emploi ? (
                                 <div className="relative group">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
-                                  <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl p-4 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl blur opacity-75 group-hover:opacity-100"></div>
+                                  <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl p-4 shadow-xl hover:scale-105 transition">
                                     <div className="font-bold text-sm mb-2 flex items-center gap-2">
-                                      <div className="bg-white/20 p-1 rounded">
-                                        <BookOpen size={14} />
-                                      </div>
-                                      <span className="line-clamp-1">{emploi.matiere.nom}</span>
+                                      <BookOpen size={14} />
+                                      <span>{emploi.matiere.nom}</span>
                                     </div>
+
                                     {emploi.enseignant && (
-                                      <div className="text-xs opacity-90 flex items-center gap-1 mb-1 bg-white/10 px-2 py-1 rounded">
+                                      <div className="text-xs flex items-center gap-1 bg-white/10 px-2 py-1 rounded mb-1">
                                         <Users size={12} />
-                                        <span className="line-clamp-1">
-                                          {emploi.enseignant.utilisateur.nom} {emploi.enseignant.utilisateur.prenom}
-                                        </span>
+                                        {emploi.enseignant.utilisateur.nom} {emploi.enseignant.utilisateur.prenom}
                                       </div>
                                     )}
+
                                     {emploi.salle && (
-                                      <div className="text-xs opacity-90 flex items-center gap-1 bg-white/10 px-2 py-1 rounded">
+                                      <div className="text-xs flex items-center gap-1 bg-white/10 px-2 py-1 rounded">
                                         <MapPin size={12} />
-                                        <span>{emploi.salle.code}</span>
+                                        {emploi.salle.code}
                                       </div>
                                     )}
                                   </div>
@@ -232,7 +248,7 @@ export default function EmploiTempsAdminPage() {
                                 <div className="h-24 flex items-center justify-center text-gray-500 text-xs rounded-lg bg-gray-800/20 border border-dashed border-gray-700">
                                   <div className="text-center">
                                     <div className="text-2xl mb-1">✨</div>
-                                    <div>Libre</div>
+                                    Libre
                                   </div>
                                 </div>
                               )}
@@ -246,16 +262,16 @@ export default function EmploiTempsAdminPage() {
               </table>
             </div>
 
-            {/* Message si aucune séance */}
             {emplois.length === 0 && (
               <div className="p-12 text-center bg-gradient-to-br from-gray-800/50 to-gray-900/50">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-purple-500/20 rounded-full mb-4">
                   <Calendar size={48} className="text-purple-400" />
                 </div>
-                <p className="text-gray-300 text-lg font-semibold">Aucune séance programmée pour ce groupe</p>
-                <p className="text-gray-500 text-sm mt-2">L'emploi du temps est vide pour le moment</p>
+                <p className="text-gray-300 text-lg font-semibold">Aucune séance programmée</p>
+                <p className="text-gray-500 text-sm mt-2">L'emploi du temps est vide pour ce groupe</p>
               </div>
             )}
+
           </div>
         </div>
       ) : (
@@ -265,12 +281,7 @@ export default function EmploiTempsAdminPage() {
               <Calendar size={48} className="text-white" />
             </div>
             <h3 className="text-3xl font-bold text-white mb-3">Sélectionnez un groupe</h3>
-            <p className="text-gray-300 text-lg">Choisissez un groupe dans la liste ci-dessus pour afficher son emploi du temps</p>
-            <div className="mt-6 flex items-center justify-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse delay-75"></div>
-              <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse delay-150"></div>
-            </div>
+            <p className="text-gray-300 text-lg">Choisissez un groupe dans la liste ci-dessus</p>
           </div>
         </div>
       )}

@@ -50,6 +50,22 @@ export default function DashboardEtudiant() {
     matieres: 0,
     notes: 0
   });
+  const [events, setEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/evenements');
+        if (res.ok) {
+          const data = await res.json();
+          setEvents(data);
+        }
+      } catch (e) {
+        // ignore
+      }
+    };
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -416,6 +432,29 @@ const loadAbsences = async () => {
               </Link>
             </div>
           </div>
+
+        {/* Événements à venir */}
+        <div className="mt-6 bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Événements à venir</h2>
+          {events && events.length > 0 ? (
+            <div className="space-y-3">
+              {events.slice(0, 5).map((evt) => (
+                <div key={evt.id_evenement} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-800">{evt.titre}</p>
+                      <p className="text-xs text-gray-500">{new Date(evt.date_debut).toLocaleString('fr-FR')}</p>
+                    </div>
+                    <div className="text-sm text-gray-500">{evt.type}</div>
+                  </div>
+                  {evt.description && <p className="text-sm text-gray-600 mt-2">{evt.description}</p>}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">Aucun événement pour le moment</p>
+          )}
+        </div>
 
           {/* Activités récentes */}
           <div className="bg-white border border-gray-200 rounded-lg p-6">

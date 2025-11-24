@@ -41,8 +41,32 @@ model Utilisateur {
   enseignant        Enseignant?
   messages_envoyes  Message[] @relation("Expediteur")
   messages_recus    Message[] @relation("Destinataire")
+  // Événements organisés par cet utilisateur
+  evenements_organises EvenementInstitutionnel[]
+  // Rattrapages planifiés par cet utilisateur
+  rattrapages_planificateur Rattrapage[] @relation("RattrapagePlanificateur")
+  // Ajustements créés par cet utilisateur
+  ajustements_auteur AjustementEmploiTemps[]
 
   @@map("utilisateur")
+}
+
+// Messages entre utilisateurs
+model Message {
+  id_message      Int       @id @default(autoincrement())
+  sujet           String?   @db.VarChar(255)
+  contenu         String?   @db.Text
+  date_creation   DateTime  @default(now())
+  id_expediteur   Int
+  id_destinataire Int
+  lu              Boolean   @default(false)
+
+  expediteur      Utilisateur @relation("Expediteur", fields: [id_expediteur], references: [id_utilisateur], onDelete: Cascade)
+  destinataire    Utilisateur @relation("Destinataire", fields: [id_destinataire], references: [id_utilisateur], onDelete: Cascade)
+
+  @@index([id_expediteur])
+  @@index([id_destinataire])
+  @@map("message")
 }
 
 // Table Département
@@ -96,6 +120,8 @@ model Groupe {
   niveau       Niveau        @relation(fields: [id_niveau], references: [id_niveau], onDelete: Cascade)
   etudiants    Etudiant[]
   emploi_temps EmploiTemps[]
+  // Rattrapages liant ce groupe
+  rattrapage_groupes RattrapageGroupe[]
 
   @@map("groupe")
 }
@@ -143,6 +169,8 @@ model Enseignant {
   matieres         Matiere[]
   emploi_temps     EmploiTemps[]
   absences         AbsenceEnseignant[]
+  // Rattrapages où cet enseignant intervient
+  rattrapages Rattrapage[]
 
   @@index([id_departement])
   @@map("enseignant")
@@ -159,6 +187,8 @@ model Matiere {
   niveau       Niveau        @relation(fields: [id_niveau], references: [id_niveau], onDelete: Cascade)
   enseignant   Enseignant    @relation(fields: [id_enseignant], references: [id_enseignant])
   emploi_temps EmploiTemps[]
+  // Rattrapages liés à cette matière
+  rattrapages Rattrapage[]
 
   @@map("matiere")
 }
@@ -172,6 +202,8 @@ model Salle {
 
   // Relations
   emploi_temps EmploiTemps[]
+  // Rattrapages dans cette salle
+  rattrapages Rattrapage[]
 
   @@map("salle")
 }
@@ -188,12 +220,24 @@ model EmploiTemps {
   id_enseignant Int
 
   // Relations
+<<<<<<< HEAD
   salle               Salle               @relation(fields: [id_salle], references: [id_salle])
   matiere             Matiere             @relation(fields: [id_matiere], references: [id_matiere])
   groupe              Groupe              @relation(fields: [id_groupe], references: [id_groupe])
   enseignant          Enseignant          @relation(fields: [id_enseignant], references: [id_enseignant])
   absences            Absence[]
   absence_enseignant  AbsenceEnseignant[]
+=======
+  salle      Salle      @relation(fields: [id_salle], references: [id_salle])
+  matiere    Matiere    @relation(fields: [id_matiere], references: [id_matiere])
+  groupe     Groupe     @relation(fields: [id_groupe], references: [id_groupe])
+  enseignant Enseignant @relation(fields: [id_enseignant], references: [id_enseignant])
+  absences   Absence[]
+  // Rattrapages liés si cet emploi a été annulé
+  rattrapages_annules Rattrapage[] @relation("RattrapageEmploiAnnule")
+  // Ajustements originaires pour cet emploi
+  ajustements_origine AjustementEmploiTemps[] @relation("AjustementEmploiOrigine")
+>>>>>>> c2538f417e0f45e8f9325fdf5a98a5c4ea3b4ee4
 
   @@index([date])
   @@index([id_groupe, date])
@@ -230,25 +274,100 @@ model AbsenceEnseignant {
   enseignant   Enseignant  @relation(fields: [id_enseignant], references: [id_enseignant], onDelete: Cascade)
   emploi_temps EmploiTemps @relation(fields: [id_emploi], references: [id_emploi], onDelete: Cascade)
   
-  @@index([id_enseignant])
-  @@index([id_emploi])
+
   @@map("absence_enseignant")
 }
 
-// Table Message
-model Message {
-  id_message      Int      @id @default(autoincrement())
-  id_expediteur   Int
-  id_destinataire Int
-  contenu         String   @db.Text
-  date            DateTime @default(now())
-  lu              Boolean  @default(false)
+// Table Événement Institutionnel
+model EvenementInstitutionnel {
+  id_evenement     Int       @id @default(autoincrement())
+  titre            String    @db.VarChar(255)
+  description      String?   @db.Text
+  date_debut       DateTime  @db.DateTime
+  date_fin         DateTime  @db.DateTime
+  type             String    @db.VarChar(50) // 'fermeture', 'conference', 'autre'
+  id_organisateur  Int
+  concerne_tous    Boolean   @default(false)
+  concerne_departements Json? // Liste des IDs de départements concernés (si concerne_tous = false)
+  date_creation    DateTime  @default(now())
+  date_modification DateTime @updatedAt
 
   // Relations
-  expediteur   Utilisateur @relation("Expediteur", fields: [id_expediteur], references: [id_utilisateur], onDelete: Cascade)
-  destinataire Utilisateur @relation("Destinataire", fields: [id_destinataire], references: [id_utilisateur], onDelete: Cascade)
+  organisateur Utilisateur @relation(fields: [id_organisateur], references: [id_utilisateur])
+  rattrapages  Rattrapage[]
 
-  @@index([id_destinataire])
+  @@index([date_debut])
+  @@index([date_fin])
+  @@index([type])
+  @@map("evenement_institutionnel")
+}
+
+// Table Rattrapage
+model Rattrapage {
+  id_rattrapage    Int       @id @default(autoincrement())
+  id_evenement     Int?      // Lien vers l'événement annulé (si applicable)
+  id_emploi_annule Int?      // Lien vers le cours annulé (si applicable)
+  id_matiere       Int
+  id_enseignant    Int
+  id_salle         Int
+  date             DateTime  @db.Date
+  heure_debut      DateTime  @db.Time
+  heure_fin        DateTime  @db.Time
+  motif            String    @db.VarChar(255)
+  statut           String    @db.VarChar(20) @default("planifie") // planifié, effectué, annulé
+  id_planificateur Int
+  date_creation    DateTime  @default(now())
+  date_modification DateTime @updatedAt
+
+  // Relations
+  evenement      EvenementInstitutionnel? @relation(fields: [id_evenement], references: [id_evenement])
+  emploi_annule  EmploiTemps?             @relation("RattrapageEmploiAnnule", fields: [id_emploi_annule], references: [id_emploi])
+  matiere        Matiere                  @relation(fields: [id_matiere], references: [id_matiere])
+  enseignant     Enseignant               @relation(fields: [id_enseignant], references: [id_enseignant])
+  salle          Salle                    @relation(fields: [id_salle], references: [id_salle])
+  planificateur  Utilisateur              @relation("RattrapagePlanificateur", fields: [id_planificateur], references: [id_utilisateur])
+  groupes        RattrapageGroupe[]
+  ajustements    AjustementEmploiTemps[]
+
   @@index([date])
-  @@map("message")
+  @@index([id_matiere])
+  @@index([id_enseignant])
+  @@map("rattrapage")
+}
+
+// Table de liaison entre Rattrapage et Groupe
+model RattrapageGroupe {
+  id_rattrapage_groupe Int      @id @default(autoincrement())
+  id_rattrapage       Int
+  id_groupe           Int
+
+  // Relations
+  rattrapage Rattrapage @relation(fields: [id_rattrapage], references: [id_rattrapage], onDelete: Cascade)
+  groupe     Groupe     @relation(fields: [id_groupe], references: [id_groupe])
+
+  @@unique([id_rattrapage, id_groupe])
+  @@map("rattrapage_groupe")
+}
+
+// Table Ajustement d'Emploi du Temps
+model AjustementEmploiTemps {
+  id_ajustement    Int       @id @default(autoincrement())
+  id_emploi_origine Int      // L'ID de l'emploi du temps d'origine
+  id_rattrapage    Int?      // Lien vers le rattrapage (si applicable)
+  type_ajustement  String    @db.VarChar(50) // 'annulation', 'deplacement', 'changement_salle', 'autre'
+  anciennes_valeurs Json?    // Anciennes valeurs (pour annulation)
+  nouvelles_valeurs Json?    // Nouvelles valeurs (si modification)
+  motif            String    @db.VarChar(255)
+  id_auteur        Int
+  date_creation    DateTime  @default(now())
+
+  // Relations
+  rattrapage   Rattrapage? @relation(fields: [id_rattrapage], references: [id_rattrapage])
+  auteur       Utilisateur @relation(fields: [id_auteur], references: [id_utilisateur])
+  emploi_origine EmploiTemps @relation("AjustementEmploiOrigine", fields: [id_emploi_origine], references: [id_emploi])
+
+  @@index([id_emploi_origine])
+  @@index([id_rattrapage])
+  @@index([date_creation])
+  @@map("ajustement_emploi_temps")
 }
