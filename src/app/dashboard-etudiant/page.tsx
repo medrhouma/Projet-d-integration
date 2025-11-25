@@ -199,7 +199,7 @@ const loadAbsences = async () => {
     { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-etudiant/emploi-temps' },
     
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-etudiant/absences' },
-    { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-etudiant/notes' },
+
     { label: 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-etudiant/messagerie' },
     { label: 'Rattrapages', icon: <Clock className="w-5 h-5" />, href: '/dashboard-etudiant/rattrapages' },
   ];

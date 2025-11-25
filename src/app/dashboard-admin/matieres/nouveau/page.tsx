@@ -24,6 +24,7 @@ export default function NouvelleMatiere() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [niveaux, setNiveaux] = useState<Niveau[]>([]);
   const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
   const [formData, setFormData] = useState({
@@ -67,7 +68,11 @@ export default function NouvelleMatiere() {
       });
 
       if (res.ok) {
-        router.push('/referentiels?tab=matieres');
+        setSuccess(true);
+        // Redirection automatique après 1.5 seconde
+        setTimeout(() => {
+          router.push('/dashboard-admin/referentiels?tab=matieres');
+        }, 1500);
       } else {
         const data = await res.json();
         setError(data.error || 'Erreur lors de la création');
@@ -84,10 +89,10 @@ export default function NouvelleMatiere() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="mb-8">
           <Link 
-            href="/referentiels?tab=matieres"
+            href="/dashboard-admin/referentiels?tab=matieres"
             className="text-blue-600 hover:text-blue-800 flex items-center gap-2 mb-4"
           >
-            ← Retour
+            ← Retour aux matières
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Nouvelle Matière</h1>
         </div>
@@ -95,6 +100,12 @@ export default function NouvelleMatiere() {
         {error && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            Matière créée avec succès ! Redirection en cours...
           </div>
         )}
 
@@ -108,7 +119,8 @@ export default function NouvelleMatiere() {
               value={formData.nom}
               onChange={(e) => setFormData(prev => ({ ...prev, nom: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               placeholder="Ex: Programmation Web, Base de Données..."
             />
           </div>
@@ -121,7 +133,8 @@ export default function NouvelleMatiere() {
               value={formData.id_niveau}
               onChange={(e) => setFormData(prev => ({ ...prev, id_niveau: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Sélectionner un niveau</option>
               {niveaux.map(niv => (
@@ -140,7 +153,8 @@ export default function NouvelleMatiere() {
               value={formData.id_enseignant}
               onChange={(e) => setFormData(prev => ({ ...prev, id_enseignant: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Sélectionner un enseignant</option>
               {enseignants.map(ens => (
@@ -153,17 +167,17 @@ export default function NouvelleMatiere() {
 
           <div className="flex gap-4 justify-end">
             <Link
-              href="/referentiels?tab=matieres"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              href="/dashboard-admin/referentiels?tab=matieres"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Annuler
             </Link>
             <button
               type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              disabled={loading || success}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? 'Création...' : 'Créer'}
+              {loading ? 'Création...' : success ? 'Créée !' : 'Créer'}
             </button>
           </div>
         </form>

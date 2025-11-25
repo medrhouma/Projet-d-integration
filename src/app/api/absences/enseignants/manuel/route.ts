@@ -59,12 +59,21 @@ export async function POST(request: NextRequest) {
     // Créer une séance temporaire pour l'absence (ou trouver une existante)
     // Pour simplifier, on cherche d'abord une séance correspondante dans l'emploi du temps
     const dateObj = new Date(date);
+    // Combine date and time to ISO string for heure_debut/heure_fin
+    function combineDateTime(dateStr: string, timeStr: string) {
+      // dateStr: '2025-11-24', timeStr: '15:30' or '15:30:00'
+      const [year, month, day] = dateStr.split('-');
+      const [h, m, s = '00'] = timeStr.split(':');
+      return new Date(Number(year), Number(month) - 1, Number(day), Number(h), Number(m), Number(s)).toISOString();
+    }
+    const heureDebutISO = combineDateTime(date, heure_debut);
+    const heureFinISO = combineDateTime(date, heure_fin);
     const emploiExistant = await prisma.emploiTemps.findFirst({
       where: {
         id_enseignant: parseInt(id_enseignant),
         date: dateObj,
-        heure_debut: heure_debut + ':00',
-        heure_fin: heure_fin + ':00'
+        heure_debut: heureDebutISO,
+        heure_fin: heureFinISO
       }
     });
 
@@ -106,8 +115,8 @@ export async function POST(request: NextRequest) {
       const nouvelEmploi = await prisma.emploiTemps.create({
         data: {
           date: dateObj,
-          heure_debut: heure_debut + ':00',
-          heure_fin: heure_fin + ':00',
+          heure_debut: heureDebutISO,
+          heure_fin: heureFinISO,
           id_enseignant: parseInt(id_enseignant),
           id_matiere: matiereDefaut.id_matiere,
           id_salle: salleDefaut.id_salle,

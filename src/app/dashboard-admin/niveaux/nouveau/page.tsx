@@ -19,6 +19,7 @@ export default function NouveauNiveau() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [departements, setDepartements] = useState<Departement[]>([]);
   const [specialites, setSpecialites] = useState<Specialite[]>([]);
   const [selectedDept, setSelectedDept] = useState('');
@@ -73,7 +74,11 @@ export default function NouveauNiveau() {
       });
 
       if (res.ok) {
-        router.push('/referentiels?tab=niveaux');
+        setSuccess(true);
+        // Redirection automatique après 1.5 seconde
+        setTimeout(() => {
+          router.push('/dashboard-admin/referentiels?tab=niveaux');
+        }, 1500);
       } else {
         const data = await res.json();
         setError(data.error || 'Erreur lors de la création');
@@ -90,10 +95,10 @@ export default function NouveauNiveau() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="mb-8">
           <Link 
-            href="/referentiels?tab=niveaux"
+            href="/dashboard-admin/referentiels?tab=niveaux"
             className="text-blue-600 hover:text-blue-800 flex items-center gap-2 mb-4"
           >
-            ← Retour
+            ← Retour aux niveaux
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Nouveau Niveau</h1>
         </div>
@@ -101,6 +106,12 @@ export default function NouveauNiveau() {
         {error && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            Niveau créé avec succès ! Redirection en cours...
           </div>
         )}
 
@@ -114,7 +125,8 @@ export default function NouveauNiveau() {
               value={formData.nom}
               onChange={(e) => setFormData(prev => ({ ...prev, nom: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               placeholder="Ex: 1ère Année, 2ème Année..."
             />
           </div>
@@ -129,7 +141,8 @@ export default function NouveauNiveau() {
                 setSelectedDept(e.target.value);
                 setFormData(prev => ({ ...prev, id_specialite: '' }));
               }}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Sélectionner un département</option>
               {departements.map(dept => (
@@ -148,7 +161,7 @@ export default function NouveauNiveau() {
               value={formData.id_specialite}
               onChange={(e) => setFormData(prev => ({ ...prev, id_specialite: e.target.value }))}
               required
-              disabled={!selectedDept}
+              disabled={!selectedDept || loading || success}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="">Sélectionner une spécialité</option>
@@ -162,17 +175,17 @@ export default function NouveauNiveau() {
 
           <div className="flex gap-4 justify-end">
             <Link
-              href="/referentiels?tab=niveaux"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              href="/dashboard-admin/referentiels?tab=niveaux"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Annuler
             </Link>
             <button
               type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              disabled={loading || success}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? 'Création...' : 'Créer'}
+              {loading ? 'Création...' : success ? 'Créé !' : 'Créer'}
             </button>
           </div>
         </form>

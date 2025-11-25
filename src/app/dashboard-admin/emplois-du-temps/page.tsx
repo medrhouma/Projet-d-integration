@@ -94,51 +94,45 @@ export default function EmploiTempsAdminPage() {
   const selectedGroupeData = groupes.find(g => g.id_groupe === selectedGroupe);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8 relative">
+    <div className="min-h-screen bg-gray-50 p-4">
       
-      {/* 🔙 Bouton Retour */}
+      {/* Bouton Retour */}
       <button
         onClick={() => router.push('/dashboard-admin')}
-        className="fixed top-4 left-4 z-50 bg-white/20 backdrop-blur-xl border border-white/30
-        hover:bg-white/30 transition px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg text-white"
+        className="mb-4 bg-white border border-gray-300 hover:bg-gray-50 transition px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm text-gray-700"
       >
-        <ArrowLeftCircle size={22} />
+        <ArrowLeftCircle size={20} />
         Retour
       </button>
 
       {/* En-tête */}
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center gap-3 mb-4">
-          <div className="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl shadow-2xl animate-pulse">
-            <Calendar size={40} className="text-white" />
-          </div>
+      <div className="mb-6 text-center">
+        <div className="inline-flex items-center justify-center gap-2 mb-3">
+          <Calendar size={32} className="text-blue-600" />
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-3">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Emploi du Temps
         </h1>
-        <p className="text-gray-300 text-lg">Consultation des emplois du temps par groupe</p>
-        <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full"></div>
+        <p className="text-gray-600">Consultation des emplois du temps par groupe</p>
       </div>
 
       {/* Sélecteur de groupe */}
-      <div className="max-w-2xl mx-auto mb-8">
-        <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
-          <label className="block text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <Users size={24} className="text-purple-400" />
+      <div className="max-w-2xl mx-auto mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <label className="block text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <Users size={20} className="text-blue-600" />
             Sélectionner un groupe
           </label>
 
           <select
-            className="w-full bg-white/90 border-2 border-purple-300 rounded-2xl px-6 py-4 text-lg
-            font-semibold text-gray-800 focus:ring-4 focus:ring-purple-500 focus:border-purple-500 
-            transition-all duration-300 shadow-lg hover:shadow-xl cursor-pointer"
+            className="w-full bg-white border border-gray-300 rounded-lg px-4 py-3 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             value={selectedGroupe || ''}
             onChange={e => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
           >
-            <option value="">🎯 Choisir un groupe...</option>
+            <option value="">Choisir un groupe...</option>
             {groupes.map(groupe => (
               <option key={groupe.id_groupe} value={groupe.id_groupe}>
-                📚 {groupe.nom} - {groupe.niveau?.nom}
+                {groupe.nom} - {groupe.niveau?.nom}
               </option>
             ))}
           </select>
@@ -148,29 +142,25 @@ export default function EmploiTempsAdminPage() {
       {/* Emploi du temps */}
       {selectedGroupe ? (
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 
             {/* Header tableau */}
-            <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-8">
+            <div className="bg-blue-600 text-white p-6">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2 flex items-center gap-3">
-                    <div className="bg-white/20 p-2 rounded-xl">
-                      <BookOpen size={28} />
-                    </div>
+                  <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                    <BookOpen size={24} />
                     {selectedGroupeData?.nom}
                   </h2>
-                  <p className="text-white/80 text-sm">Emploi du temps de la semaine</p>
+                  <p className="text-blue-100 text-sm">Emploi du temps de la semaine</p>
                 </div>
 
                 {emplois.length > 0 && (
-                  <div className="flex items-center gap-3 bg-white/20 px-6 py-3 rounded-2xl backdrop-blur-sm">
-                    <div className="bg-white/30 p-2 rounded-lg">
-                      <BookOpen size={20} />
-                    </div>
+                  <div className="flex items-center gap-2 bg-blue-500 px-4 py-2 rounded-lg">
+                    <BookOpen size={18} />
                     <div>
-                      <div className="text-2xl font-bold">{emplois.length}</div>
-                      <div className="text-xs text-white/80">séance(s)</div>
+                      <div className="font-bold">{emplois.length}</div>
+                      <div className="text-xs text-blue-100">séance(s)</div>
                     </div>
                   </div>
                 )}
@@ -181,18 +171,17 @@ export default function EmploiTempsAdminPage() {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-gray-800 to-gray-900">
-                    <th className="border border-gray-700 p-4 sticky left-0 bg-gray-900 z-10 min-w-[150px]">
-                      <div className="flex items-center justify-center gap-2 text-purple-400">
-                        <Clock size={24} />
-                        <span className="font-bold">Horaires</span>
+                  <tr className="bg-gray-800">
+                    <th className="border border-gray-600 p-3 sticky left-0 bg-gray-800 z-10 min-w-[140px]">
+                      <div className="flex items-center justify-center gap-2 text-blue-300">
+                        <Clock size={20} />
+                        <span className="font-semibold">Horaires</span>
                       </div>
                     </th>
 
                     {jours.map((jour, i) => (
-                      <th key={i} className="border border-gray-700 p-4 font-bold text-white min-w-[200px]">
+                      <th key={i} className="border border-gray-600 p-3 font-semibold text-white min-w-[180px]">
                         <div className="flex items-center justify-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-purple-500"></div>
                           {jour}
                         </div>
                       </th>
@@ -202,16 +191,15 @@ export default function EmploiTempsAdminPage() {
 
                 <tbody>
                   {heures.map((heure, i) => (
-                    <tr key={i} className={heure.isPause ? 'bg-orange-500/20' : 'hover:bg-white/5'}>
-                      <td className={`border border-gray-700 p-4 font-bold sticky left-0 z-10 ${heure.isPause ? 'bg-orange-500/30 text-orange-200' : 'bg-gray-800/50 text-purple-300'}`}>
+                    <tr key={i} className={heure.isPause ? 'bg-orange-50' : 'hover:bg-gray-50'}>
+                      <td className={`border border-gray-300 p-3 font-semibold sticky left-0 z-10 ${heure.isPause ? 'bg-orange-100 text-orange-800' : 'bg-gray-100 text-gray-700'}`}>
                         {heure.label}
                       </td>
 
                       {heure.isPause ? (
-                        <td colSpan={6} className="border border-gray-700 p-6 text-center">
-                          <div className="inline-flex items-center gap-3 bg-orange-500/30 px-8 py-4 rounded-2xl backdrop-blur-sm">
-                            <span className="text-3xl">🍽️</span>
-                            <span className="text-orange-200 font-bold text-lg">PAUSE DÉJEUNER</span>
+                        <td colSpan={6} className="border border-gray-300 p-4 text-center">
+                          <div className="inline-flex items-center gap-2 bg-orange-100 px-4 py-2 rounded-lg">
+                            <span className="text-orange-800 font-semibold">PAUSE DÉJEUNER</span>
                           </div>
                         </td>
                       ) : (
@@ -219,37 +207,31 @@ export default function EmploiTempsAdminPage() {
                           const emploi = getEmploiForSlot(dayIndex, heure.start, heure.end);
 
                           return (
-                            <td key={dayIndex} className="border border-gray-700 p-2">
+                            <td key={dayIndex} className="border border-gray-300 p-2">
                               {emploi ? (
-                                <div className="relative group">
-                                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl blur opacity-75 group-hover:opacity-100"></div>
-                                  <div className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl p-4 shadow-xl hover:scale-105 transition">
-                                    <div className="font-bold text-sm mb-2 flex items-center gap-2">
-                                      <BookOpen size={14} />
-                                      <span>{emploi.matiere.nom}</span>
-                                    </div>
-
-                                    {emploi.enseignant && (
-                                      <div className="text-xs flex items-center gap-1 bg-white/10 px-2 py-1 rounded mb-1">
-                                        <Users size={12} />
-                                        {emploi.enseignant.utilisateur.nom} {emploi.enseignant.utilisateur.prenom}
-                                      </div>
-                                    )}
-
-                                    {emploi.salle && (
-                                      <div className="text-xs flex items-center gap-1 bg-white/10 px-2 py-1 rounded">
-                                        <MapPin size={12} />
-                                        {emploi.salle.code}
-                                      </div>
-                                    )}
+                                <div className="bg-blue-50 border border-blue-200 text-gray-800 rounded-lg p-3 shadow-sm">
+                                  <div className="font-semibold text-sm mb-2 flex items-center gap-2">
+                                    <BookOpen size={14} />
+                                    <span>{emploi.matiere.nom}</span>
                                   </div>
+
+                                  {emploi.enseignant && (
+                                    <div className="text-xs flex items-center gap-1 bg-white px-2 py-1 rounded mb-1">
+                                      <Users size={12} />
+                                      {emploi.enseignant.utilisateur.nom} {emploi.enseignant.utilisateur.prenom}
+                                    </div>
+                                  )}
+
+                                  {emploi.salle && (
+                                    <div className="text-xs flex items-center gap-1 bg-white px-2 py-1 rounded">
+                                      <MapPin size={12} />
+                                      {emploi.salle.code}
+                                    </div>
+                                  )}
                                 </div>
                               ) : (
-                                <div className="h-24 flex items-center justify-center text-gray-500 text-xs rounded-lg bg-gray-800/20 border border-dashed border-gray-700">
-                                  <div className="text-center">
-                                    <div className="text-2xl mb-1">✨</div>
-                                    Libre
-                                  </div>
+                                <div className="h-20 flex items-center justify-center text-gray-400 text-xs rounded border border-dashed border-gray-300">
+                                  Libre
                                 </div>
                               )}
                             </td>
@@ -263,12 +245,10 @@ export default function EmploiTempsAdminPage() {
             </div>
 
             {emplois.length === 0 && (
-              <div className="p-12 text-center bg-gradient-to-br from-gray-800/50 to-gray-900/50">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-purple-500/20 rounded-full mb-4">
-                  <Calendar size={48} className="text-purple-400" />
-                </div>
-                <p className="text-gray-300 text-lg font-semibold">Aucune séance programmée</p>
-                <p className="text-gray-500 text-sm mt-2">L'emploi du temps est vide pour ce groupe</p>
+              <div className="p-8 text-center bg-gray-50">
+                <Calendar size={48} className="text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600 font-semibold">Aucune séance programmée</p>
+                <p className="text-gray-500 text-sm mt-1">L'emploi du temps est vide pour ce groupe</p>
               </div>
             )}
 
@@ -276,12 +256,10 @@ export default function EmploiTempsAdminPage() {
         </div>
       ) : (
         <div className="max-w-2xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-16 text-center border border-white/20">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full mb-6 animate-bounce">
-              <Calendar size={48} className="text-white" />
-            </div>
-            <h3 className="text-3xl font-bold text-white mb-3">Sélectionnez un groupe</h3>
-            <p className="text-gray-300 text-lg">Choisissez un groupe dans la liste ci-dessus</p>
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+            <Calendar size={48} className="text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">Sélectionnez un groupe</h3>
+            <p className="text-gray-600">Choisissez un groupe dans la liste ci-dessus</p>
           </div>
         </div>
       )}

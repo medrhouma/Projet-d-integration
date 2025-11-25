@@ -13,7 +13,7 @@ export default function NouvelEnseignant() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [success, setSuccess] = useState(false);
   const [departements, setDepartements] = useState<Departement[]>([]);
   
   const [formData, setFormData] = useState({
@@ -46,7 +46,7 @@ export default function NouvelEnseignant() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setSuccess('');
+    setSuccess(false);
 
     try {
       const res = await fetch('/api/enseignants', {
@@ -58,10 +58,10 @@ export default function NouvelEnseignant() {
       const data = await res.json();
 
       if (res.ok) {
-        setSuccess('Enseignant ajouté avec succès !');
+        setSuccess(true);
         setTimeout(() => {
           router.push('/dashboard-admin/enseignants');
-        }, 2000);
+        }, 1500);
       } else {
         setError(data.error || 'Erreur lors de l\'ajout');
       }
@@ -99,7 +99,7 @@ export default function NouvelEnseignant() {
             href="/dashboard-admin/enseignants"
             className="text-green-600 hover:text-green-800 flex items-center gap-2 mb-4"
           >
-            ← Retour
+            ← Retour aux enseignants
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Ajouter un enseignant</h1>
           <p className="text-gray-600 mt-2">Remplissez tous les champs pour créer un nouveau compte enseignant</p>
@@ -113,7 +113,7 @@ export default function NouvelEnseignant() {
 
         {success && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-            {success}
+            Enseignant ajouté avec succès ! Redirection en cours...
           </div>
         )}
 
@@ -138,7 +138,8 @@ export default function NouvelEnseignant() {
                     generateIdentifiant();
                   }}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="Nom de famille"
                 />
               </div>
@@ -157,7 +158,8 @@ export default function NouvelEnseignant() {
                     generateIdentifiant();
                   }}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="Prénom"
                 />
               </div>
@@ -172,7 +174,8 @@ export default function NouvelEnseignant() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="email@school.tn"
                 />
               </div>
@@ -188,7 +191,8 @@ export default function NouvelEnseignant() {
                   onChange={handleChange}
                   required
                   maxLength={10}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="ENS001"
                 />
               </div>
@@ -211,7 +215,8 @@ export default function NouvelEnseignant() {
                   value={formData.identifiant}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="prof.nom"
                 />
               </div>
@@ -227,7 +232,8 @@ export default function NouvelEnseignant() {
                   onChange={handleChange}
                   required
                   minLength={6}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  disabled={loading || success}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
                   placeholder="Minimum 6 caractères"
                 />
               </div>
@@ -247,7 +253,8 @@ export default function NouvelEnseignant() {
                 name="id_departement"
                 value={formData.id_departement}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                disabled={loading || success}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent disabled:bg-gray-100"
               >
                 <option value="">Sélectionner un département</option>
                 {departements.map(dept => (
@@ -262,16 +269,16 @@ export default function NouvelEnseignant() {
           <div className="flex gap-4 justify-end">
             <Link
               href="/dashboard-admin/enseignants"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Annuler
             </Link>
             <button
               type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400"
+              disabled={loading || success}
+              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? 'Ajout en cours...' : 'Ajouter l\'enseignant'}
+              {loading ? 'Ajout en cours...' : success ? 'Ajouté !' : 'Ajouter l\'enseignant'}
             </button>
           </div>
         </form>

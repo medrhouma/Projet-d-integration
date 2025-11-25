@@ -51,13 +51,20 @@ export async function GET(request: NextRequest) {
       where.id_enseignant = parseInt(id_enseignant);
     }
 
-    // Récupérer les absences
+    // Récupérer les absences avec les relations nécessaires pour l'affichage
     const absences = await prisma.absenceEnseignant.findMany({
       where,
       include: {
         enseignant: {
           include: {
             utilisateur: true
+          }
+        },
+        emploi_temps: {
+          include: {
+            matiere: true,
+            salle: true,
+            groupe: true,
           }
         }
       },
@@ -85,10 +92,20 @@ export async function GET(request: NextRequest) {
       absences_non_justifiees: ens.absences.filter(a => a.statut === 'NonJustifiee').length
     }));
 
+    // Adapter les noms attendus côté front (statistiques + propriétés camelCase)
+    const statistiques = stats.map(s => ({
+      id_enseignant: s.id_enseignant,
+      nom: s.nom,
+      prenom: s.prenom,
+      totalAbsences: s.total_absences,
+      absencesNonJustifiees: s.absences_non_justifiees
+    }));
+
     return NextResponse.json({
       success: true,
       absences,
-      stats
+      stats,          // ancien format si utilisé ailleurs
+      statistiques    // format attendu par la page
     });
 
   } catch (error: any) {

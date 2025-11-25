@@ -58,7 +58,7 @@ export default function RattrapagesPage() {
 
   const openAdd = () => {
     setEditingId(null);
-    setForm({ id_matiere: "", date: "", id_salle: "", id_enseignant: "", selected_groupes: [], motif: "" });
+    setForm({ id_matiere: "", date: "", id_salle: "", id_enseignant: "", heure_debut: "", heure_fin: "", selected_groupes: [], motif: "" });
     setShowForm(true);
   };
 

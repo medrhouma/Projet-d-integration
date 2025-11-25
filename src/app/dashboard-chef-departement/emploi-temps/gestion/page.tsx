@@ -3,38 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-// Styles personnalisés pour les animations
-const customStyles = `
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  .animate-slide-in {
-    animation: slideIn 0.3s ease-out;
-  }
-  
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-out;
-  }
-  
-  .drag-preview {
-    opacity: 0.8;
-    transform: rotate(3deg);
-  }
-`;
-
 interface Matiere {
   id_matiere: number;
   nom: string;
@@ -109,7 +77,7 @@ const TIME_SLOTS = [
   { debut: '08:30', fin: '10:00' },
   { debut: '10:15', fin: '11:45' },
   { debut: '11:50', fin: '13:20' },
-  { debut: 'PAUSE', fin: 'DÉJEUNER' }, // Pause déjeuner 13:20 - 14:30
+  { debut: 'PAUSE', fin: 'DÉJEUNER' },
   { debut: '14:30', fin: '16:00' },
   { debut: '16:15', fin: '17:45' },
 ];
@@ -122,22 +90,23 @@ const COLORS = [
 export default function GestionEmploiTemps() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+    // ...existing code...
+
+    // --- Navigation Back Button ---
+    // Place this at the top of the returned JSX
   const [userRole, setUserRole] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
 
-  // Data states
   const [groupes, setGroupes] = useState<Groupe[]>([]);
   const [matieres, setMatieres] = useState<Matiere[]>([]);
   const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
   const [salles, setSalles] = useState<Salle[]>([]);
 
-  // Selection states
   const [selectedGroupe, setSelectedGroupe] = useState<number | null>(null);
   const [selectedMatiere, setSelectedMatiere] = useState<number | null>(null);
   const [selectedEnseignant, setSelectedEnseignant] = useState<number | null>(null);
   const [selectedSalle, setSelectedSalle] = useState<number | null>(null);
 
-  // Template and schedule states
   const [templates, setTemplates] = useState<SeanceTemplate[]>([]);
   const [placedSeances, setPlacedSeances] = useState<PlacedSeance[]>([]);
   const [draggedTemplate, setDraggedTemplate] = useState<SeanceTemplate | null>(null);
@@ -155,21 +124,17 @@ export default function GestionEmploiTemps() {
 
   useEffect(() => {
     if (selectedGroupe) {
-      // Réinitialiser d'abord les séances placées avant de charger les nouvelles
       setPlacedSeances([]);
       fetchExistingSchedule();
-      // Réinitialiser les sélections quand le groupe change
       setSelectedMatiere(null);
       setSelectedEnseignant(null);
       setSelectedSalle(null);
       setTemplates([]);
     } else {
-      // Si aucun groupe sélectionné, vider les séances
       setPlacedSeances([]);
     }
   }, [selectedGroupe]);
 
-  // Auto-sélectionner l'enseignant quand une matière est choisie
   useEffect(() => {
     if (selectedMatiere) {
       const matiere = matieres.find(m => m.id_matiere === selectedMatiere);
@@ -186,7 +151,6 @@ export default function GestionEmploiTemps() {
         router.push('/login');
         return;
       }
-
       const data = await response.json();
       const userData = data.success ? data.user : data;
 
@@ -247,36 +211,36 @@ export default function GestionEmploiTemps() {
       
       const data = await response.json();
       console.log('📦 Données reçues de l\'API:', data);
-      console.log('📊 Nombre de séances:', data.length);
+      if (!data.success || !Array.isArray(data.data)) {
+        setPlacedSeances([]);
+        return;
+      }
+      console.log('📊 Nombre de séances:', data.data.length);
 
-      if (data.length === 0) {
+      if (data.data.length === 0) {
         console.log('ℹ️ Aucune séance trouvée pour ce groupe');
         setPlacedSeances([]);
         return;
       }
 
-      const placed: PlacedSeance[] = data.map((seance: any) => {
+      const placed: PlacedSeance[] = data.data.map((seance: any) => {
         const dateObj = new Date(seance.date);
-        const jour = dateObj.getDay() - 1; // 0 = Monday (dimanche=0, donc lundi=1-1=0)
+        const jour = dateObj.getDay() - 1;
         
-        // Fonction pour extraire HH:MM d'une heure (plusieurs formats possibles)
         const extraireHeure = (heureValue: any): string => {
           if (!heureValue) return '00:00';
           
           const str = String(heureValue);
           
-          // Format ISO DateTime: "1970-01-01T08:30:00.000Z" ou "2025-01-13T08:30:00Z"
           if (str.includes('T')) {
             const dateTime = new Date(str);
-            // Utiliser getUTCHours/getUTCMinutes pour éviter la conversion de fuseau horaire
             const hours = String(dateTime.getUTCHours()).padStart(2, '0');
             const minutes = String(dateTime.getUTCMinutes()).padStart(2, '0');
             return `${hours}:${minutes}`;
           }
           
-          // Format Time: "08:30:00" ou "08:30"
           if (str.includes(':')) {
-            return str.substring(0, 5); // Prend "HH:MM"
+            return str.substring(0, 5);
           }
           
           return '00:00';
@@ -286,20 +250,6 @@ export default function GestionEmploiTemps() {
         const heureFin = extraireHeure(seance.heure_fin);
         
         const slotIndex = TIME_SLOTS.findIndex(slot => slot.debut === heureDebut);
-
-        const joursNoms = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
-        console.log(`  📌 Séance ${seance.id_emploi}:`);
-        console.log(`     - Matière: ${seance.matiere.nom}`);
-        console.log(`     - Date brute: ${seance.date}`);
-        console.log(`     - Date objet: ${dateObj}`);
-        console.log(`     - getDay(): ${dateObj.getDay()} → jour calculé: ${jour} (${joursNoms[jour] || 'INVALIDE'})`);
-        console.log(`     - Heure BRUTE début: "${seance.heure_debut}"`);
-        console.log(`     - Heure BRUTE fin: "${seance.heure_fin}"`);
-        console.log(`     - Heure EXTRAITE: ${heureDebut} - ${heureFin}`);
-        console.log(`     - Slot trouvé: ${slotIndex} ${slotIndex === -1 ? '❌ AUCUN SLOT NE CORRESPOND!' : '✅'}`);
-        console.log(`     - TIME_SLOTS disponibles:`, TIME_SLOTS.map(s => s.debut));
-        console.log(`     - Enseignant: ${seance.enseignant ? seance.enseignant.utilisateur.nom : 'AUCUN'}`);
-        console.log(`     - Salle: ${seance.salle ? seance.salle.code : 'AUCUNE'}`);
 
         const placedSeance = {
           id: seance.id_emploi,
@@ -314,7 +264,6 @@ export default function GestionEmploiTemps() {
           heureFin,
         };
 
-        console.log(`     - ✅ Objet créé:`, placedSeance);
         return placedSeance;
       });
 
@@ -373,7 +322,6 @@ export default function GestionEmploiTemps() {
       return;
     }
 
-    // Check if slot is already occupied
     const existing = placedSeances.find(
       s => s.jour === jour && s.slotIndex === slotIndex
     );
@@ -384,7 +332,6 @@ export default function GestionEmploiTemps() {
 
     const timeSlot = TIME_SLOTS[slotIndex];
 
-    // Check conflicts
     try {
       const conflictResponse = await fetch('/api/emploi-temps/check-conflicts', {
         method: 'POST',
@@ -407,11 +354,7 @@ export default function GestionEmploiTemps() {
         return;
       }
 
-      // Save to database
       const dateStr = getDateForDay(jour);
-      
-      // Créer les dates en UTC pour éviter les problèmes de fuseau horaire
-      // Format: "1970-01-01T10:15:00.000Z" (UTC explicite)
       const heureDebutStr = `1970-01-01T${timeSlot.debut}:00.000Z`;
       const heureFinStr = `1970-01-01T${timeSlot.fin}:00.000Z`;
 
@@ -431,7 +374,6 @@ export default function GestionEmploiTemps() {
 
       if (!createResponse.ok) {
         const errorData = await createResponse.json();
-        console.error('Erreur API:', errorData);
         throw new Error(errorData.error || 'Erreur lors de la création de la séance');
       }
 
@@ -460,25 +402,18 @@ export default function GestionEmploiTemps() {
 
   const deleteSeance = async (seance: PlacedSeance) => {
     if (!seance.id) {
-      console.error('Pas d\'ID pour cette séance:', seance);
-      alert('Impossible de supprimer cette séance (pas d\'ID)');
+      alert('Impossible de supprimer cette séance');
       return;
     }
 
     try {
-      console.log('Suppression de la séance ID:', seance.id);
       const response = await fetch(`/api/emploi-temps/${seance.id}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Erreur API:', errorData);
-        throw new Error(errorData.error || 'Erreur lors de la suppression');
-      }
+      if (!response.ok) throw new Error('Erreur lors de la suppression');
 
       setPlacedSeances(placedSeances.filter(s => s.id !== seance.id));
-      console.log('Séance supprimée avec succès');
     } catch (error) {
       console.error('Erreur suppression:', error);
       alert('Erreur lors de la suppression de la séance');
@@ -496,23 +431,15 @@ export default function GestionEmploiTemps() {
     }
 
     const confirmed = confirm(
-      `Êtes-vous sûr de vouloir supprimer TOUTES les ${seancesWithId.length} séances de ce groupe ?\n\nCette action est irréversible.`
+      `Êtes-vous sûr de vouloir supprimer TOUTES les ${seancesWithId.length} séances de ce groupe ?`
     );
 
     if (!confirmed) return;
 
     try {
-      console.log(`Suppression de ${seancesWithId.length} séances...`);
-      
-      // Supprimer toutes les séances une par une
       const deletePromises = seancesWithId.map(async (s) => {
-        console.log(`Suppression séance ID: ${s.id}`);
         const response = await fetch(`/api/emploi-temps/${s.id}`, { method: 'DELETE' });
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error(`Erreur suppression ${s.id}:`, errorData);
-          throw new Error(`Erreur suppression séance ${s.id}`);
-        }
+        if (!response.ok) throw new Error(`Erreur suppression séance ${s.id}`);
         return response;
       });
 
@@ -520,26 +447,21 @@ export default function GestionEmploiTemps() {
 
       setPlacedSeances([]);
       setTemplates([]);
-      alert(`✓ Toutes les ${seancesWithId.length} séances ont été supprimées avec succès`);
-      console.log('Toutes les séances supprimées');
+      alert(`Toutes les ${seancesWithId.length} séances ont été supprimées`);
     } catch (error) {
       console.error('Erreur suppression:', error);
-      alert('Erreur lors de la suppression des séances. Vérifiez la console pour plus de détails.');
+      alert('Erreur lors de la suppression des séances');
     }
   };
 
   const getFilteredMatieres = () => {
     if (!selectedGroupe) return [];
-    
     const groupe = groupes.find(g => g.id_groupe === selectedGroupe);
     if (!groupe) return [];
-    
-    // Filtrer les matières qui appartiennent au même niveau que le groupe
     return matieres.filter(m => m.id_niveau === groupe.id_niveau);
   };
 
   const getFilteredEnseignants = () => {
-    // Si une matière est sélectionnée, afficher uniquement l'enseignant de cette matière
     if (selectedMatiere) {
       const matiere = matieres.find(m => m.id_matiere === selectedMatiere);
       if (matiere) {
@@ -548,7 +470,6 @@ export default function GestionEmploiTemps() {
       return [];
     }
     
-    // Sinon, si un groupe est sélectionné, afficher tous les enseignants du niveau
     if (selectedGroupe) {
       const groupe = groupes.find(g => g.id_groupe === selectedGroupe);
       if (!groupe) return [];
@@ -564,9 +485,8 @@ export default function GestionEmploiTemps() {
   };
 
   const getDateForDay = (jour: number) => {
-    // Get next occurrence of the day (0=Monday, 1=Tuesday, etc.)
     const today = new Date();
-    const currentDay = today.getDay() - 1; // Convert to 0=Monday
+    const currentDay = today.getDay() - 1;
     const daysUntil = (jour - currentDay + 7) % 7;
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysUntil);
@@ -575,66 +495,55 @@ export default function GestionEmploiTemps() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="relative w-24 h-24 mx-auto mb-6">
-            <div className="absolute inset-0 border-8 border-orange-500/30 rounded-full animate-pulse"></div>
-            <div className="absolute inset-0 border-t-8 border-orange-400 rounded-full animate-spin"></div>
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Chargement en cours...</h2>
-          <p className="text-gray-300">Préparation de votre emploi du temps</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700">Chargement...</h2>
         </div>
       </div>
     );
   }
 
   return (
-    <>
-      <style>{customStyles}</style>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-orange-900 to-slate-900 p-6 animate-fade-in">
-        <div className="max-w-[1800px] mx-auto">
-        {/* Header amélioré */}
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-8 mb-6 animate-slide-in">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="p-4 bg-gradient-to-br from-orange-500/30 to-red-500/30 backdrop-blur-lg rounded-xl shadow-lg transform hover:scale-105 transition border border-orange-400/30">
-                <svg className="w-10 h-10 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-400 via-red-400 to-amber-400 bg-clip-text text-transparent">
-                  Gestion de l&apos;Emploi du Temps
-                </h1>
-                <p className="text-gray-300 mt-1">Interface drag & drop pour organiser facilement vos cours</p>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      {/* Navigation Back Button */}
+      <div className="mb-4">
+        <button
+          onClick={() => router.push('/dashboard-chef-departement')}
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow"
+        >
+          &#8592; Retour au Dashboard
+        </button>
+      </div>
+
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">Gestion de l'Emploi du Temps</h1>
+              <p className="text-gray-600">Interface drag & drop pour organiser vos cours</p>
             </div>
             {selectedGroupe && placedSeances.length > 0 && (
-              <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-300 rounded-lg border border-green-400/30 backdrop-blur-lg">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <span className="font-semibold">{placedSeances.length} séance(s) programmée(s)</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm">
+                <span>{placedSeances.length} séance(s) programmée(s)</span>
               </div>
             )}
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-white mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Sélectionner le groupe
             </label>
             <select
               value={selectedGroupe || ''}
               onChange={(e) => setSelectedGroupe(Number(e.target.value))}
-              className="w-full md:w-96 px-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition text-white placeholder-gray-400"
+              className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="" className="bg-gray-900">-- Choisir un groupe --</option>
+              <option value="">-- Choisir un groupe --</option>
               {groupes.map((groupe) => (
-                <option key={groupe.id_groupe} value={groupe.id_groupe} className="bg-gray-900">
-                  {groupe.nom} - {groupe.niveau?.nom} - {groupe.specialite?.nom}
+                <option key={groupe.id_groupe} value={groupe.id_groupe}>
+                  {groupe.nom} - {groupe.niveau?.nom}
                 </option>
               ))}
             </select>
@@ -642,23 +551,17 @@ export default function GestionEmploiTemps() {
         </div>
 
         {!selectedGroupe && (
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-12 text-center">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-orange-500/30 to-red-500/30 backdrop-blur-lg rounded-full flex items-center justify-center mx-auto mb-6 border border-orange-400/30">
-                <svg className="w-12 h-12 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Aucun groupe sélectionné</h3>
-              <p className="text-gray-300 mb-6">
-                Veuillez sélectionner un groupe ci-dessus pour commencer à créer et gérer l'emploi du temps.
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Aucun groupe sélectionné</h3>
+              <p className="text-gray-600">
+                Veuillez sélectionner un groupe pour commencer à créer l'emploi du temps.
               </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                </svg>
-                <span>Interface drag & drop intuitive</span>
-              </div>
             </div>
           </div>
         )}
@@ -667,115 +570,69 @@ export default function GestionEmploiTemps() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Panel - Templates */}
             <div className="lg:col-span-1 space-y-6">
-              {/* Carte de création de séances */}
-              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl overflow-hidden shadow-xl">
-                <div className="bg-gradient-to-r from-green-500/30 to-emerald-500/30 backdrop-blur-lg px-6 py-4 border-b border-white/20">
-                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    Créer des Séances
-                  </h2>
-                  <p className="text-green-200 text-sm mt-1">Composez votre cours</p>
+              {/* Création de séances */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="bg-blue-50 px-4 py-3 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-800">Créer des Séances</h2>
                 </div>
 
-                <div className="p-6 space-y-5">
+                <div className="p-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-white mb-2 flex items-center gap-2">
-                      <span className="text-lg">📚</span>
-                      Matière
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Matière</label>
                     <select
                       value={selectedMatiere || ''}
                       onChange={(e) => setSelectedMatiere(Number(e.target.value))}
-                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-white"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       disabled={!selectedGroupe}
                     >
-                      <option value="" className="bg-gray-900">-- Choisir --</option>
+                      <option value="">-- Choisir --</option>
                       {getFilteredMatieres().map((matiere) => (
-                        <option key={matiere.id_matiere} value={matiere.id_matiere} className="bg-gray-900">
+                        <option key={matiere.id_matiere} value={matiere.id_matiere}>
                           {matiere.nom} {matiere.code ? `(${matiere.code})` : ''}
                         </option>
                       ))}
                     </select>
-                    {!selectedGroupe && (
-                      <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        Veuillez d'abord sélectionner un groupe
-                      </p>
-                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-white mb-2 flex items-center gap-2">
-                      <span className="text-lg">👨‍🏫</span>
-                      Enseignant
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Enseignant</label>
                     <select
                       value={selectedEnseignant || ''}
                       onChange={(e) => setSelectedEnseignant(Number(e.target.value))}
-                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-white"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       disabled={!selectedGroupe || selectedMatiere !== null}
                     >
-                      <option value="" className="bg-gray-900">-- Choisir --</option>
+                      <option value="">-- Choisir --</option>
                       {getFilteredEnseignants().map((enseignant) => (
-                        <option key={enseignant.id_enseignant} value={enseignant.id_enseignant} className="bg-gray-900">
+                        <option key={enseignant.id_enseignant} value={enseignant.id_enseignant}>
                           {enseignant.utilisateur.nom} {enseignant.utilisateur.prenom}
                         </option>
                       ))}
                     </select>
-                    {!selectedGroupe ? (
-                      <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        Veuillez d'abord sélectionner un groupe
-                      </p>
-                    ) : selectedMatiere ? (
-                      <p className="text-xs text-green-300 mt-2 flex items-center gap-1 font-medium">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        Enseignant auto-sélectionné
-                      </p>
-                    ) : null}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-bold text-white mb-2 flex items-center gap-2">
-                      <span className="text-lg">🏫</span>
-                      Salle
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Salle</label>
                     <select
                       value={selectedSalle || ''}
                       onChange={(e) => setSelectedSalle(Number(e.target.value))}
-                      className="w-full px-4 py-3 bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition text-white"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       disabled={!selectedGroupe}
                     >
-                      <option value="" className="bg-gray-900">-- Choisir --</option>
+                      <option value="">-- Choisir --</option>
                       {salles.map((salle) => (
-                        <option key={salle.id_salle} value={salle.id_salle} className="bg-gray-900">
+                        <option key={salle.id_salle} value={salle.id_salle}>
                           {salle.code} - {salle.type} (Cap: {salle.capacite})
                         </option>
                       ))}
                     </select>
-                    {!selectedGroupe && (
-                      <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        Veuillez d'abord sélectionner un groupe
-                      </p>
-                    )}
                   </div>
 
                   <button
                     onClick={createTemplate}
-                    className="w-full bg-gradient-to-r from-green-500/30 to-emerald-500/30 hover:from-green-500/40 hover:to-emerald-500/40 backdrop-blur-lg border border-green-400/30 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     Créer le modèle
@@ -783,47 +640,26 @@ export default function GestionEmploiTemps() {
                 </div>
               </div>
 
-              {/* Liste des modèles créés */}
+              {/* Liste des modèles */}
               {templates.length > 0 && (
-                <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl overflow-hidden shadow-xl">
-                  <div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-lg px-6 py-4 border-b border-white/20">
-                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                      Modèles Créés ({templates.length})
-                    </h3>
-                    <p className="text-purple-200 text-sm mt-1">✨ Glissez-déposez dans la grille</p>
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                  <div className="bg-purple-50 px-4 py-3 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800">Modèles Créés ({templates.length})</h3>
                   </div>
-                  <div className="p-6 space-y-3 max-h-96 overflow-y-auto">
+                  <div className="p-4 space-y-3 max-h-96 overflow-y-auto">
                     {templates.map((template) => (
                       <div
                         key={template.id}
                         draggable
                         onDragStart={(e) => handleDragStart(e, template)}
-                        className="p-4 rounded-xl cursor-move shadow-md hover:shadow-xl transition transform hover:scale-105 border-2 border-white"
+                        className="p-3 rounded-lg cursor-move border border-gray-200 hover:border-blue-300 transition"
                         style={{ backgroundColor: template.color, color: 'white' }}
                       >
-                        <div className="flex items-start gap-3">
-                          <svg className="w-6 h-6 flex-shrink-0 mt-0.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                          </svg>
-                          <div className="flex-1">
-                            <div className="font-bold text-lg">{template.matiere.nom}</div>
-                            <div className="text-sm opacity-95 mt-1 flex items-center gap-1">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                              </svg>
-                              {template.enseignant.utilisateur.nom} {template.enseignant.utilisateur.prenom}
-                            </div>
-                            <div className="text-sm opacity-95 mt-1 flex items-center gap-1">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                              </svg>
-                              Salle {template.salle.code}
-                            </div>
-                          </div>
+                        <div className="font-semibold">{template.matiere.nom}</div>
+                        <div className="text-sm opacity-90">
+                          {template.enseignant.utilisateur.nom} {template.enseignant.utilisateur.prenom}
                         </div>
+                        <div className="text-sm opacity-90">Salle {template.salle.code}</div>
                       </div>
                     ))}
                   </div>
@@ -832,17 +668,17 @@ export default function GestionEmploiTemps() {
             </div>
 
             {/* Right Panel - Schedule Grid */}
-            <div className="lg:col-span-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-xl p-6 overflow-x-auto">
+            <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+                <h2 className="text-xl font-semibold text-gray-800">
                   Emploi du temps - {groupes.find(g => g.id_groupe === selectedGroupe)?.nom}
                 </h2>
                 {placedSeances.length > 0 && (
                   <button
                     onClick={deleteAllSeances}
-                    className="px-4 py-2 bg-red-500/30 hover:bg-red-500/40 backdrop-blur-lg border border-red-400/30 text-white rounded-xl text-sm font-medium transition hover:scale-105"
+                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition"
                   >
-                    🗑️ Supprimer tout
+                    Supprimer tout
                   </button>
                 )}
               </div>
@@ -851,59 +687,46 @@ export default function GestionEmploiTemps() {
                 <table className="w-full border-collapse">
                   <thead>
                     <tr>
-                      <th className="border border-white/20 bg-gray-900/30 p-2 text-sm font-semibold text-orange-300">
+                      <th className="border border-gray-300 bg-gray-50 p-2 text-sm font-semibold text-gray-700">
                         Horaire
                       </th>
                       {JOURS.map((jour) => (
                         <th
                           key={jour}
-                          className="border border-white/20 bg-gray-900/30 p-2 text-sm font-semibold text-orange-300"
+                          className="border border-gray-300 bg-gray-50 p-2 text-sm font-semibold text-gray-700"
                         >
                           {jour}
                         </th>
                       ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/10">
+                  <tbody>
                     {TIME_SLOTS.map((slot, slotIndex) => {
-                      // Ligne de pause déjeuner
                       if (slot.debut === 'PAUSE') {
                         return (
                           <tr key={slotIndex}>
                             <td 
                               colSpan={7} 
-                              className="border border-white/20 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 backdrop-blur-lg p-3 text-center"
+                              className="border border-gray-300 bg-yellow-50 p-3 text-center"
                             >
-                              <div className="flex items-center justify-center gap-2">
-                                <span className="text-2xl">🍽️</span>
-                                <span className="font-bold text-orange-300 text-base">
-                                  PAUSE DÉJEUNER
-                                </span>
-                                <span className="text-sm text-orange-400">
-                                  13:20 - 14:30
-                                </span>
+                              <div className="flex items-center justify-center gap-2 text-yellow-700">
+                                <span className="font-medium">PAUSE DÉJEUNER</span>
+                                <span className="text-sm">13:20 - 14:30</span>
                               </div>
                             </td>
                           </tr>
                         );
                       }
 
-                      // Ligne de séance normale
                       return (
                         <tr key={slotIndex}>
-                          <td className="border border-white/20 bg-gray-900/30 p-2 text-xs font-medium text-center text-gray-300">
+                          <td className="border border-gray-300 bg-gray-50 p-2 text-xs text-center text-gray-600">
                             {slot.debut}<br />-<br />{slot.fin}
                           </td>
                           {JOURS.map((_, jourIndex) => {
                             const seance = placedSeances.find(
                               s => s.jour === jourIndex && s.slotIndex === slotIndex
                             );
-                            
-                            // Debug: Log pour chaque cellule lors du premier rendu
-                            if (slotIndex === 0 && jourIndex === 0 && placedSeances.length > 0) {
-                              console.log(`🔍 Recherche de séances dans placedSeances (${placedSeances.length} séances):`, placedSeances);
-                            }
-                            
                             const isHovered = hoveredCell?.jour === jourIndex && hoveredCell?.slot === slotIndex;
 
                             return (
@@ -912,8 +735,8 @@ export default function GestionEmploiTemps() {
                                 onDragOver={(e) => handleDragOver(e, jourIndex, slotIndex)}
                                 onDragLeave={handleDragLeave}
                                 onDrop={(e) => handleDrop(e, jourIndex, slotIndex)}
-                                className={`border border-white/20 p-1 h-24 transition ${
-                                  isHovered ? 'bg-orange-500/20' : seance ? '' : 'bg-white/5 hover:bg-white/10'
+                                className={`border border-gray-300 p-1 h-24 ${
+                                  isHovered ? 'bg-blue-50' : seance ? '' : 'bg-gray-50 hover:bg-gray-100'
                                 }`}
                               >
                                 {seance ? (
@@ -923,7 +746,7 @@ export default function GestionEmploiTemps() {
                                   >
                                     <button
                                       onClick={() => deleteSeance(seance)}
-                                      className="absolute top-1 right-1 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-100 transition"
+                                      className="absolute top-1 right-1 bg-white text-red-600 rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-100 transition text-xs"
                                     >
                                       ×
                                     </button>
@@ -937,7 +760,7 @@ export default function GestionEmploiTemps() {
                                   </div>
                                 ) : (
                                   isHovered && (
-                                    <div className="h-full flex items-center justify-center text-orange-300 text-sm font-medium">
+                                    <div className="h-full flex items-center justify-center text-blue-600 text-sm">
                                       Déposer ici
                                     </div>
                                   )
@@ -951,32 +774,10 @@ export default function GestionEmploiTemps() {
                   </tbody>
                 </table>
               </div>
-              
-              {/* Footer informatif */}
-              <div className="mt-4 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 backdrop-blur-lg rounded-xl border border-orange-400/30">
-                <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-orange-300">
-                      <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                      </svg>
-                      <span className="font-medium">5 seances par jour</span>
-                    </div>
-                    
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-xs">Glissez-déposez les modèles dans la grille</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         )}
       </div>
     </div>
-    </>
   );
 }

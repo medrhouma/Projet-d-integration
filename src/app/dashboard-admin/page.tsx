@@ -306,13 +306,12 @@ export default function DashboardAdmin() {
   const menuItems = [
     { label: 'Tableau de bord', icon: <Home className="w-5 h-5" />, href: '/dashboard-admin' },
     { label: 'Référentiels', icon: <Building className="w-5 h-5" />, href: '/dashboard-admin/referentiels' },
-    { label: 'Étudiants', icon: <GraduationCap className="w-5 h-5" />, href: '/dashboard-admin/etudiants' },
-    { label: 'Enseignants', icon: <UserCheck className="w-5 h-5" />, href: '/dashboard-admin/enseignants' },
+  
     { label: 'Emplois du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-admin/emplois-du-temps' },
     { label: 'Absences', icon: <AlertTriangle className="w-5 h-5" />, href: '/dashboard-admin/absences' },
-    { label: 'Rapports', icon: <FileText className="w-5 h-5" />, href: '/dashboard-admin/rapports' },
+
     {label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-admin/messagerie' },
-    { label: 'Paramètres', icon: <Settings className="w-5 h-5" />, href: '/dashboard-admin/parametres' },
+    
     { label: 'Événements', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-admin#evenements' },
   ];
   

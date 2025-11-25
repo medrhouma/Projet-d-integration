@@ -156,9 +156,9 @@ export default function DashboardEnseignant() {
     { label: 'Mon Profil', icon: <User className="w-5 h-5" />, href: '/dashboard-enseignant/profil' },
     { label: 'Mes Cours', icon: <BookOpen className="w-5 h-5" />, href: '/dashboard-enseignant/cours' },
     { label: 'Emploi du temps', icon: <Calendar className="w-5 h-5" />, href: '/dashboard-enseignant/emploi-temps' },
-    { label: 'Mes Étudiants', icon: <Users className="w-5 h-5" />, href: '/dashboard-enseignant/etudiants' },
+
     { label: 'Absences', icon: <FileText className="w-5 h-5" />, href: '/dashboard-enseignant/absences' },
-    { label: 'Notes', icon: <Award className="w-5 h-5" />, href: '/dashboard-enseignant/notes' },
+
     { label : 'Messages', icon: <Mail className="w-5 h-5" />, href: '/dashboard-enseignant/messagerie' }
   ];
 

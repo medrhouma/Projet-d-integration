@@ -9,8 +9,6 @@ import {
   Eye, 
   EyeOff, 
   CheckCircle, 
-
-  
   XCircle, 
   LogIn,
   BookOpen,
@@ -220,28 +218,28 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500 px-4 py-8 relative overflow-hidden">
-      {/* Fond animé avec particules */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-10 left-10 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute top-0 right-10 w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 px-4 py-8 relative overflow-hidden">
+      {/* Fond animé avec particules - Couleurs réduites */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-10 left-10 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-10 w-72 h-72 bg-gray-100 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-50 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Grille de fond */}
-      <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
+      <div className="absolute inset-0 bg-grid-gray-200/[0.02] bg-[size:20px_20px]"></div>
 
       <div className="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-3xl shadow-2xl w-full max-w-2xl border border-white/20 animate-fade-in-up">
         
         {/* En-tête avec logo amélioré */}
         <div className="text-center mb-8">
           <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
-            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl shadow-xl transform hover:scale-110 transition-transform duration-300">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur-xl opacity-50 animate-pulse"></div>
+            <div className="relative inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl transform hover:scale-110 transition-transform duration-300">
               <School className="w-10 h-10 text-white" />
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent mb-2 animate-fade-in">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 animate-fade-in">
             ISET Tozeur
           </h1>
           <p className="text-gray-600 text-base md:text-lg font-medium">Connexion à votre espace personnel</p>
@@ -267,7 +265,7 @@ export default function LoginPage() {
         {/* Sélection du rôle avec design moderne */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
               <Settings className="w-5 h-5 text-white" />
             </div>
             <h3 className="text-lg font-bold text-gray-800">
@@ -316,7 +314,7 @@ export default function LoginPage() {
           {/* Champ Identifiant avec icône et validation */}
           <div className="group">
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
+              <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-md flex items-center justify-center">
                 <User className="w-3 h-3 text-white" />
               </div>
               Identifiant
@@ -327,7 +325,7 @@ export default function LoginPage() {
                 <User className={`w-5 h-5 transition-colors ${
                   getFieldStatus('login') === 'error' ? 'text-red-400' :
                   getFieldStatus('login') === 'success' ? 'text-green-400' :
-                  'text-gray-400 group-hover:text-purple-500'
+                  'text-gray-400 group-hover:text-blue-500'
                 }`} />
               </div>
               <input
@@ -340,7 +338,7 @@ export default function LoginPage() {
                     ? 'border-red-400 bg-red-50 ring-4 ring-red-100 text-red-900 placeholder-red-400' 
                     : getFieldStatus('login') === 'success' 
                     ? 'border-green-400 bg-green-50 ring-4 ring-green-100 text-green-900' 
-                    : 'border-gray-300 bg-gray-50 focus:border-purple-500 focus:ring-purple-100 hover:border-gray-400'
+                    : 'border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-100 hover:border-gray-400'
                 }`}
                 placeholder="Email ou nom d'utilisateur"
                 required
@@ -372,7 +370,7 @@ export default function LoginPage() {
           {/* Champ Mot de passe avec toggle et validation */}
           <div className="group">
             <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-md flex items-center justify-center">
+              <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-md flex items-center justify-center">
                 <BookOpen className="w-3 h-3 text-white" />
               </div>
               Mot de passe
@@ -383,7 +381,7 @@ export default function LoginPage() {
                 <BookOpen className={`w-5 h-5 transition-colors ${
                   getFieldStatus('password') === 'error' ? 'text-red-400' :
                   getFieldStatus('password') === 'success' ? 'text-green-400' :
-                  'text-gray-400 group-hover:text-purple-500'
+                  'text-gray-400 group-hover:text-blue-500'
                 }`} />
               </div>
               <input
@@ -396,7 +394,7 @@ export default function LoginPage() {
                     ? 'border-red-400 bg-red-50 ring-4 ring-red-100 text-red-900 placeholder-red-400' 
                     : getFieldStatus('password') === 'success' 
                     ? 'border-green-400 bg-green-50 ring-4 ring-green-100 text-green-900' 
-                    : 'border-gray-300 bg-gray-50 focus:border-purple-500 focus:ring-purple-100 hover:border-gray-400'
+                    : 'border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-100 hover:border-gray-400'
                 }`}
                 placeholder="••••••••••"
                 required
@@ -405,10 +403,10 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-purple-600 transition-colors group"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-blue-600 transition-colors group"
                 disabled={isLoading}
               >
-                <div className="p-1 rounded-lg hover:bg-purple-100 transition-colors">
+                <div className="p-1 rounded-lg hover:bg-blue-100 transition-colors">
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
                   ) : (
@@ -438,16 +436,16 @@ export default function LoginPage() {
                   disabled={isLoading}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-purple-500 peer-checked:to-pink-500"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-500"></div>
               </div>
-              <span className="ml-3 text-sm text-gray-700 font-medium group-hover:text-purple-600 transition-colors">
+              <span className="ml-3 text-sm text-gray-700 font-medium group-hover:text-blue-600 transition-colors">
                 Se souvenir de moi
               </span>
             </label>
             
             <Link 
               href="/forgot-password" 
-              className="text-sm bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-bold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 hover:underline"
+              className="text-sm bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:underline"
             >
               Mot de passe oublié ?
             </Link>
@@ -495,11 +493,11 @@ export default function LoginPage() {
         <div className="mt-8 pt-6 border-t border-gray-200">
           <div className="flex flex-col items-center gap-3">
             <div className="flex items-center gap-4 text-xs text-gray-500">
-              <Link href="/privacy" className="hover:text-purple-600 transition-colors font-medium">
+              <Link href="/privacy" className="hover:text-blue-600 transition-colors font-medium">
                 Politique de confidentialité
               </Link>
               <span className="text-gray-300">•</span>
-              <Link href="/terms" className="hover:text-purple-600 transition-colors font-medium">
+              <Link href="/terms" className="hover:text-blue-600 transition-colors font-medium">
                 Conditions d'utilisation
               </Link>
             </div>
@@ -513,6 +511,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>
+  );
 }

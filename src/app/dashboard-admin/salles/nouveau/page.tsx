@@ -8,6 +8,7 @@ export default function NouvelleSalle() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     code: '',
     type: 'Salle de cours',
@@ -31,7 +32,11 @@ export default function NouvelleSalle() {
       });
 
       if (res.ok) {
-        router.push('/referentiels?tab=salles');
+        setSuccess(true);
+        // Redirection automatique après 1.5 seconde
+        setTimeout(() => {
+          router.push('/dashboard-admin/referentiels?tab=salles');
+        }, 1500);
       } else {
         const data = await res.json();
         setError(data.error || 'Erreur lors de la création');
@@ -48,10 +53,10 @@ export default function NouvelleSalle() {
       <div className="max-w-2xl mx-auto px-4">
         <div className="mb-8">
           <Link 
-            href="/referentiels?tab=salles"
+            href="/dashboard-admin/referentiels?tab=salles"
             className="text-blue-600 hover:text-blue-800 flex items-center gap-2 mb-4"
           >
-            ← Retour
+            ← Retour aux salles
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Nouvelle Salle</h1>
         </div>
@@ -59,6 +64,12 @@ export default function NouvelleSalle() {
         {error && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            Salle créée avec succès ! Redirection en cours...
           </div>
         )}
 
@@ -72,7 +83,8 @@ export default function NouvelleSalle() {
               value={formData.code}
               onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               placeholder="Ex: A101, B202..."
             />
           </div>
@@ -85,7 +97,8 @@ export default function NouvelleSalle() {
               value={formData.type}
               onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             >
               <option value="Salle de cours">Salle de cours</option>
               <option value="Laboratoire Informatique">Laboratoire Informatique</option>
@@ -107,24 +120,25 @@ export default function NouvelleSalle() {
               onChange={(e) => setFormData(prev => ({ ...prev, capacite: e.target.value }))}
               required
               min="1"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
               placeholder="Nombre de places"
             />
           </div>
 
           <div className="flex gap-4 justify-end">
             <Link
-              href="/referentiels?tab=salles"
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              href="/dashboard-admin/referentiels?tab=salles"
+              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Annuler
             </Link>
             <button
               type="submit"
-              disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              disabled={loading || success}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? 'Création...' : 'Créer'}
+              {loading ? 'Création...' : success ? 'Créée !' : 'Créer'}
             </button>
           </div>
         </form>

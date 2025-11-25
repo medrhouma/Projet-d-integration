@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Calendar, Clock, Users, BookOpen, AlertTriangle, CheckCircle, XCircle, Filter, Search, Download } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { ArrowLeftCircle } from "lucide-react";
@@ -56,6 +57,7 @@ interface Matiere {
 }
 
 export default function AbsencesAdminPage() {
+  const router = useRouter();
   const [absences, setAbsences] = useState<Absence[]>([]);
   const [groupes, setGroupes] = useState<Groupe[]>([]);
   const [matieres, setMatieres] = useState<Matiere[]>([]);
@@ -173,84 +175,79 @@ export default function AbsencesAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900 to-slate-900 p-8">
-      {/* 🔙 Bouton Retour */}
-            <button
-              onClick={() => router.push('/dashboard-admin')}
-              className="fixed top-4 left-4 z-50 bg-white/20 backdrop-blur-xl border border-white/30
-              hover:bg-white/30 transition px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg text-white"
-            >
-              <ArrowLeftCircle size={22} />
-                <span>Retour</span>
-              
-            </button>
+    <div className="min-h-screen bg-gray-50 p-4">
+      {/* Bouton Retour */}
+      <button
+        onClick={() => router.push('/dashboard-admin')}
+        className="mb-4 bg-white border border-gray-300 hover:bg-gray-50 transition px-4 py-2 rounded-lg flex items-center gap-2 shadow-sm text-gray-700"
+      >
+        <ArrowLeftCircle size={20} />
+        Retour
+      </button>
+
       {/* En-tête */}
-      <div className="mb-8 text-center">
-        <div className="inline-flex items-center justify-center gap-3 mb-4">
-          <div className="bg-gradient-to-r from-red-500 to-orange-500 p-3 rounded-2xl shadow-2xl animate-pulse">
-            <AlertTriangle size={40} className="text-white" />
-          </div>
+      <div className="mb-6 text-center">
+        <div className="inline-flex items-center justify-center gap-2 mb-3">
+          <AlertTriangle size={32} className="text-red-600" />
         </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-3">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Gestion des Absences
         </h1>
-        <p className="text-gray-300 text-lg">Suivi et gestion des absences étudiantes</p>
-        <div className="mt-4 h-1 w-32 mx-auto bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 rounded-full"></div>
+        <p className="text-gray-600">Suivi et gestion des absences étudiantes</p>
       </div>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
-          <div className="flex items-center justify-between mb-3">
-            <AlertTriangle className="text-white" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.total}</span>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <AlertTriangle className="text-gray-600" size={24} />
+            <span className="text-2xl font-bold text-gray-800">{stats.total}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Total Absences</p>
+          <p className="text-gray-600 text-sm">Total Absences</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
-          <div className="flex items-center justify-between mb-3">
-            <CheckCircle className="text-green-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.justifiees}</span>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <CheckCircle className="text-green-600" size={24} />
+            <span className="text-2xl font-bold text-gray-800">{stats.justifiees}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Justifiées</p>
+          <p className="text-gray-600 text-sm">Justifiées</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
-          <div className="flex items-center justify-between mb-3">
-            <XCircle className="text-red-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.nonJustifiees}</span>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <XCircle className="text-red-600" size={24} />
+            <span className="text-2xl font-bold text-gray-800">{stats.nonJustifiees}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Non Justifiées</p>
+          <p className="text-gray-600 text-sm">Non Justifiées</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-6 border border-white/20">
-          <div className="flex items-center justify-between mb-3">
-            <Calendar className="text-blue-400" size={32} />
-            <span className="text-4xl font-bold text-white">{stats.aujourdhui}</span>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center justify-between mb-2">
+            <Calendar className="text-blue-600" size={24} />
+            <span className="text-2xl font-bold text-gray-800">{stats.aujourdhui}</span>
           </div>
-          <p className="text-gray-300 font-semibold">Aujourd'hui</p>
+          <p className="text-gray-600 text-sm">Aujourd'hui</p>
         </div>
       </div>
 
       {/* Filtres */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-white/20 mb-8">
-        <div className="flex items-center gap-3 mb-6">
-          <Filter className="text-orange-400" size={24} />
-          <h2 className="text-2xl font-bold text-white">Filtres</h2>
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className="text-gray-600" size={20} />
+          <h2 className="text-lg font-semibold text-gray-800">Filtres</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
           {/* Recherche */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">
-              <Search size={16} className="inline mr-2" />
+            <label className="block text-gray-700 font-medium mb-2 text-sm">
               Rechercher un étudiant
             </label>
             <input
               type="text"
               placeholder="Nom ou prénom..."
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500 focus:border-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -258,12 +255,11 @@ export default function AbsencesAdminPage() {
 
           {/* Groupe */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">
-              <Users size={16} className="inline mr-2" />
+            <label className="block text-gray-700 font-medium mb-2 text-sm">
               Groupe
             </label>
             <select
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               value={selectedGroupe || ''}
               onChange={(e) => setSelectedGroupe(e.target.value ? parseInt(e.target.value) : null)}
             >
@@ -276,12 +272,11 @@ export default function AbsencesAdminPage() {
 
           {/* Matière */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">
-              <BookOpen size={16} className="inline mr-2" />
+            <label className="block text-gray-700 font-medium mb-2 text-sm">
               Matière
             </label>
             <select
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               value={selectedMatiere || ''}
               onChange={(e) => setSelectedMatiere(e.target.value ? parseInt(e.target.value) : null)}
             >
@@ -294,9 +289,9 @@ export default function AbsencesAdminPage() {
 
           {/* Statut */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">Statut</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm">Statut</label>
             <select
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               value={selectedStatut}
               onChange={(e) => setSelectedStatut(e.target.value)}
             >
@@ -308,10 +303,10 @@ export default function AbsencesAdminPage() {
 
           {/* Date début */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">Date début</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm">Date début</label>
             <input
               type="date"
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               value={dateDebut}
               onChange={(e) => setDateDebut(e.target.value)}
             />
@@ -319,10 +314,10 @@ export default function AbsencesAdminPage() {
 
           {/* Date fin */}
           <div>
-            <label className="block text-white font-semibold mb-2 text-sm">Date fin</label>
+            <label className="block text-gray-700 font-medium mb-2 text-sm">Date fin</label>
             <input
               type="date"
-              className="w-full bg-white/90 border-2 border-orange-300 rounded-xl px-4 py-2 focus:ring-4 focus:ring-orange-500"
+              className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
               value={dateFin}
               onChange={(e) => setDateFin(e.target.value)}
             />
@@ -339,60 +334,59 @@ export default function AbsencesAdminPage() {
               setDateDebut('');
               setDateFin('');
             }}
-            className="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-colors"
+            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
           >
             Réinitialiser
           </button>
           <button
             onClick={exporterAbsences}
-            className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl transition-all flex items-center gap-2"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm"
           >
-            <Download size={20} />
+            <Download size={16} />
             Exporter CSV ({filteredAbsences.length})
           </button>
         </div>
       </div>
 
       {/* Liste des absences */}
-      <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden border border-white/20">
-        <div className="bg-gradient-to-r from-red-600 via-orange-600 to-yellow-600 text-white p-6">
-          <h2 className="text-2xl font-bold">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-blue-600 text-white p-4">
+          <h2 className="text-lg font-semibold">
             {filteredAbsences.length} absence(s) trouvée(s)
           </h2>
         </div>
 
         <div className="overflow-x-auto">
           {filteredAbsences.length === 0 ? (
-            <div className="p-12 text-center">
-              <AlertTriangle size={64} className="mx-auto text-gray-400 mb-4" />
-              <p className="text-gray-300 text-lg">Aucune absence trouvée</p>
+            <div className="p-8 text-center">
+              <AlertTriangle size={48} className="mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-600">Aucune absence trouvée</p>
             </div>
           ) : (
             <table className="w-full">
-              <thead className="bg-gray-800 text-white">
+              <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="p-4 text-left">Date & Heure</th>
-                  <th className="p-4 text-left">Étudiant</th>
-                  <th className="p-4 text-left">Groupe</th>
-                  <th className="p-4 text-left">Matière</th>
-                  <th className="p-4 text-left">Enseignant</th>
-                  <th className="p-4 text-left">Salle</th>
-                  <th className="p-4 text-left">Statut</th>
-                  <th className="p-4 text-left">Motif</th>
+                  <th className="p-3 text-left text-sm font-semibold">Date & Heure</th>
+                  <th className="p-3 text-left text-sm font-semibold">Étudiant</th>
+                  <th className="p-3 text-left text-sm font-semibold">Groupe</th>
+                  <th className="p-3 text-left text-sm font-semibold">Matière</th>
+                  <th className="p-3 text-left text-sm font-semibold">Enseignant</th>
+                  <th className="p-3 text-left text-sm font-semibold">Salle</th>
+                  <th className="p-3 text-left text-sm font-semibold">Statut</th>
+                  <th className="p-3 text-left text-sm font-semibold">Motif</th>
                 </tr>
               </thead>
-              <tbody className="text-white">
+              <tbody className="text-gray-800">
                 {filteredAbsences.map((absence) => (
-                  <tr key={absence.id_absence} className="border-b border-gray-700 hover:bg-white/5 transition-colors">
-                    <td className="p-4">
+                  <tr key={absence.id_absence} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="p-3">
                       <div className="flex items-center gap-2">
-                        <Calendar size={16} className="text-blue-400" />
+                        <Calendar size={14} className="text-blue-600" />
                         <div>
-                          <div className="font-semibold">
+                          <div className="font-medium text-sm">
                             {new Date(absence.emploi_temps.date).toLocaleDateString('fr-FR')}
                           </div>
-                          <div className="text-sm text-gray-400">
-                            <Clock size={12} className="inline mr-1" />
+                          <div className="text-xs text-gray-500">
                             {new Date(absence.emploi_temps.heure_debut).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                             {' - '}
                             {new Date(absence.emploi_temps.heure_fin).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -400,44 +394,44 @@ export default function AbsencesAdminPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-4">
-                      <div className="font-semibold">
+                    <td className="p-3">
+                      <div className="font-medium text-sm">
                         {absence.etudiant.utilisateur.prenom} {absence.etudiant.utilisateur.nom}
                       </div>
-                      <div className="text-sm text-gray-400">{absence.etudiant.numero_inscription}</div>
+                      <div className="text-xs text-gray-500">{absence.etudiant.numero_inscription}</div>
                     </td>
-                    <td className="p-4">
-                      <div className="font-semibold">{absence.etudiant.groupe.nom}</div>
-                      <div className="text-sm text-gray-400">{absence.etudiant.groupe.niveau.nom}</div>
+                    <td className="p-3">
+                      <div className="font-medium text-sm">{absence.etudiant.groupe.nom}</div>
+                      <div className="text-xs text-gray-500">{absence.etudiant.groupe.niveau.nom}</div>
                     </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <BookOpen size={16} className="text-purple-400" />
-                        <span className="font-semibold">{absence.emploi_temps.matiere.nom}</span>
+                    <td className="p-3">
+                      <div className="flex items-center gap-1">
+                        <BookOpen size={14} className="text-purple-600" />
+                        <span className="font-medium text-sm">{absence.emploi_temps.matiere.nom}</span>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3 text-sm">
                       {absence.emploi_temps.enseignant.utilisateur.prenom} {absence.emploi_temps.enseignant.utilisateur.nom}
                     </td>
-                    <td className="p-4 font-mono text-sm">{absence.emploi_temps.salle.code}</td>
-                    <td className="p-4">
+                    <td className="p-3 font-mono text-sm">{absence.emploi_temps.salle.code}</td>
+                    <td className="p-3">
                       {absence.statut === 'Justifiee' ? (
-                        <span className="inline-flex items-center gap-2 bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
-                          <CheckCircle size={16} />
+                        <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                          <CheckCircle size={12} />
                           Justifiée
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-2 bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
-                          <XCircle size={16} />
+                        <span className="inline-flex items-center gap-1 bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">
+                          <XCircle size={12} />
                           Non justifiée
                         </span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="p-3">
                       {absence.motif ? (
-                        <span className="text-sm text-gray-300">{absence.motif}</span>
+                        <span className="text-sm text-gray-600">{absence.motif}</span>
                       ) : (
-                        <span className="text-sm text-gray-500 italic">-</span>
+                        <span className="text-sm text-gray-400 italic">-</span>
                       )}
                     </td>
                   </tr>

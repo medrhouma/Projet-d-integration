@@ -3,6 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, Calendar, Users, TrendingUp, Search, FileText } from 'lucide-react';
+// ...existing code...
+
+// API call to justify a student absence
+async function justifyStudentAbsence(id_absence: number, motif: string) {
+  const res = await fetch('/api/absences/etudiants', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id_absence, statut: 'Justifiee', motif })
+  });
+  return res.json();
+}
 
 interface AbsenceStats {
   total_absences: number;
@@ -43,6 +54,45 @@ export default function AbsencesPage() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'justifiee' | 'non-justifiee'>('all');
+  // For justification modal
+  const [showJustifyModal, setShowJustifyModal] = useState(false);
+  const [justifyMotif, setJustifyMotif] = useState('');
+  const [justifyAbsenceId, setJustifyAbsenceId] = useState<number | null>(null);
+  const [justifyLoading, setJustifyLoading] = useState(false);
+  const [justifyError, setJustifyError] = useState('');
+  // Open modal for justification
+  const openJustifyModal = (absence: Absence) => {
+    setJustifyAbsenceId(absence.id_absence);
+    setJustifyMotif(absence.motif || '');
+    setShowJustifyModal(true);
+    setJustifyError('');
+  };
+
+  // Handle justification submit
+  const handleJustifySubmit = async () => {
+    if (!justifyAbsenceId || !justifyMotif.trim()) {
+      setJustifyError('Veuillez saisir un motif de justification.');
+      return;
+    }
+    setJustifyLoading(true);
+    setJustifyError('');
+    try {
+      const result = await justifyStudentAbsence(justifyAbsenceId, justifyMotif);
+      if (result.success) {
+        setShowJustifyModal(false);
+        setJustifyAbsenceId(null);
+        setJustifyMotif('');
+        // Refresh absences
+        fetchAbsencesData();
+      } else {
+        setJustifyError(result.error || 'Erreur lors de la justification');
+      }
+    } catch (e) {
+      setJustifyError('Erreur de connexion au serveur');
+    } finally {
+      setJustifyLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchAbsencesData();
@@ -54,63 +104,34 @@ export default function AbsencesPage() {
 
   const fetchAbsencesData = async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      // Appel à l'API backend pour récupérer les absences des étudiants du département
+      const response = await fetch('/api/absences/etudiants?all=1');
       if (!response.ok) {
-        router.push('/login');
+        setError("Erreur lors de la récupération des absences");
+        setAbsences([]);
+        setFilteredAbsences([]);
         return;
       }
-
-      const userData = await response.json();
-      
-      if (!userData.success) {
-        router.push('/login');
+      const data = await response.json();
+      // DEBUG: Afficher les données brutes dans la console
+      console.log('DEBUG absences backend:', data);
+      if (!data.success) {
+        setError(data.error || "Erreur lors de la récupération des absences");
+        setAbsences([]);
+        setFilteredAbsences([]);
         return;
       }
-
-      const deptId = userData.user.id_departement || userData.user.enseignant?.id_departement;
-
-      if (!deptId) {
-        setError('Département non trouvé');
-        return;
+      // data.absences doit être un tableau d'absences avec les champs nécessaires
+      setAbsences(data.absences || []);
+      setFilteredAbsences(data.absences || []);
+      // Si le backend fournit des stats, les utiliser
+      if (data.stats) {
+        setStats(data.stats);
       }
-
-      // For now, we'll create mock data since the absence API might not be implemented
-      // TODO: Replace with actual API call when available
-      const mockStats: AbsenceStats = {
-        total_absences: 156,
-        absences_ce_mois: 42,
-        taux_absenteisme: 8.5,
-        absences_par_matiere: [
-          { id_matiere: 1, nom_matiere: 'Mathématiques', nombre_absences: 28 },
-          { id_matiere: 2, nom_matiere: 'Physique', nombre_absences: 24 },
-          { id_matiere: 3, nom_matiere: 'Informatique', nombre_absences: 19 },
-        ],
-      };
-
-      const mockAbsences: Absence[] = [
-        {
-          id_absence: 1,
-          date_absence: new Date().toISOString(),
-          justifiee: false,
-          motif: null,
-          etudiant: {
-            nom: 'Benali',
-            prenom: 'Ahmed',
-            matricule: 'E2023001',
-            groupe: { nom: 'G1' },
-          },
-          matiere: {
-            nom: 'Mathématiques',
-            code: 'MATH101',
-          },
-        },
-      ];
-
-      setStats(mockStats);
-      setAbsences(mockAbsences);
-      setFilteredAbsences(mockAbsences);
     } catch (err) {
       setError('Erreur de connexion au serveur');
+      setAbsences([]);
+      setFilteredAbsences([]);
       console.error('Erreur:', err);
     } finally {
       setLoading(false);
@@ -157,6 +178,15 @@ export default function AbsencesPage() {
 
   return (
     <div className="p-8">
+      {/* Bouton retour dashboard */}
+      <div className="mb-4">
+        <button
+          onClick={() => router.push('/dashboard-chef-departement')}
+          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-semibold shadow"
+        >
+          &#8592; Retour au Dashboard
+        </button>
+      </div>
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -276,8 +306,11 @@ export default function AbsencesPage() {
         {filteredAbsences.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <AlertTriangle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <p>Aucune absence trouvée</p>
-            <p className="text-sm text-gray-400 mt-1">Cette fonctionnalité sera bientôt disponible</p>
+            <p>Aucune absence d'étudiant trouvée.</p>
+            <p className="text-sm text-gray-400 mt-1">Vérifiez que des absences existent bien côté base de données et que le backend retourne la bonne structure.</p>
+            <pre className="text-xs text-left bg-gray-100 p-2 mt-4 rounded max-h-40 overflow-auto">
+              {JSON.stringify(absences, null, 2)}
+            </pre>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -308,20 +341,20 @@ export default function AbsencesPage() {
                 {filteredAbsences.map((absence) => (
                   <tr key={absence.id_absence} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(absence.date_absence).toLocaleDateString('fr-FR')}
+                      {absence.date_absence ? new Date(absence.date_absence).toLocaleDateString('fr-FR') : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {absence.etudiant.nom} {absence.etudiant.prenom}
+                        {absence.etudiant?.nom || '-'} {absence.etudiant?.prenom || ''}
                       </div>
-                      <div className="text-xs text-gray-500">{absence.etudiant.matricule}</div>
+                      <div className="text-xs text-gray-500">{absence.etudiant?.matricule || '-'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {absence.etudiant.groupe.nom}
+                      {absence.etudiant?.groupe?.nom || '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{absence.matiere.nom}</div>
-                      <div className="text-xs text-gray-500">{absence.matiere.code}</div>
+                      <div className="text-sm text-gray-900">{absence.matiere?.nom || '-'}</div>
+                      <div className="text-xs text-gray-500">{absence.matiere?.code || '-'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {absence.justifiee ? (
@@ -329,9 +362,17 @@ export default function AbsencesPage() {
                           Justifiée
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                          Non justifiée
-                        </span>
+                        <>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mr-2">
+                            Non justifiée
+                          </span>
+                          <button
+                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200 transition"
+                            onClick={() => openJustifyModal(absence)}
+                          >
+                            Justifier
+                          </button>
+                        </>
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -339,6 +380,42 @@ export default function AbsencesPage() {
                     </td>
                   </tr>
                 ))}
+                {/* Modal de justification d'absence étudiant */}
+                {showJustifyModal && (
+                  <tr>
+                    <td colSpan={6} className="p-0">
+                      <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                          <h3 className="text-xl font-bold text-gray-800 mb-4">Justifier l'absence de l'étudiant</h3>
+                          <textarea
+                            value={justifyMotif}
+                            onChange={e => setJustifyMotif(e.target.value)}
+                            placeholder="Entrez le motif de justification..."
+                            className="w-full border rounded-lg p-3 mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            rows={4}
+                          />
+                          {justifyError && <div className="text-red-600 text-sm mb-2">{justifyError}</div>}
+                          <div className="flex justify-end space-x-3">
+                            <button
+                              onClick={() => { setShowJustifyModal(false); setJustifyAbsenceId(null); setJustifyMotif(''); setJustifyError(''); }}
+                              className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                              disabled={justifyLoading}
+                            >
+                              Annuler
+                            </button>
+                            <button
+                              onClick={handleJustifySubmit}
+                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                              disabled={justifyLoading}
+                            >
+                              {justifyLoading ? 'Enregistrement...' : 'Confirmer'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

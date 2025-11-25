@@ -1,28 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, BookOpen, User, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, BookOpen, User, AlertTriangle, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 
 interface Absence {
   id_absence: number;
   motif: string | null;
   statut: string;
-  emploi_temps: {
-    date: string;
-    heure_debut: string;
-    heure_fin: string;
-    matiere: {
-      nom: string;
-    };
-    salle: {
-      code: string;
-    };
-    enseignant: {
-      utilisateur: {
-        nom: string;
-        prenom: string;
-      };
-    };
+  justifiee: boolean;
+  date_absence: string;
+  heure_debut: string;
+  heure_fin: string;
+  matiere: {
+    nom: string;
+  };
+  salle: string;
+  enseignant: {
+    nom: string;
+    prenom: string;
   };
 }
 
@@ -38,20 +33,44 @@ export default function MesAbsencesPage() {
   const chargerAbsences = async () => {
     try {
       setLoading(true);
+      setMessage('');
+      
+      console.log('Chargement des absences...');
       const res = await fetch('/api/absences/etudiants');
-      const data = await res.json();
+      console.log('Réponse API:', res.status);
+      
+      if (!res.ok) {
+        throw new Error(`Erreur ${res.status}: ${res.statusText}`);
+      }
 
-      if (data.success) {
+      const data = await res.json();
+      console.log('Données reçues:', data);
+
+      // Gestion de différentes structures de réponse
+      if (data.success && data.absences) {
+        setAbsences(data.absences);
+      } else if (Array.isArray(data)) {
+        // Si l'API retourne directement un tableau
+        setAbsences(data);
+      } else if (data.absences) {
+        // Autre structure possible
         setAbsences(data.absences);
       } else {
-        setMessage('❌ ' + data.error);
+        setMessage('❌ Format de données non reconnu');
+        setAbsences([]);
       }
     } catch (error) {
-      setMessage('❌ Erreur lors du chargement');
-      console.error(error);
+      console.error('Erreur détaillée:', error);
+      setMessage('❌ Erreur lors du chargement des absences');
+      setAbsences([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBackToDashboard = () => {
+    // Redirection vers le dashboard étudiant
+    window.location.href = '/dashboard-etudiant';
   };
 
   if (loading) {
@@ -59,19 +78,28 @@ export default function MesAbsencesPage() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement...</p>
+          <p className="text-gray-600">Chargement de vos absences...</p>
         </div>
       </div>
     );
   }
 
   const nbTotal = absences.length;
-  const nbJustifiees = absences.filter(a => a.statut === 'Justifiee').length;
-  const nbNonJustifiees = absences.filter(a => a.statut === 'NonJustifiee').length;
+  const nbJustifiees = absences.filter(a => a.justifiee === true).length;
+  const nbNonJustifiees = absences.filter(a => a.justifiee === false).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 p-8">
       <div className="max-w-6xl mx-auto">
+        {/* Bouton Retour */}
+        <button
+          onClick={handleBackToDashboard}
+          className="mb-6 px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-semibold transition-colors flex items-center gap-2 shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Retour au Dashboard
+        </button>
+
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-6 border border-purple-100">
           <div className="flex items-center gap-4">
@@ -86,6 +114,22 @@ export default function MesAbsencesPage() {
             </div>
           </div>
         </div>
+
+        {/* Message d'erreur */}
+        {message && (
+          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5" />
+              {message}
+            </div>
+            <button
+              onClick={chargerAbsences}
+              className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors"
+            >
+              Réessayer
+            </button>
+          </div>
+        )}
 
         {/* Statistiques */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -120,13 +164,6 @@ export default function MesAbsencesPage() {
           </div>
         </div>
 
-        {/* Message */}
-        {message && (
-          <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800">
-            {message}
-          </div>
-        )}
-
         {/* Liste des absences */}
         {absences.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-xl p-12 text-center border border-purple-100">
@@ -139,6 +176,11 @@ export default function MesAbsencesPage() {
             <p className="text-gray-600 text-lg">
               Vous n'avez aucune absence enregistrée
             </p>
+            {message && (
+              <p className="text-sm text-gray-500 mt-2">
+                {message}
+              </p>
+            )}
           </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-purple-100">
@@ -153,7 +195,7 @@ export default function MesAbsencesPage() {
                 <div
                   key={absence.id_absence}
                   className={`p-6 hover:bg-gray-50 transition-colors ${
-                    absence.statut === 'NonJustifiee' ? 'bg-red-50' : 'bg-green-50'
+                    absence.justifiee === false ? 'bg-red-50' : 'bg-green-50'
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -163,19 +205,20 @@ export default function MesAbsencesPage() {
                         <div className="flex items-center gap-2">
                           <Calendar className="w-5 h-5 text-purple-600" />
                           <span className="font-semibold text-gray-800">
-                            {new Date(absence.emploi_temps.date).toLocaleDateString('fr-FR', {
-                              weekday: 'long',
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })}
+                            {absence.date_absence
+                              ? new Date(absence.date_absence).toLocaleDateString('fr-FR', {
+                                  weekday: 'long',
+                                  day: 'numeric',
+                                  month: 'long',
+                                  year: 'numeric',
+                                })
+                              : '-'}
                           </span>
                         </div>
-
                         <div className="flex items-center gap-2">
                           <Clock className="w-5 h-5 text-indigo-600" />
                           <span className="text-gray-700">
-                            {absence.emploi_temps.heure_debut} - {absence.emploi_temps.heure_fin}
+                            {absence.heure_debut || '-'} - {absence.heure_fin || '-'}
                           </span>
                         </div>
                       </div>
@@ -187,28 +230,27 @@ export default function MesAbsencesPage() {
                           <div>
                             <p className="text-xs text-gray-600">Matière</p>
                             <p className="font-semibold text-gray-800">
-                              {absence.emploi_temps.matiere.nom}
+                              {absence.matiere?.nom || '-'}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <MapPin className="w-5 h-5 text-green-600" />
+                          <MapPin className="w-5 h-5 text-pink-600" />
                           <div>
                             <p className="text-xs text-gray-600">Salle</p>
                             <p className="font-semibold text-gray-800">
-                              {absence.emploi_temps.salle.code}
+                              {absence.salle || '-'}
                             </p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <User className="w-5 h-5 text-orange-600" />
+                          <User className="w-5 h-5 text-indigo-600" />
                           <div>
                             <p className="text-xs text-gray-600">Enseignant</p>
                             <p className="font-semibold text-gray-800">
-                              {absence.emploi_temps.enseignant.utilisateur.nom}{' '}
-                              {absence.emploi_temps.enseignant.utilisateur.prenom}
+                              {absence.enseignant?.prenom || '-'} {absence.enseignant?.nom || ''}
                             </p>
                           </div>
                         </div>
@@ -227,11 +269,9 @@ export default function MesAbsencesPage() {
                     {/* Statut */}
                     <div>
                       <span className={`px-4 py-2 rounded-lg font-semibold inline-flex items-center gap-2 ${
-                        absence.statut === 'Justifiee'
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-red-100 text-red-700'
+                        absence.justifiee ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       }`}>
-                        {absence.statut === 'Justifiee' ? (
+                        {absence.justifiee ? (
                           <>
                             <CheckCircle className="w-5 h-5" />
                             Justifiée
@@ -268,7 +308,46 @@ export default function MesAbsencesPage() {
             </div>
           </div>
         )}
+
+        {/* Boutons d'action */}
+        <div className="mt-6 flex gap-4 justify-center">
+          <button
+            onClick={chargerAbsences}
+            className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors inline-flex items-center gap-2"
+          >
+            <RefreshCw className="w-5 h-5" />
+            Actualiser
+          </button>
+          
+          <button
+            onClick={handleBackToDashboard}
+            className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors inline-flex items-center gap-2"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Retour au Dashboard
+          </button>
+        </div>
       </div>
     </div>
+  );
+}
+
+// Composant RefreshCw
+function RefreshCw(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <path d="M3 3v5h5" />
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+      <path d="M16 16h5v5" />
+    </svg>
   );
 }
