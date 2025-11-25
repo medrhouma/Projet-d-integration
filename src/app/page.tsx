@@ -292,7 +292,7 @@ const news = [
               </div>
               <div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  ISET Tozeur
+                  Université MAS 
                 </span>
                 <p className="text-xs text-gray-500">Excellence depuis 1995</p>
               </div>

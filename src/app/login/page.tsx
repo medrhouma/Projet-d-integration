@@ -240,7 +240,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-2 animate-fade-in">
-            ISET Tozeur
+            Université MAS
           </h1>
           <p className="text-gray-600 text-base md:text-lg font-medium">Connexion à votre espace personnel</p>
           <div className="flex items-center justify-center gap-2 mt-2">
@@ -502,7 +502,7 @@ export default function LoginPage() {
               </Link>
             </div>
             <p className="text-xs text-gray-500 text-center">
-              © 2025 ISET Tozeur. Tous droits réservés.
+              © 2025 Université MAS. Tous droits réservés.
             </p>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
